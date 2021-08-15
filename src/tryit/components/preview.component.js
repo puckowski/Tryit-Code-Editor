@@ -66,6 +66,9 @@ class PreviewComponent {
             },
             children: [
                 markup('h4', {
+                    attrs: {
+                        style: 'margin:  0px;'
+                    },
                     children: [
                         textNode('Preview')
                     ]
@@ -85,7 +88,7 @@ class PreviewComponent {
                         frameborder: '0',
                         id: 'tryit-sling-iframe',
                         slonlyself: 'true',
-                        style: 'background-color: #ffffff;'
+                        style: 'background-color: #ffffff; width: 100%; height: 100%;'
                     }
                 })
             ]

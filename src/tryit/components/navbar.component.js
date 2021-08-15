@@ -48,7 +48,7 @@ class NavbarComponent {
                     children: [
                         markup('h4', {
                             attrs: {
-                                style: 'margin-bottom: 0px;'
+                                style: 'margin: 0px;'
                             },
                             children: [
                                 textNode('Code Editor')
@@ -88,7 +88,7 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.onRun.bind(this),
-                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204);'
+                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); align-self: center;'
                     },
                     children: [
                         textNode('Run')
