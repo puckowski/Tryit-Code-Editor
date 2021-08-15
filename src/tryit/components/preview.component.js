@@ -62,12 +62,12 @@ class PreviewComponent {
     view() {
         return markup('div', {
             attrs: {
-                style: 'color: rgb(204, 204, 204); max-height: inherit; overflow: auto;'
+                style: 'padding: 0.25rem; color: rgb(204, 204, 204); max-height: inherit; overflow: auto; display: flex; flex-direction: column; height: calc(100% - 0.5rem);'
             },
             children: [
                 markup('h4', {
                     attrs: {
-                        style: 'margin:  0px;'
+                        style: 'margin: 0px; flex: 1;'
                     },
                     children: [
                         textNode('Preview')
@@ -76,7 +76,7 @@ class PreviewComponent {
                 ...(this.injectedList.length > 18 ? [
                     markup('div', {
                         attrs: {
-                            style: 'background-color: rgb(46, 49, 56); padding: 0.25rem;'
+                            style: 'background-color: rgb(46, 49, 56); padding: 0.25rem; flex: 1;'
                         },
                         children: [
                             textNode(this.injectedList)
@@ -88,7 +88,8 @@ class PreviewComponent {
                         frameborder: '0',
                         id: 'tryit-sling-iframe',
                         slonlyself: 'true',
-                        style: 'background-color: #ffffff; width: 100%; height: 100%;'
+                        ...this.injectedList.length > 18 && { style: 'background-color: #ffffff; width: 100%; flex: 18;' },
+                        ...this.injectedList.length <= 18 && { style: 'background-color: #ffffff; width: 100%; flex: 19;' }
                     }
                 })
             ]
