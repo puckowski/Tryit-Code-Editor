@@ -5,8 +5,17 @@ class StoreGlobal {
         this.editIndex = 0;
         this.dataUpdated = BehaviorSubject(false);
         this.heightModifier = 0;
+        this.inlineHeight = '';
     }
 
+    getInlineHeight() {
+        return this.inlineHeight;
+    }
+
+    setInlineHeight(inlineHeight) {
+        this.inlineHeight = inlineHeight;
+    }
+    
     getDataSubject() {
         return this.dataUpdated;
     }

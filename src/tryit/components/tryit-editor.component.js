@@ -1,4 +1,4 @@
-import { m, markup, textNode, version } from '../../../dist/sling.min';
+import { getState, m, markup, setState, textNode, version } from '../../../dist/sling.min';
 import ContentPanelComponent from './content-panel.component';
 import NavbarComponent from './navbar.component';
 
@@ -6,6 +6,14 @@ class TryitEditorComponent {
 
     constructor() {
         this.contentPanelComp = new ContentPanelComponent();
+    }
+
+    slOnInit() {
+        const tryitRootEle = document.getElementById('tryit-root');
+        const tryitHeight = tryitRootEle.style.height;
+        const state = getState();
+        state.setInlineHeight(tryitHeight);
+        setState(state);
     }
 
     view() {

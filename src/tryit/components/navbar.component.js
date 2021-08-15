@@ -38,15 +38,18 @@ class NavbarComponent {
 
         return markup('div', {
             attrs: {
-                style: 'padding: 0.25rem; background-color: rgb(46, 49, 56);'
+                style: 'padding: 0.5rem; background-color: rgb(46, 49, 56); display: flex; flex-direction: row;'
             },
             children: [
                 markup('div', {
                     attrs: {
-                        style: 'margin-right: 0.5rem; display: inline-block; color: rgb(204, 204, 204);'
+                        style: 'margin-right: 0.5rem; display: inline-block; color: rgb(204, 204, 204); align-self: center;'
                     },
                     children: [
                         markup('h4', {
+                            attrs: {
+                                style: 'margin-bottom: 0px;'
+                            },
                             children: [
                                 textNode('Code Editor')
                             ]
@@ -56,7 +59,7 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.addFile.bind(this),
-                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem;'
+                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center;'
                     },
                     children: [
                         textNode('Add File')
@@ -65,7 +68,7 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.expandHeight.bind(this),
-                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem;'
+                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center;'
                     },
                     children: [
                         textNode('Expand')
@@ -75,7 +78,7 @@ class NavbarComponent {
                     markup('button', {
                         attrs: {
                             onclick: this.shrinkHeight.bind(this),
-                            style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem;'
+                            style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center;'
                         },
                         children: [
                             textNode('Shrink')
