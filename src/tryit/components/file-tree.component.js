@@ -11,7 +11,8 @@ class FileTreeComponent {
 
     onEditName(index) {
         this.editNameIndex = index;
-        this.editedFileName = '';
+        const file = this.fileService.getFile(index);
+        this.editedFileName = file.name ? file.name : '';
     }
 
     onFinishEditName(index) {
