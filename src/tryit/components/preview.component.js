@@ -62,7 +62,7 @@ class PreviewComponent {
     view() {
         return markup('div', {
             attrs: {
-                style: 'padding: 0.25rem; color: rgb(204, 204, 204); max-height: inherit; overflow: auto; display: flex; flex-direction: column; height: calc(100% - 0.5rem);'
+                style: 'padding: 0.25rem; color: rgb(204, 204, 204) !important; max-height: inherit; overflow: auto; display: flex; flex-direction: column; height: calc(100% - 0.5rem);'
             },
             children: [
                 markup('h4', {

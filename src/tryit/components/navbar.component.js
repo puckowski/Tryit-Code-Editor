@@ -43,7 +43,7 @@ class NavbarComponent {
             children: [
                 markup('div', {
                     attrs: {
-                        style: 'margin-right: 0.5rem; display: inline-block; color: rgb(204, 204, 204); align-self: center;'
+                        style: 'margin-right: 0.5rem; display: inline-block; color: rgb(204, 204, 204) !important; align-self: center;'
                     },
                     children: [
                         markup('h4', {

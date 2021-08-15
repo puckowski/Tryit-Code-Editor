@@ -33,7 +33,7 @@ class SourcePanelComponent {
 
         return markup('div', {
             attrs: {
-                style: 'padding: 0.25rem; background-color: rgb(21, 24, 30); color: rgb(204, 204, 204); overflow: auto; height: calc(100% - 0.5rem); display: flex; flex-direction: column;'
+                style: 'padding: 0.25rem; background-color: rgb(21, 24, 30); color: rgb(204, 204, 204) !important; overflow: auto; height: calc(100% - 0.5rem); display: flex; flex-direction: column;'
             },
             children: [
                 markup('h4', {
