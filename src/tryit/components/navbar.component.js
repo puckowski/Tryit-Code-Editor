@@ -32,6 +32,13 @@ class NavbarComponent {
         state.getDataSubject().next(true);
     }
 
+    onClearConsole() {
+        const consoleEle = document.getElementById('tryit-sling-console');
+        if (consoleEle) {
+            consoleEle.value = '';
+        }
+    }
+
     view() {
         const state = getState();
         const mod = state.getHeightModifier();
@@ -88,12 +95,21 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.onRun.bind(this),
-                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); align-self: center;'
+                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center;'
                     },
                     children: [
                         textNode('Run')
                     ]
                 }),
+                markup('button', {
+                    attrs: {
+                        onclick: this.onClearConsole.bind(this),
+                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); align-self: center;'
+                    },
+                    children: [
+                        textNode('Clear Console')
+                    ]
+                })
             ]
         });
     }

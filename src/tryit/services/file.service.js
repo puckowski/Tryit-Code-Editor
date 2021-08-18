@@ -52,14 +52,43 @@ class FileService {
         this.setFileList(fileList);
     }
 
-    updateFileInject(index) {
+    updateFileInject(index, value = null) {
         const fileList = this.getFileList();
         const file = fileList.find(file => file.index === index);
         if (file) {
             if (!file.injectScript) {
-                file.injectScript = true;
+                if (value === null || value === undefined) {
+                    file.injectScript = true;
+                } else {
+                    file.injectScript = value;
+                }
             } else {
-                file.injectScript = !file.injectScript;
+                if (value === null || value === undefined) {
+                    file.injectScript = !file.injectScript;
+                } else {
+                    file.injectScript = value;
+                }
+            }
+        }
+        this.setFileList(fileList);
+    }
+
+    updateFileInjectCss(index, value = null) {
+        const fileList = this.getFileList();
+        const file = fileList.find(file => file.index === index);
+        if (file) {
+            if (!file.injectCss) {
+                if (value === null || value === undefined) {
+                    file.injectCss = true;
+                } else {
+                    file.injectCss = value;
+                }
+            } else {
+                if (value === null || value === undefined) {
+                    file.injectCss = !file.injectCss;
+                } else {
+                    file.injectCss = value;
+                }
             }
         }
         this.setFileList(fileList);
@@ -81,7 +110,8 @@ class FileService {
             name: '',
             index: fileCount,
             data: '',
-            injectScript: false
+            injectScript: false,
+            injectCss: false
         };
     }
 

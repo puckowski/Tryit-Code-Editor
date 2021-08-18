@@ -40,6 +40,14 @@ class FileTreeComponent {
 
     onToggleInject(index) {
         this.fileService.updateFileInject(index);
+        this.fileService.updateFileInjectCss(index, false);
+        const state = getState();
+        state.getDataSubject().next(true);
+    }
+
+    onToggleInjectCss(index) {
+        this.fileService.updateFileInjectCss(index);
+        this.fileService.updateFileInject(index, false);
         const state = getState();
         state.getDataSubject().next(true);
     }
@@ -64,7 +72,7 @@ class FileTreeComponent {
                         children: [
                             markup('button', {
                                 attrs: {
-                                    style: 'margin-right: 0.5rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204);',
+                                    style: 'margin: 0 0.5rem 0.5rem 0; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204);',
                                     ...file.index !== this.editNameIndex && { onclick: this.onEditName.bind(this, file.index) },
                                     ...file.index === this.editNameIndex && { onclick: this.onFinishEditName.bind(this, file.index) },
                                 },
@@ -79,7 +87,7 @@ class FileTreeComponent {
                             }),
                             markup('button', {
                                 attrs: {
-                                    style: 'margin-right: 0.5rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204);',
+                                    style: 'margin-right: 0 0.5rem 0.5rem 0; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204);',
                                     onclick: this.onRemoveFile.bind(this, file.index)
                                 },
                                 children: [
@@ -94,7 +102,7 @@ class FileTreeComponent {
                             ...(file.index === this.editNameIndex ? [
                                 markup('input', {
                                     attrs: {
-                                        style: 'margin-left: 0.5rem;',
+                                        style: ' 0 0.5rem 0.5rem 0.5rem',
                                         oninput: this.onFileNameInput.bind(this),
                                         value: this.editedFileName
                                     }
@@ -115,6 +123,25 @@ class FileTreeComponent {
                                             type: 'checkbox',
                                             ...file.injectScript && { checked: 'true' },
                                             onchange: this.onToggleInject.bind(this, file.index)
+                                        }
+                                    })
+                                ]
+                            }),
+                            markup('div', {
+                                children: [
+                                    markup('span', {
+                                        attrs: {
+                                            style: 'margin-right: 0.25rem;'
+                                        },
+                                        children: [
+                                            textNode('Inject CSS')
+                                        ]
+                                    }),
+                                    markup('input', {
+                                        attrs: {
+                                            type: 'checkbox',
+                                            ...file.injectCss && { checked: 'true' },
+                                            onchange: this.onToggleInjectCss.bind(this, file.index)
                                         }
                                     })
                                 ]
