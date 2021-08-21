@@ -6,6 +6,24 @@ class StoreGlobal {
         this.dataUpdated = BehaviorSubject(false);
         this.heightModifier = 0;
         this.inlineHeight = '';
+        this.collapsedMode = false;
+        this.showPreview = false;
+    }
+
+    getShowPreview() {
+        return this.showPreview;
+    }
+
+    setShowPreview(newShowPreview) {
+        this.showPreview = newShowPreview;
+    }
+
+    getCollapsedMode() {
+        return this.collapsedMode;
+    }
+
+    setCollapsedMode(newMode) {
+        this.collapsedMode = newMode;
     }
 
     getInlineHeight() {
@@ -15,7 +33,7 @@ class StoreGlobal {
     setInlineHeight(inlineHeight) {
         this.inlineHeight = inlineHeight;
     }
-    
+
     getDataSubject() {
         return this.dataUpdated;
     }

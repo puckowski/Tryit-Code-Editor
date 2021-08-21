@@ -27,6 +27,12 @@ class NavbarComponent {
         setState(state);
     }
 
+    togglePreview() {
+        const state = getState();
+        state.setShowPreview(!state.getShowPreview());
+        setState(state);
+    }
+
     onRun() {
         const state = getState();
         state.getDataSubject().next(true);
@@ -42,15 +48,16 @@ class NavbarComponent {
     view() {
         const state = getState();
         const mod = state.getHeightModifier();
+        const collapsedMode = state.getCollapsedMode();
 
         return markup('div', {
             attrs: {
-                style: 'padding: 0.5rem; background-color: rgb(46, 49, 56); display: flex; flex-direction: row;'
+                style: 'padding: 0.5rem; background-color: rgb(46, 49, 56); display: flex; flex-direction: row; flex-wrap: wrap;'
             },
             children: [
                 markup('div', {
                     attrs: {
-                        style: 'margin-right: 0.5rem; display: inline-block; color: rgb(204, 204, 204) !important; align-self: center;'
+                        style: 'margin-right: 0.5rem; display: inline-block; color: rgb(204, 204, 204); align-self: center;'
                     },
                     children: [
                         markup('h4', {
@@ -101,6 +108,17 @@ class NavbarComponent {
                         textNode('Run')
                     ]
                 }),
+                ...(collapsedMode === true ? [
+                    markup('button', {
+                        attrs: {
+                            onclick: this.togglePreview.bind(this),
+                            style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center;'
+                        },
+                        children: [
+                            textNode('Toggle Preview')
+                        ]
+                    })
+                ] : []),
                 markup('button', {
                     attrs: {
                         onclick: this.onClearConsole.bind(this),
@@ -109,7 +127,7 @@ class NavbarComponent {
                     children: [
                         textNode('Clear Console')
                     ]
-                })
+                }),
             ]
         });
     }

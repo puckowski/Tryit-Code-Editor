@@ -6,24 +6,8 @@ class PreviewComponent {
     constructor() {
         this.fileService = new FileService();
         this.injectedList = '';
-    }
-
-    getConsoleScriptText() {
-        const consoleScript = 'const console=(function(oldCons) { return {' +
-            'log: function(text) { oldCons.log(text); window.parent.document.getElementById(\'tryit-sling-console\').value += text + \'\\r\\n\'; },' +
-            'info: function (text) { oldCons.info(text); window.parent.document.getElementById(\'tryit-sling-console\').value += text + \'\\r\\n\'; },' +
-            'warn: function (text) { oldCons.warn(text); window.parent.document.getElementById(\'tryit-sling-console\').value += text + \'\\r\\n\'; },' +
-            'error: function (text) { oldCons.error(text); window.parent.document.getElementById(\'tryit-sling-console\').value += text + \'\\r\\n\'; }' +
-            '}; }(window.console)); window.console = console;';
-
-        return consoleScript;
-    }
-
-    slAfterInit() {
-        const state = getState();
-        const sub = state.getDataSubject();
-        sub.subscribe(() => {
-            this.injectedList = 'Injected scripts: ';
+        this.onFileChangeFunction = () => {
+            this.injectedList = 'Injected files: ';
             const iframe = document.getElementById('tryit-sling-iframe');
 
             const state = getState();
@@ -47,7 +31,7 @@ class PreviewComponent {
                         script.text = injectedScript.data;
                         script.type = 'module';
                         htmlContainer.document.head.appendChild(script);
-                        if (this.injectedList.length > 18) {
+                        if (this.injectedList.length > 16) {
                             this.injectedList += ', ';
                         }
 
@@ -63,7 +47,7 @@ class PreviewComponent {
                         var stylesheet = document.createElement('style');
                         stylesheet.textContent = injectedScript.data;
                         htmlContainer.document.head.appendChild(stylesheet);
-                        if (this.injectedList.length > 18) {
+                        if (this.injectedList.length > 16) {
                             this.injectedList += ', ';
                         }
 
@@ -85,8 +69,27 @@ class PreviewComponent {
             if (htmlContainer.document.head) {
                 detectChanges();
             }
-        });
-        sub.next(true);
+        };
+    }
+
+    getConsoleScriptText() {
+        const consoleScript = 'const console=(function(oldCons) { return {' +
+            'log: function(text) { oldCons.log(text); window.parent.document.getElementById(\'tryit-sling-console\').value += text + \'\\r\\n\'; },' +
+            'info: function (text) { oldCons.info(text); window.parent.document.getElementById(\'tryit-sling-console\').value += text + \'\\r\\n\'; },' +
+            'warn: function (text) { oldCons.warn(text); window.parent.document.getElementById(\'tryit-sling-console\').value += text + \'\\r\\n\'; },' +
+            'error: function (text) { oldCons.error(text); window.parent.document.getElementById(\'tryit-sling-console\').value += text + \'\\r\\n\'; }' +
+            '}; }(window.console)); window.console = console;';
+
+        return consoleScript;
+    }
+
+    slAfterInit() {
+        const state = getState();
+        const sub = state.getDataSubject();
+        if (!sub.getHasSubscription(this.onFileChangeFunction)) {
+            sub.subscribe(this.onFileChangeFunction);
+            sub.next(true);
+        }
     }
 
     addFile() {
@@ -96,7 +99,7 @@ class PreviewComponent {
     view() {
         return markup('div', {
             attrs: {
-                style: 'padding: 0.25rem; color: rgb(204, 204, 204) !important; max-height: inherit; overflow: auto; display: flex; flex-direction: column; height: calc(100% - 0.5rem);'
+                style: 'padding: 0.25rem; color: rgb(204, 204, 204); max-height: inherit; overflow: auto; display: flex; flex-direction: column; height: calc(100% - 0.5rem);'
             },
             children: [
                 markup('h4', {
@@ -107,7 +110,7 @@ class PreviewComponent {
                         textNode('Preview')
                     ]
                 }),
-                ...(this.injectedList.length > 18 ? [
+                ...(this.injectedList.length > 16 ? [
                     markup('div', {
                         attrs: {
                             style: 'background-color: rgb(46, 49, 56); padding: 0.25rem; flex: 1;'
@@ -122,14 +125,13 @@ class PreviewComponent {
                         frameborder: '0',
                         id: 'tryit-sling-iframe',
                         slonlyself: 'true',
-                        ...this.injectedList.length > 18 && { style: 'background-color: #ffffff; width: 100%; flex: 14;' },
-                        ...this.injectedList.length <= 18 && { style: 'background-color: #ffffff; width: 100%; flex: 15;' }
+                        ...this.injectedList.length > 16 && { style: 'background-color: #ffffff; width: 100%; flex: 14;' },
+                        ...this.injectedList.length <= 16 && { style: 'background-color: #ffffff; width: 100%; flex: 15;' }
                     }
                 }),
                 markup('textarea', {
                     attrs: {
                         id: 'tryit-sling-console',
-                        slonlyself: 'true',
                         style: 'width: 100%; flex: 4;',
                         placeholder: 'Text will appear when logged'
                     }

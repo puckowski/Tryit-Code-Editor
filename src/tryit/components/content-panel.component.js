@@ -10,6 +10,7 @@ class ContentPanelComponent {
         this.fileService = new FileService();
         this.fileTreeComp = new FileTreeComponent();
         this.previewComp = new PreviewComponent();
+        this.sourceComp = new SourcePanelComponent();
         this.unitList = [
             'cm', 'mm', 'in', 'px', 'pt', 'pc', 'em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax', '%'
         ];
@@ -42,7 +43,9 @@ class ContentPanelComponent {
         const inlineHeight = state.getInlineHeight();
         const mod = state.getHeightModifier();
         const heightStr = this.getHeightString(inlineHeight, mod);
-
+        const collapsedMode = state.getCollapsedMode();
+        const showPreview = state.getShowPreview();
+        
         return markup('div', {
             children: [
                 markup('div', {
@@ -52,28 +55,52 @@ class ContentPanelComponent {
                     children: [
                         markup('div', {
                             attrs: {
-                                style: 'width: 16%; max-height: inherit;'
+                                style: 'width: 12%; min-width: 100px; max-height: inherit;'
                             },
                             children: [
                                 this.fileTreeComp
                             ]
                         }),
-                        markup('div', {
-                            attrs: {
-                                style: 'width: 42%; max-height: inherit;'
-                            },
-                            children: [
-                                new SourcePanelComponent()
-                            ]
-                        }),
-                        markup('div', {
-                            attrs: {
-                                style: 'width: 42%; max-height: inherit;'
-                            },
-                            children: [
-                                this.previewComp
-                            ]
-                        })
+                        ...(collapsedMode === false ? [
+                            markup('div', {
+                                attrs: {
+                                    style: 'width: 44%; max-height: inherit;'
+                                },
+                                children: [
+                                    this.sourceComp
+                                ]
+                            }),
+                            markup('div', {
+                                attrs: {
+                                    style: 'width: 44%; max-height: inherit;'
+                                },
+                                children: [
+                                    this.previewComp
+                                ]
+                            })
+                        ] : []),
+                        ...(collapsedMode === true ? [
+                            ...(showPreview === true ? [
+                                markup('div', {
+                                    attrs: {
+                                        style: 'width: 88%; max-height: inherit;'
+                                    },
+                                    children: [
+                                        this.previewComp
+                                    ]
+                                })
+                            ] : []),
+                            ...(showPreview === false ? [
+                                markup('div', {
+                                    attrs: {
+                                        style: 'width: 88%; max-height: inherit;'
+                                    },
+                                    children: [
+                                        this.sourceComp
+                                    ]
+                                })
+                            ] : []),
+                        ] : []),
                     ]
                 })
             ]

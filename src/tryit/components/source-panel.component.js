@@ -5,19 +5,26 @@ class SourcePanelComponent {
 
     constructor() {
         this.fileService = new FileService();
+        this.onFileChangeFunction = () => {
+            const textAreaEle = document.getElementById('tryit-sling-textarea');
+
+            if (textAreaEle) {
+                const state = getState();
+                const fileIndex = state.getEditIndex();
+                const fileData = this.fileService.getFileData(fileIndex);
+
+                textAreaEle.value = fileData;
+            }
+        };
     }
 
     slAfterInit() {
         const state = getState();
         const sub = state.getDataSubject();
-        sub.subscribe(() => {
-            const state = getState();
-            const fileIndex = state.getEditIndex();
-            const fileData = this.fileService.getFileData(fileIndex);
-
-            const textAreaEle = document.getElementById('tryit-sling-textarea');
-            textAreaEle.value = fileData;
-        });
+        if (!sub.getHasSubscription(this.onFileChangeFunction)) {
+            sub.subscribe(this.onFileChangeFunction);
+            sub.next(true);
+        }
     }
 
     onInput(event) {
@@ -33,7 +40,7 @@ class SourcePanelComponent {
 
         return markup('div', {
             attrs: {
-                style: 'padding: 0.25rem; background-color: rgb(21, 24, 30); color: rgb(204, 204, 204) !important; overflow: auto; height: calc(100% - 0.5rem); display: flex; flex-direction: column;'
+                style: 'padding: 0.25rem; background-color: rgb(21, 24, 30); color: rgb(204, 204, 204); overflow: auto; height: calc(100% - 0.5rem); display: flex; flex-direction: column;'
             },
             children: [
                 markup('h4', {
