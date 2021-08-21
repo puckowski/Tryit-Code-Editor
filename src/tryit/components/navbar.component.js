@@ -1,10 +1,12 @@
 import { getState, markup, setState, textNode, version } from '../../../dist/sling.min';
+import ExportService from '../services/export.service';
 import FileService from '../services/file.service';
 
 class NavbarComponent {
 
     constructor() {
         this.fileService = new FileService();
+        this.exportService = new ExportService();
     }
 
     addFile() {
@@ -45,10 +47,44 @@ class NavbarComponent {
         }
     }
 
+    onExport() {
+        const iframeEle = document.getElementById('tryit-sling-iframe');
+
+        if (iframeEle) {
+            let text = '';
+
+            if (iframeEle.contentDocument) {
+                text = iframeEle.contentDocument.documentElement.outerHTML;
+            } else if (iframeEle.contentWindow) {
+                text = iframeEle.contentWindow.document.documentElement.outerHTML;
+            }
+
+            this.exportService.downloadFile('export.html', text);
+        }
+    }
+
+    onImport(event) {
+        if (event && event.target && event.target.files) {
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.readAsText(file, 'UTF-8');
+                reader.onload = (readEvent) => {
+                    const state = getState();
+                    const fileIndex = state.getEditIndex();
+                    this.fileService.updateFileData(fileIndex, readEvent.target.result);
+                    state.getDataSubject().next(true);
+                };
+            }
+        }
+    }
+
     view() {
         const state = getState();
         const mod = state.getHeightModifier();
         const collapsedMode = state.getCollapsedMode();
+        const versionStr = state.getVersion();
 
         return markup('div', {
             attrs: {
@@ -62,10 +98,15 @@ class NavbarComponent {
                     children: [
                         markup('h4', {
                             attrs: {
-                                style: 'margin: 0px;'
+                                style: 'margin: 0px; display: inline-block; margin-right: 0.25rem;'
                             },
                             children: [
                                 textNode('Code Editor')
+                            ]
+                        }),
+                        markup('span', {
+                            children: [
+                                textNode(versionStr)
                             ]
                         })
                     ]
@@ -73,7 +114,7 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.addFile.bind(this),
-                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center;'
+                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
                     },
                     children: [
                         textNode('Add File')
@@ -82,7 +123,7 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.expandHeight.bind(this),
-                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center;'
+                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
                     },
                     children: [
                         textNode('Expand')
@@ -92,7 +133,7 @@ class NavbarComponent {
                     markup('button', {
                         attrs: {
                             onclick: this.shrinkHeight.bind(this),
-                            style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center;'
+                            style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
                         },
                         children: [
                             textNode('Shrink')
@@ -102,7 +143,7 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.onRun.bind(this),
-                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center;'
+                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
                     },
                     children: [
                         textNode('Run')
@@ -112,7 +153,7 @@ class NavbarComponent {
                     markup('button', {
                         attrs: {
                             onclick: this.togglePreview.bind(this),
-                            style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center;'
+                            style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
                         },
                         children: [
                             textNode('Toggle Preview')
@@ -121,13 +162,41 @@ class NavbarComponent {
                 ] : []),
                 markup('button', {
                     attrs: {
+                        onclick: this.onExport.bind(this),
+                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
+                    },
+                    children: [
+                        textNode('Export')
+                    ]
+                }),
+                markup('label', {
+                    attrs: {
+                        id: 'try-sling-import-label',
+                        for: 'tryit-sling-import',
+                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;',
+                    },
+                    children: [
+                        textNode('Import')
+                    ]
+                }),
+                markup('input', {
+                    attrs: {
+                        onchange: this.onImport.bind(this),
+                        id: 'tryit-sling-import',
+                        type: 'file',
+                        style: 'display: none;'
+                    }
+                }),
+                markup('button', {
+                    attrs: {
+                        id: 'tryit-sling-clear-console',
                         onclick: this.onClearConsole.bind(this),
-                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); align-self: center;'
+                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
                     },
                     children: [
                         textNode('Clear Console')
                     ]
-                }),
+                })
             ]
         });
     }

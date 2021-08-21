@@ -8,8 +8,13 @@ class StoreGlobal {
         this.inlineHeight = '';
         this.collapsedMode = false;
         this.showPreview = false;
+        this.version = '1.2';
     }
 
+    getVersion() {
+        return this.version;
+    }
+    
     getShowPreview() {
         return this.showPreview;
     }

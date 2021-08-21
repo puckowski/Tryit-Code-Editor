@@ -132,6 +132,7 @@ class PreviewComponent {
                 markup('textarea', {
                     attrs: {
                         id: 'tryit-sling-console',
+                        slonlyself: 'true',
                         style: 'width: 100%; flex: 4;',
                         placeholder: 'Text will appear when logged'
                     }
