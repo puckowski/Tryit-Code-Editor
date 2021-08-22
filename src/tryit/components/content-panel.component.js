@@ -1,6 +1,7 @@
-import { getState, markup, textNode, version } from '../../../dist/sling.min';
+import { getState, markup } from '../../../dist/sling.min';
 import FileService from '../services/file.service';
 import FileTreeComponent from './file-tree.component';
+import HelpComponent from './help.component';
 import PreviewComponent from './preview.component';
 import SourcePanelComponent from './source-panel.component';
 
@@ -31,7 +32,7 @@ class ContentPanelComponent {
 
             heightStr = 'max-height: ' + finalValue + '; height: ' + finalValue + ';';
         } else {
-            const newHeight = mod + 50;
+            const newHeight = mod + 60;
             heightStr = 'max-height: ' + String(newHeight) + 'vh; height: ' + String(newHeight) + 'vh;';
         }
 
@@ -45,6 +46,7 @@ class ContentPanelComponent {
         const heightStr = this.getHeightString(inlineHeight, mod);
         const collapsedMode = state.getCollapsedMode();
         const showPreview = state.getShowPreview();
+        const showHelp = state.getShowHelp();
         
         return markup('div', {
             children: [
@@ -61,46 +63,57 @@ class ContentPanelComponent {
                                 this.fileTreeComp
                             ]
                         }),
-                        ...(collapsedMode === false ? [
-                            markup('div', {
-                                attrs: {
-                                    style: 'width: 44%; max-height: inherit;'
-                                },
-                                children: [
-                                    this.sourceComp
-                                ]
-                            }),
-                            markup('div', {
-                                attrs: {
-                                    style: 'width: 44%; max-height: inherit;'
-                                },
-                                children: [
-                                    this.previewComp
-                                ]
-                            })
-                        ] : []),
-                        ...(collapsedMode === true ? [
-                            ...(showPreview === true ? [
+                        ...(showHelp === false ? [
+                            ...(collapsedMode === false ? [
                                 markup('div', {
                                     attrs: {
-                                        style: 'width: 88%; max-height: inherit;'
+                                        style: 'width: 44%; max-height: inherit;'
+                                    },
+                                    children: [
+                                        this.sourceComp
+                                    ]
+                                }),
+                                markup('div', {
+                                    attrs: {
+                                        style: 'width: 44%; max-height: inherit;'
                                     },
                                     children: [
                                         this.previewComp
                                     ]
                                 })
                             ] : []),
-                            ...(showPreview === false ? [
-                                markup('div', {
-                                    attrs: {
-                                        style: 'width: 88%; max-height: inherit;'
-                                    },
-                                    children: [
-                                        this.sourceComp
-                                    ]
-                                })
-                            ] : []),
-                        ] : []),
+                            ...(collapsedMode === true ? [
+                                ...(showPreview === true ? [
+                                    markup('div', {
+                                        attrs: {
+                                            style: 'width: 88%; max-height: inherit;'
+                                        },
+                                        children: [
+                                            this.previewComp
+                                        ]
+                                    })
+                                ] : []),
+                                ...(showPreview === false ? [
+                                    markup('div', {
+                                        attrs: {
+                                            style: 'width: 88%; max-height: inherit;'
+                                        },
+                                        children: [
+                                            this.sourceComp
+                                        ]
+                                    })
+                                ] : []),
+                            ] : [])
+                        ] : [
+                            markup('div', {
+                                attrs: {
+                                    style: 'width: 88%; max-height: inherit;'
+                                },
+                                children: [
+                                    new HelpComponent()
+                                ]
+                            })
+                        ]),
                     ]
                 })
             ]

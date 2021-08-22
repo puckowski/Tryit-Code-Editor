@@ -1,4 +1,4 @@
-import { getState, markup, setState, textNode, version } from '../../../dist/sling.min';
+import { detectChanges, getState, markup, setState, textNode, version } from '../../../dist/sling.min';
 import ExportService from '../services/export.service';
 import FileService from '../services/file.service';
 
@@ -54,8 +54,20 @@ class NavbarComponent {
             let text = '';
 
             if (iframeEle.contentDocument) {
+                const scriptList = iframeEle.contentDocument.head.querySelectorAll('script');
+                for (let i = 0; i < scriptList.length; ++i) {
+                    if (scriptList[i].hasAttribute('tryit-sling-script')) {
+                        iframeEle.contentDocument.head.removeChild(scriptList[i]);
+                    }
+                }
                 text = iframeEle.contentDocument.documentElement.outerHTML;
             } else if (iframeEle.contentWindow) {
+                const scriptList = iframeEle.contentWindow.document.head.querySelectorAll('script');
+                for (let i = 0; i < scriptList.length; ++i) {
+                    if (scriptList[i].hasAttribute('tryit-sling-script')) {
+                        iframeEle.contentWindow.document.head.removeChild(scriptList[i]);
+                    }
+                }
                 text = iframeEle.contentWindow.document.documentElement.outerHTML;
             }
 
@@ -78,6 +90,77 @@ class NavbarComponent {
                 };
             }
         }
+    }
+
+    onImportWorkspace(event) {
+        if (event && event.target && event.target.files) {
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.readAsText(file, 'UTF-8');
+                reader.onload = (readEvent) => {
+                    const iframeEle = document.createElement('iframe');
+                    iframeEle.style.visibility = 'hidden';
+                    document.body.appendChild(iframeEle);
+
+                    const htmlContainer = (iframeEle.contentWindow) ? iframeEle.contentWindow : (iframeEle.contentDocument.document) ? iframeEle.contentDocument.document : iframeEle.contentDocument;
+                    htmlContainer.document.open();
+                    htmlContainer.document.write(readEvent.target.result);
+
+                    htmlContainer.document.close();
+
+                    if (iframeEle.contentDocument) {
+                        const scriptList = iframeEle.contentDocument.head.querySelectorAll('script');
+                        for (let i = 0; i < scriptList.length; ++i) {
+                            this.fileService.addFile(scriptList[i].textContent, true, false);
+                        }
+                        for (let i = 0; i < scriptList.length; ++i) {
+                            iframeEle.contentDocument.head.removeChild(scriptList[i]);
+                        }
+
+                        const styleList = iframeEle.contentDocument.head.querySelectorAll('style');
+                        for (let i = 0; i < styleList.length; ++i) {
+                            this.fileService.addFile(styleList[i].textContent, false, true);
+                        }
+                        for (let i = 0; i < scriptList.length; ++i) {
+                            iframeEle.contentDocument.head.removeChild(styleList[i]);
+                        }
+
+                        const text = iframeEle.contentDocument.documentElement.outerHTML;
+                        this.fileService.addFile(text);
+                    } else if (iframeEle.contentWindow) {
+                        const scriptList = iframeEle.contentWindow.document.head.querySelectorAll('script');
+                        for (let i = 0; i < scriptList.length; ++i) {
+                            this.fileService.addFile(scriptList[i].textContent, true, false);
+                        }
+                        for (let i = 0; i < scriptList.length; ++i) {
+                            iframeEle.contentWindow.document.head.removeChild(scriptList[i]);
+                        }
+
+                        const styleList = iframeEle.contentDocument.head.querySelectorAll('style');
+                        for (let i = 0; i < styleList.length; ++i) {
+                            this.fileService.addFile(styleList[i].textContent, false, true);
+                        }
+                        for (let i = 0; i < scriptList.length; ++i) {
+                            iframeEle.contentWindow.document.head.removeChild(styleList[i]);
+                        }
+
+                        const text = iframeEle.contentWindow.document.documentElement.outerHTML;
+                        this.fileService.addFile(text);
+                    }
+
+                    document.body.removeChild(iframeEle);
+                    detectChanges();
+                };
+            }
+        }
+    }
+
+    onHelpToggle() {
+        const state = getState();
+        state.setShowHelp(!state.getShowHelp());
+        setState(state);
     }
 
     view() {
@@ -176,7 +259,17 @@ class NavbarComponent {
                         style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;',
                     },
                     children: [
-                        textNode('Import')
+                        textNode('Import File')
+                    ]
+                }),
+                markup('label', {
+                    attrs: {
+                        id: 'try-sling-import-workspace-label',
+                        for: 'tryit-sling-import-workspace',
+                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;',
+                    },
+                    children: [
+                        textNode('Import Workspace')
                     ]
                 }),
                 markup('input', {
@@ -186,6 +279,23 @@ class NavbarComponent {
                         type: 'file',
                         style: 'display: none;'
                     }
+                }),
+                markup('input', {
+                    attrs: {
+                        onchange: this.onImportWorkspace.bind(this),
+                        id: 'tryit-sling-import-workspace',
+                        type: 'file',
+                        style: 'display: none;'
+                    }
+                }),
+                markup('button', {
+                    attrs: {
+                        onclick: this.onHelpToggle.bind(this),
+                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
+                    },
+                    children: [
+                        textNode('Toggle Help')
+                    ]
                 }),
                 markup('button', {
                     attrs: {

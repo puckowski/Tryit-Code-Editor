@@ -26,7 +26,7 @@ class FileService {
         return JSON.parse(data);
     }
 
-    addFile() {
+    addFile(data = null, injectScript = false, injectCss = false) {
         const fileList = this.getFileList();
 
         let nextFree = 0;
@@ -35,7 +35,15 @@ class FileService {
             nextFree++;
         }
 
-        fileList.push(this.getFileObject(nextFree));
+        const fileObj = this.getFileObject(nextFree);
+
+        if (data !== null && data !== undefined) {
+            fileObj.data = data;
+            fileObj.injectScript = injectScript;
+            fileObj.injectCss = injectCss;
+        }
+        
+        fileList.push(fileObj);
         this.setFileList(fileList);
     }
 

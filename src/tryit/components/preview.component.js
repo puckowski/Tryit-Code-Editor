@@ -61,6 +61,7 @@ class PreviewComponent {
                 var consoleScript = document.createElement('script');
                 consoleScript.text = this.getConsoleScriptText();
                 consoleScript.type = 'module';
+                consoleScript.setAttribute('tryit-sling-script', 'true');
                 htmlContainer.document.head.appendChild(consoleScript);
             }
 
