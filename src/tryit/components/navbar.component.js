@@ -161,6 +161,12 @@ class NavbarComponent {
         const state = getState();
         state.setShowHelp(!state.getShowHelp());
         setState(state);
+
+        if (!state.getShowHelp()) {
+            s.DETACHED_SET_TIMEOUT(() => {
+                state.getDataSubject().next(true);
+            }, 0);
+        }
     }
 
     view() {

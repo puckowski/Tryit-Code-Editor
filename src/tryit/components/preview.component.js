@@ -125,7 +125,7 @@ class PreviewComponent {
                     attrs: {
                         frameborder: '0',
                         id: 'tryit-sling-iframe',
-                        slonlyself: 'true',
+                        sldirective: 'onlyself',
                         ...this.injectedList.length > 16 && { style: 'background-color: #ffffff; width: 100%; flex: 14;' },
                         ...this.injectedList.length <= 16 && { style: 'background-color: #ffffff; width: 100%; flex: 15;' }
                     }
@@ -133,7 +133,7 @@ class PreviewComponent {
                 markup('textarea', {
                     attrs: {
                         id: 'tryit-sling-console',
-                        slonlyself: 'true',
+                        sldirective: 'onlyself',
                         style: 'width: 100%; flex: 4;',
                         placeholder: 'Text will appear when logged'
                     }
