@@ -32,6 +32,11 @@ class NavbarComponent {
     togglePreview() {
         const state = getState();
         state.setShowPreview(!state.getShowPreview());
+
+        s.DETACHED_SET_TIMEOUT(() => {
+            state.getDataSubject().next(true);
+        }, 0);
+        
         setState(state);
     }
 

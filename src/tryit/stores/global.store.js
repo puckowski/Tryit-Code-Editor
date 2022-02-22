@@ -8,7 +8,7 @@ class StoreGlobal {
         this.inlineHeight = '';
         this.collapsedMode = false;
         this.showPreview = false;
-        this.version = '1.4';
+        this.version = '1.5';
         this.showHelp = false;
     }
 

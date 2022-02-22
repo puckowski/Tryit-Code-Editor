@@ -15,6 +15,10 @@ class ScreenService {
             state.setCollapsedMode(false);
         }
 
+        s.DETACHED_SET_TIMEOUT(() => {
+            state.getDataSubject().next(true);
+        }, 0);
+        
         setState(state);
         detectChanges();
     }
