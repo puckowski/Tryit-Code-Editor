@@ -169,6 +169,15 @@ class NavbarComponent {
         }
     }
 
+    onSlingDemo() {
+        const startIndex = this.fileService.buildSlingDemo();
+        const state = getState();
+        state.setEditIndex(startIndex);
+        s.DETACHED_SET_TIMEOUT(() => {
+            state.getDataSubject().next(true);
+        }, 0);
+    }
+
     view() {
         const state = getState();
         const mod = state.getHeightModifier();
@@ -203,7 +212,7 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.addFile.bind(this),
-                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
+                        style: 'margin-bottom: 0.25rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
                     },
                     children: [
                         textNode('Add File')
@@ -212,7 +221,7 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.expandHeight.bind(this),
-                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
+                        style: 'margin-bottom: 0.25rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
                     },
                     children: [
                         textNode('Expand')
@@ -222,7 +231,7 @@ class NavbarComponent {
                     markup('button', {
                         attrs: {
                             onclick: this.shrinkHeight.bind(this),
-                            style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
+                            style: 'margin-bottom: 0.25rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
                         },
                         children: [
                             textNode('Shrink')
@@ -232,7 +241,7 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.onRun.bind(this),
-                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
+                        style: 'margin-bottom: 0.25rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
                     },
                     children: [
                         textNode('Run')
@@ -242,7 +251,7 @@ class NavbarComponent {
                     markup('button', {
                         attrs: {
                             onclick: this.togglePreview.bind(this),
-                            style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
+                            style: 'margin-bottom: 0.25rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
                         },
                         children: [
                             textNode('Toggle Preview')
@@ -252,7 +261,7 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.onExport.bind(this),
-                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
+                        style: 'margin-bottom: 0.25rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
                     },
                     children: [
                         textNode('Export')
@@ -262,7 +271,7 @@ class NavbarComponent {
                     attrs: {
                         id: 'try-sling-import-label',
                         for: 'tryit-sling-import',
-                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;',
+                        style: 'margin-bottom: 0.25rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;',
                     },
                     children: [
                         textNode('Import File')
@@ -272,7 +281,7 @@ class NavbarComponent {
                     attrs: {
                         id: 'try-sling-import-workspace-label',
                         for: 'tryit-sling-import-workspace',
-                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;',
+                        style: 'margin-bottom: 0.25rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;',
                     },
                     children: [
                         textNode('Import Workspace')
@@ -297,7 +306,7 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.onHelpToggle.bind(this),
-                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
+                        style: 'margin-bottom: 0.25rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
                     },
                     children: [
                         textNode('Toggle Help')
@@ -307,10 +316,19 @@ class NavbarComponent {
                     attrs: {
                         id: 'tryit-sling-clear-console',
                         onclick: this.onClearConsole.bind(this),
-                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
+                        style: 'margin-bottom: 0.25rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
                     },
                     children: [
                         textNode('Clear Console')
+                    ]
+                }),
+                markup('button', {
+                    attrs: {
+                        onclick: this.onSlingDemo.bind(this),
+                        style: 'margin-bottom: 0.25rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
+                    },
+                    children: [
+                        textNode('Sling.js Demo')
                     ]
                 })
             ]

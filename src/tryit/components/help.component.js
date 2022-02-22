@@ -63,6 +63,11 @@ class HelpComponent {
                             children: [
                                 textNode('Click Clear Console to clear the preview console.')
                             ]
+                        }),
+                        markup('p', {
+                            children: [
+                                textNode('Click Sling.js Demo to build a \'Hello, world!\' Sling.js project.')
+                            ]
                         })
                     ]
                 })
