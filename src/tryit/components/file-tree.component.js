@@ -62,10 +62,11 @@ class FileTreeComponent {
                 style: 'background-color: rgb(32, 35, 39); color: rgb(204, 204, 204); overflow: auto; max-height: inherit;'
             },
             children: [
-                ...Array.from(fileList, (file) =>
+                ...Array.from(fileList, (file, index) =>
                     markup('div', {
                         attrs: {
-                            ...editIndex !== file.index && { style: 'padding: 0.5rem;' },
+                            ...editIndex !== file.index && index % 2 === 0 && { style: 'padding: 0.5rem;' },
+                            ...editIndex !== file.index && index % 2 !== 0 && { style: 'padding: 0.5rem; background-color: rgb(21, 24, 30);' },
                             ...editIndex === file.index && { style: 'padding: 0.5rem; background-color: rgb(60, 68, 83);' },
                             onclick: this.onFileSelection.bind(this, file.index)
                         },
@@ -96,7 +97,15 @@ class FileTreeComponent {
                             }),
                             markup('div', {
                                 children: [
-                                    textNode('File ' + (file.index + 1) + ': ' + file.name)
+                                    ...(editIndex === file.index ? [
+                                        markup('strong', {
+                                            children: [
+                                                textNode('File ' + (file.index + 1) + ': ' + file.name)
+                                            ]
+                                        })
+                                    ] : [
+                                        textNode('File ' + (file.index + 1) + ': ' + file.name)
+                                    ])
                                 ]
                             }),
                             ...(file.index === this.editNameIndex ? [
