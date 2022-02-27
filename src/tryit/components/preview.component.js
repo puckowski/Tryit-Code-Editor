@@ -1,4 +1,4 @@
-import { detectChanges, getState, markup, textNode, version } from '../../../dist/sling.min';
+import { detectChanges, getState, markup, setState, textNode, version } from '../../../dist/sling.min';
 import FileService from '../services/file.service';
 
 class PreviewComponent {
@@ -6,6 +6,10 @@ class PreviewComponent {
     constructor() {
         this.fileService = new FileService();
         this.injectedList = '';
+        this.isPreviewLoading = false;
+        this.onInvalidScriptFunction = () => {
+            detectChanges();
+        }
         this.onFileChangeFunction = () => {
             this.injectedList = 'Injected files: ';
             const iframe = document.getElementById('tryit-sling-iframe');
@@ -25,11 +29,58 @@ class PreviewComponent {
             htmlContainer.document.write(fileData);
 
             if (htmlContainer.document.head) {
+                const consoleScript = document.createElement('script');
+                consoleScript.text = this.getConsoleScriptText();
+                consoleScript.type = 'module';
+                consoleScript.setAttribute('tryit-sling-script', 'true');
+                htmlContainer.document.head.appendChild(consoleScript);
+
                 fileListJs.forEach((injectedScript) => {
                     if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
                         var script = document.createElement('script');
-                        script.text = injectedScript.data;
+                        script.text = injectedScript.data += '\nlet slTryItCount = Number(localStorage.getItem(\'tryitCount\')); slTryItCount++; localStorage.setItem(\'tryitCount\', slTryItCount);';
                         script.type = 'module';
+
+                        let tryitCountOriginal = localStorage.getItem('tryitCount');
+                        if (!tryitCountOriginal) {
+                            tryitCountOriginal = 0;
+                            localStorage.setItem('tryitCount', tryitCountOriginal);
+                        } else {
+                            tryitCountOriginal = Number(tryitCountOriginal);
+                        }
+
+                        let successRunCount = 0;
+                        this.isPreviewLoading = true;
+
+                        const checkSuccessInterval = s.DETACHED_SET_INTERVAL(() => {
+                            const tryitCountFinal = Number(localStorage.getItem('tryitCount'));
+
+                            if (tryitCountOriginal === tryitCountFinal) {
+                                const invalidIndexSubject = state.getInvalidScriptIndexSubject();
+                                const indices = invalidIndexSubject.getData();
+                                if (!indices.includes(injectedScript.index)) {
+                                    indices.push(injectedScript.index);
+                                }
+                                invalidIndexSubject.next(indices);
+                            } else {
+                                const invalidIndexSubject = state.getInvalidScriptIndexSubject();
+                                const indices = invalidIndexSubject.getData();
+                                const currentIndex = indices.indexOf(injectedScript.index);
+                                if (currentIndex > -1) {
+                                    indices.splice(currentIndex, 1);
+                                }
+                                invalidIndexSubject.next(indices);
+                            }
+
+                            successRunCount++;
+
+                            if (successRunCount === 17) {
+                                clearInterval(checkSuccessInterval);
+                                this.isPreviewLoading = false;
+                                detectChanges();
+                            }
+                        }, 300);
+
                         htmlContainer.document.head.appendChild(script);
                         if (this.injectedList.length > 16) {
                             this.injectedList += ', ';
@@ -39,6 +90,14 @@ class PreviewComponent {
                         if (injectedScript.name.length > 0) {
                             this.injectedList += ' (' + injectedScript.name + ')';
                         }
+
+                        const invalidIndexSubject = state.getInvalidScriptIndexSubject();
+                        const indices = invalidIndexSubject.getData();
+                        const currentIndex = indices.indexOf(injectedScript.index);
+                        if (currentIndex > -1) {
+                            indices.splice(currentIndex, 1);
+                        }
+                        invalidIndexSubject.next(indices);
                     }
                 });
 
@@ -57,12 +116,6 @@ class PreviewComponent {
                         }
                     }
                 });
-
-                var consoleScript = document.createElement('script');
-                consoleScript.text = this.getConsoleScriptText();
-                consoleScript.type = 'module';
-                consoleScript.setAttribute('tryit-sling-script', 'true');
-                htmlContainer.document.head.appendChild(consoleScript);
             }
 
             htmlContainer.document.close();
@@ -71,6 +124,20 @@ class PreviewComponent {
                 detectChanges();
             }
         };
+    }
+
+    slAfterInit() {
+        const state = getState();
+        const sub = state.getDataSubject();
+        if (!sub.getHasSubscription(this.onFileChangeFunction)) {
+            sub.subscribe(this.onFileChangeFunction);
+            sub.next(true);
+        }
+
+        const subInvalid = state.getInvalidScriptIndexSubject();
+        if (!subInvalid.getHasSubscription(this.onInvalidScriptFunction)) {
+            subInvalid.subscribe(this.onInvalidScriptFunction);
+        }
     }
 
     getConsoleScriptText() {
@@ -84,20 +151,35 @@ class PreviewComponent {
         return consoleScript;
     }
 
-    slAfterInit() {
-        const state = getState();
-        const sub = state.getDataSubject();
-        if (!sub.getHasSubscription(this.onFileChangeFunction)) {
-            sub.subscribe(this.onFileChangeFunction);
-            sub.next(true);
-        }
-    }
-
     addFile() {
         this.fileService.addFile();
     }
 
+    getInvalidScriptMessage() {
+        const state = getState();
+        const sub = state.getInvalidScriptIndexSubject();
+        const indices = sub.getData();
+
+        if (indices && indices.length > 0) {
+            let message = 'Invalid Files: ';
+
+            indices.forEach((fileIndex, index) => {
+                if (index > 0) {
+                    message += ', ';
+                }
+
+                message += 'File ' + (fileIndex + 1);
+            });
+
+            return message + ' ';
+        } else {
+            return '';
+        }
+    }
+
     view() {
+        const invalidMessage = this.getInvalidScriptMessage();
+
         return markup('div', {
             attrs: {
                 style: 'padding: 0.25rem; color: rgb(204, 204, 204); max-height: inherit; overflow: auto; display: flex; flex-direction: column; height: calc(100% - 0.5rem);'
@@ -108,7 +190,17 @@ class PreviewComponent {
                         style: 'margin: 0px; flex: 1;'
                     },
                     children: [
-                        textNode('Preview')
+                        ...(invalidMessage.length === 0 && !this.isPreviewLoading ? textNode('Preview') : []),
+                        ...(invalidMessage.length !== 0 && !this.isPreviewLoading ? textNode(invalidMessage) : []),
+                        ...(invalidMessage.length !== 0 && !this.isPreviewLoading ? [markup('span', {
+                            attrs: {
+                                'style': 'font-family: sans-serif; color: red'
+                            },
+                            children: [
+                                textNode('X')
+                            ]
+                        })] : []),
+                        ...(this.isPreviewLoading ? textNode('Loading...') : [])
                     ]
                 }),
                 ...(this.injectedList.length > 16 ? [

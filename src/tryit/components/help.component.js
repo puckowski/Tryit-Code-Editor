@@ -68,6 +68,11 @@ class HelpComponent {
                             children: [
                                 textNode('Click Sling.js Demo to build a \'Hello, world!\' Sling.js project.')
                             ]
+                        }),
+                        markup('p', {
+                            children: [
+                                textNode('Press Tab or click on the suggested word popup to insert the suggested word.')
+                            ]
                         })
                     ]
                 })

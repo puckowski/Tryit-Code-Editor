@@ -1,3 +1,5 @@
+import { getState } from "../../../dist/sling.min";
+
 class FileService {
 
     constructor() {
@@ -158,6 +160,10 @@ class FileService {
         const file = fileList.find(file => file.index === index);
         if (file) file.data = data;
         this.setFileList(fileList);
+
+        const state = getState();
+        const sourceSubject = state.getSourceHasNewInputSubject();
+        sourceSubject.next(true);
     }
 
     updateFileInject(index, value = null) {

@@ -1,5 +1,6 @@
 import { getState, markup, textNode } from '../../../dist/sling.min';
 import FileService from '../services/file.service';
+import WordSuggestionComponent from './suggestion-popup.component';
 
 class SourcePanelComponent {
 
@@ -9,13 +10,19 @@ class SourcePanelComponent {
             const textAreaEle = document.getElementById('tryit-sling-textarea');
 
             if (textAreaEle) {
-                const state = getState();
-                const fileIndex = state.getEditIndex();
-                const fileData = this.fileService.getFileData(fileIndex);
+                s.DETACHED_SET_TIMEOUT(() => {
+                    const state = getState();
+                    const fileIndex = state.getEditIndex();
+                    const fileData = this.fileService.getFileData(fileIndex);
 
-                textAreaEle.value = fileData;
+                    textAreaEle.focus();
+                    textAreaEle.value = fileData;
+                    textAreaEle.selectionStart = state.getCaretPositionToRestore();
+                    textAreaEle.selectionEnd = state.getCaretPositionToRestore();
+                }, 100);
             }
         };
+        this.wordSuggestionComp = new WordSuggestionComponent();
     }
 
     slAfterInit() {
@@ -59,7 +66,8 @@ class SourcePanelComponent {
                         oninput: this.onInput.bind(this),
                         id: 'tryit-sling-textarea'
                     }
-                })
+                }),
+                this.wordSuggestionComp
             ]
         });
     }

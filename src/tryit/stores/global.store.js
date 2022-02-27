@@ -8,8 +8,23 @@ class StoreGlobal {
         this.inlineHeight = '';
         this.collapsedMode = false;
         this.showPreview = false;
-        this.version = '1.5';
+        this.version = '2.0';
         this.showHelp = false;
+        this.sourceHasNewInput = BehaviorSubject(false);
+        this.invalidScriptIndices = BehaviorSubject([]);
+        this.caretPositionToRestore = 0;
+    }
+
+    getCaretPositionToRestore() {
+        return this.caretPositionToRestore;
+    }
+
+    setCaretPositionToRestore(position) {
+        this.caretPositionToRestore = position;
+    }
+    
+    getInvalidScriptIndexSubject() {
+        return this.invalidScriptIndices;
     }
 
     getShowHelp() {
@@ -46,6 +61,10 @@ class StoreGlobal {
 
     setInlineHeight(inlineHeight) {
         this.inlineHeight = inlineHeight;
+    }
+
+    getSourceHasNewInputSubject() {
+        return this.sourceHasNewInput;
     }
 
     getDataSubject() {

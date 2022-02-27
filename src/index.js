@@ -1,4 +1,4 @@
-import { getState, mount, setState } from "../dist/sling.min";
+import { mount, setState } from "../dist/sling.min";
 import TryitEditorComponent from "./tryit/components/tryit-editor.component";
 import ScreenService from "./tryit/services/screen.service";
 import StoreGlobal from "./tryit/stores/global.store";
