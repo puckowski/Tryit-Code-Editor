@@ -28,6 +28,9 @@ class FileTreeComponent {
     onFileSelection(index) {
         const state = getState();
         state.setEditIndex(index);
+        if (this.editNameIndex > 0) {
+            state.setPreserveFocus(true);
+        }
         state.getDataSubject().next(true);
         setState(state);
     }
@@ -111,7 +114,7 @@ class FileTreeComponent {
                             ...(file.index === this.editNameIndex ? [
                                 markup('input', {
                                     attrs: {
-                                        style: ' 0 0.5rem 0.5rem 0.5rem',
+                                        style: 'width: 100%;',
                                         oninput: this.onFileNameInput.bind(this),
                                         value: this.editedFileName
                                     }

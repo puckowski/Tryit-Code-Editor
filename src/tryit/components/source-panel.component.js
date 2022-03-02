@@ -1,4 +1,4 @@
-import { getState, markup, textNode } from '../../../dist/sling.min';
+import { getState, markup, setState, textNode } from '../../../dist/sling.min';
 import FileService from '../services/file.service';
 import WordSuggestionComponent from './suggestion-popup.component';
 
@@ -7,19 +7,25 @@ class SourcePanelComponent {
     constructor() {
         this.fileService = new FileService();
         this.onFileChangeFunction = () => {
-            const textAreaEle = document.getElementById('tryit-sling-textarea');
+            let state = getState();
+            if (state.getPreserveFocus()) {
+                state.setPreserveFocus(false);
+                setState(state);
+            } else {
+                const textAreaEle = document.getElementById('tryit-sling-textarea');
 
-            if (textAreaEle) {
-                s.DETACHED_SET_TIMEOUT(() => {
-                    const state = getState();
-                    const fileIndex = state.getEditIndex();
-                    const fileData = this.fileService.getFileData(fileIndex);
+                if (textAreaEle) {
+                    s.DETACHED_SET_TIMEOUT(() => {
+                        state = getState();
+                        const fileIndex = state.getEditIndex();
+                        const fileData = this.fileService.getFileData(fileIndex);
 
-                    textAreaEle.focus();
-                    textAreaEle.value = fileData;
-                    textAreaEle.selectionStart = state.getCaretPositionToRestore();
-                    textAreaEle.selectionEnd = state.getCaretPositionToRestore();
-                }, 100);
+                        textAreaEle.focus();
+                        textAreaEle.value = fileData;
+                        textAreaEle.selectionStart = state.getCaretPositionToRestore();
+                        textAreaEle.selectionEnd = state.getCaretPositionToRestore();
+                    }, 100);
+                }
             }
         };
         this.wordSuggestionComp = new WordSuggestionComponent();

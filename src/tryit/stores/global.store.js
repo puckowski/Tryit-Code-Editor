@@ -8,11 +8,20 @@ class StoreGlobal {
         this.inlineHeight = '';
         this.collapsedMode = false;
         this.showPreview = false;
-        this.version = '2.0';
+        this.version = '2.1';
         this.showHelp = false;
         this.sourceHasNewInput = BehaviorSubject(false);
         this.invalidScriptIndices = BehaviorSubject([]);
         this.caretPositionToRestore = 0;
+        this.preserveFocus = false;
+    }
+
+    setPreserveFocus(preserveState) {
+        this.preserveFocus = preserveState;
+    }
+
+    getPreserveFocus() {
+        return this.preserveFocus;
     }
 
     getCaretPositionToRestore() {
