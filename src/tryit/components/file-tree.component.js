@@ -114,7 +114,7 @@ class FileTreeComponent {
                             ...(file.index === this.editNameIndex ? [
                                 markup('input', {
                                     attrs: {
-                                        style: 'width: 100%;',
+                                        style: 'width: 100%; padding: 1px 2px;',
                                         oninput: this.onFileNameInput.bind(this),
                                         value: this.editedFileName
                                     }
