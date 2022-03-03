@@ -28,7 +28,7 @@ class FileTreeComponent {
     onFileSelection(index) {
         const state = getState();
         state.setEditIndex(index);
-        if (this.editNameIndex > 0) {
+        if (this.editNameIndex >= 0) {
             state.setPreserveFocus(true);
         }
         state.getDataSubject().next(true);
