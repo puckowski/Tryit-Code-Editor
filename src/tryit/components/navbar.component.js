@@ -1,6 +1,7 @@
 import { detectChanges, getState, markup, setState, textNode, version } from '../../../dist/sling.min';
 import ExportService from '../services/export.service';
 import FileService from '../services/file.service';
+import { SCRIPT_VALIDITY_CHECK_SOURCE } from '../stores/global.store';
 
 class NavbarComponent {
 
@@ -95,6 +96,23 @@ class NavbarComponent {
                 };
             }
         }
+
+        if (event && event.target) {
+            event.target.value = '';
+        }
+    }
+
+    removeLastOccurrence(textToReplace, str) {
+        const charpos = str.lastIndexOf(textToReplace);
+        
+        if (charpos < 0) {
+            return str;
+        }
+
+        const ptone = str.substring(0, charpos);
+        const pttwo = str.substring(charpos + textToReplace.length);
+
+        return (ptone + pttwo);
     }
 
     onImportWorkspace(event) {
@@ -118,7 +136,10 @@ class NavbarComponent {
                     if (iframeEle.contentDocument) {
                         const scriptList = iframeEle.contentDocument.head.querySelectorAll('script');
                         for (let i = 0; i < scriptList.length; ++i) {
-                            this.fileService.addFile(scriptList[i].textContent, true, false);
+                            let scriptText = scriptList[i].textContent;
+                            scriptText = this.removeLastOccurrence(SCRIPT_VALIDITY_CHECK_SOURCE, scriptText);
+
+                            this.fileService.addFile(scriptText, true, false);
                         }
                         for (let i = 0; i < scriptList.length; ++i) {
                             iframeEle.contentDocument.head.removeChild(scriptList[i]);
@@ -137,7 +158,10 @@ class NavbarComponent {
                     } else if (iframeEle.contentWindow) {
                         const scriptList = iframeEle.contentWindow.document.head.querySelectorAll('script');
                         for (let i = 0; i < scriptList.length; ++i) {
-                            this.fileService.addFile(scriptList[i].textContent, true, false);
+                            let scriptText = scriptList[i].textContent;
+                            scriptText = this.removeLastOccurrence(SCRIPT_VALIDITY_CHECK_SOURCE, scriptText);
+
+                            this.fileService.addFile(scriptText, true, false);
                         }
                         for (let i = 0; i < scriptList.length; ++i) {
                             iframeEle.contentWindow.document.head.removeChild(scriptList[i]);
@@ -162,6 +186,10 @@ class NavbarComponent {
                     detectChanges();
                 };
             }
+        }
+
+        if (event && event.target) {
+            event.target.value = '';
         }
     }
 

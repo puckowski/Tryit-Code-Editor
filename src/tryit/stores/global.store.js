@@ -1,5 +1,7 @@
 import { BehaviorSubject } from '../../../dist/sling-reactive.min';
 
+export const SCRIPT_VALIDITY_CHECK_SOURCE = 'let slTryItCount = Number(localStorage.getItem(\'tryitCount\')); slTryItCount++; localStorage.setItem(\'tryitCount\', slTryItCount);';
+
 class StoreGlobal {
     constructor() {
         this.editIndex = 0;

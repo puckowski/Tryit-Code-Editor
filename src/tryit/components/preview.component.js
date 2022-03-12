@@ -1,5 +1,6 @@
 import { detectChanges, getState, markup, setState, textNode, version } from '../../../dist/sling.min';
 import FileService from '../services/file.service';
+import { SCRIPT_VALIDITY_CHECK_SOURCE } from '../stores/global.store';
 
 class PreviewComponent {
 
@@ -38,7 +39,7 @@ class PreviewComponent {
                 fileListJs.forEach((injectedScript) => {
                     if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
                         var script = document.createElement('script');
-                        script.text = injectedScript.data;
+                        script.text = injectedScript.data += '\n' + SCRIPT_VALIDITY_CHECK_SOURCE;
                         script.type = 'module';
 
                         let tryitCountOriginal = localStorage.getItem('tryitCount');
