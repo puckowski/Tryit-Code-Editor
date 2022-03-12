@@ -128,7 +128,7 @@ class NavbarComponent {
                         for (let i = 0; i < styleList.length; ++i) {
                             this.fileService.addFile(styleList[i].textContent, false, true);
                         }
-                        for (let i = 0; i < scriptList.length; ++i) {
+                        for (let i = 0; i < styleList.length; ++i) {
                             iframeEle.contentDocument.head.removeChild(styleList[i]);
                         }
 
@@ -156,6 +156,9 @@ class NavbarComponent {
                     }
 
                     document.body.removeChild(iframeEle);
+                    
+                    const state = getState();
+                    state.getDataSubject().next(true);
                     detectChanges();
                 };
             }

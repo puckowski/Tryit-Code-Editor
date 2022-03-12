@@ -50,6 +50,8 @@ class SourcePanelComponent {
         const state = getState();
         const fileIndex = state.getEditIndex();
         const file = this.fileService.getFile(fileIndex);
+        const fileList = this.fileService.getFileList();
+        const fileListLength = fileList ? fileList.length : 0;
 
         return markup('div', {
             attrs: {
@@ -70,7 +72,8 @@ class SourcePanelComponent {
                     attrs: {
                         style: 'width: 100%; background-color: rgb(0, 0, 0); border: none; color: rgb(204, 204, 204); flex: 19;',
                         oninput: this.onInput.bind(this),
-                        id: 'tryit-sling-textarea'
+                        id: 'tryit-sling-textarea',
+                        ...fileListLength === 0 && { 'readonly': 'true' }
                     }
                 }),
                 this.wordSuggestionComp

@@ -38,7 +38,7 @@ class PreviewComponent {
                 fileListJs.forEach((injectedScript) => {
                     if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
                         var script = document.createElement('script');
-                        script.text = injectedScript.data += '\nlet slTryItCount = Number(localStorage.getItem(\'tryitCount\')); slTryItCount++; localStorage.setItem(\'tryitCount\', slTryItCount);';
+                        script.text = injectedScript.data;
                         script.type = 'module';
 
                         let tryitCountOriginal = localStorage.getItem('tryitCount');
