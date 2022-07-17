@@ -113,7 +113,7 @@ export function getCaretCoordinates(element, position, options) {
         style.overflow = 'hidden';  // for Chrome to not render a scrollbar; IE keeps overflowY = 'scroll'
     }
 
-    div.textContent = element.value.substring(0, position);
+    div.textContent = element.textContent.substring(0, position);
     // The second special handling for input type="text" vs textarea:
     // spaces need to be replaced with non-breaking spaces - http://stackoverflow.com/a/13402035/1269037
     if (isInput)
@@ -125,7 +125,7 @@ export function getCaretCoordinates(element, position, options) {
     // The  *only* reliable way to do that is to copy the *entire* rest of the
     // textarea's content into the <span> created at the caret position.
     // For inputs, just '.' would be enough, but no need to bother.
-    span.textContent = element.value.substring(position) || '.';  // || because a completely empty faux span doesn't render at all
+    span.textContent = element.textContent.substring(position) || '.';  // || because a completely empty faux span doesn't render at all
     div.appendChild(span);
 
     var coordinates = {
@@ -147,4 +147,20 @@ if (typeof module != 'undefined' && typeof module.exports != 'undefined') {
     module.exports = getCaretCoordinates;
 } else if (isBrowser) {
     window.getCaretCoordinates = getCaretCoordinates;
+}
+
+export function getCaretPosition(element) {
+    let position = 0;
+    const isSupported = typeof window.getSelection !== "undefined";
+    if (isSupported) {
+        const selection = window.getSelection();
+        if (selection.rangeCount !== 0) {
+            const range = window.getSelection().getRangeAt(0);
+            const preCaretRange = range.cloneRange();
+            preCaretRange.selectNodeContents(element);
+            preCaretRange.setEnd(range.endContainer, range.endOffset);
+            position = preCaretRange.toString().length;
+        }
+    }
+    return position;
 }

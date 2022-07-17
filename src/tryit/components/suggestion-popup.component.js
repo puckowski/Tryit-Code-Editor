@@ -1,5 +1,5 @@
 import { detectChanges, getState, markup, textNode } from '../../../dist/sling.min';
-import { getCaretCoordinates } from '../services/caret.service';
+import { getCaretCoordinates, getCaretPosition } from '../services/caret.service';
 import FileService from '../services/file.service';
 
 export class WordSuggestionComponent {
@@ -52,7 +52,7 @@ export class WordSuggestionComponent {
             dataSub.subscribe(this.onDataChanged);
         }
 
-        const slingTextArea = document.getElementById('tryit-sling-textarea');
+        const slingTextArea = document.getElementById('tryit-sling-div');
         if (slingTextArea) {
             slingTextArea.addEventListener("scroll", function (textArea, event) {
                 this.scrollY = textArea.scrollTop;
@@ -61,10 +61,11 @@ export class WordSuggestionComponent {
 
         s.DETACHED_SET_INTERVAL(() => {
             if (this.newInput) {
-                const textAreaEle = document.getElementById('tryit-sling-textarea');
-                if (textAreaEle && textAreaEle.selectionEnd >= 16) {
-                    this.selectionText = textAreaEle.value.slice(textAreaEle.selectionEnd - 16, textAreaEle.selectionEnd);
-                    this.occurrence = this.countOccurrences(textAreaEle.value, this.selectionText);
+                const textAreaEle = document.getElementById('tryit-sling-div');
+                const selectionEnd = getCaretPosition(textAreaEle);
+                if (textAreaEle && selectionEnd >= 16) {
+                    this.selectionText = textAreaEle.textContent.slice(selectionEnd - 16, selectionEnd);
+                    this.occurrence = this.countOccurrences(textAreaEle.textContent, this.selectionText);
 
                     const state = getState();
                     const fileIndex = state.getEditIndex();

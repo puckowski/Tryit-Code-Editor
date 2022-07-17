@@ -1,6 +1,8 @@
 import { getState, markup, setState, textNode } from '../../../dist/sling.min';
 import FileService from '../services/file.service';
 import WordSuggestionComponent from './suggestion-popup.component';
+import hljs from '../../../js/highlight';
+import { getCaretPosition } from '../services/caret.service';
 
 class SourcePanelComponent {
 
@@ -12,7 +14,7 @@ class SourcePanelComponent {
                 state.setPreserveFocus(false);
                 setState(state);
             } else {
-                const textAreaEle = document.getElementById('tryit-sling-textarea');
+                const textAreaEle = document.getElementById('tryit-sling-div');
 
                 if (textAreaEle) {
                     s.DETACHED_SET_TIMEOUT(() => {
@@ -21,9 +23,9 @@ class SourcePanelComponent {
                         const fileData = this.fileService.getFileData(fileIndex);
 
                         textAreaEle.focus();
-                        textAreaEle.value = fileData;
-                        textAreaEle.selectionStart = state.getCaretPositionToRestore();
-                        textAreaEle.selectionEnd = state.getCaretPositionToRestore();
+                        textAreaEle.textContent = fileData;
+                        this.highlightCode();
+                        this.setCurrentCursorPosition(state.getCaretPositionToRestore());
                     }, 100);
                 }
             }
@@ -40,10 +42,63 @@ class SourcePanelComponent {
         }
     }
 
+    createRange(node, chars, range) {
+        if (!range) {
+            range = document.createRange()
+            range.selectNode(node);
+            range.setStart(node, 0);
+        }
+
+        if (chars.count === 0) {
+            range.setEnd(node, chars.count);
+        } else if (node && chars.count > 0) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                if (node.textContent.length < chars.count) {
+                    chars.count -= node.textContent.length;
+                } else {
+                    range.setEnd(node, chars.count);
+                    chars.count = 0;
+                }
+            } else {
+                for (var lp = 0; lp < node.childNodes.length; lp++) {
+                    range = this.createRange(node.childNodes[lp], chars, range);
+
+                    if (chars.count === 0) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        return range;
+    }
+
+    setCurrentCursorPosition(chars) {
+        if (chars >= 0) {
+            var selection = window.getSelection();
+
+            const range = this.createRange(document.getElementById('tryit-sling-div'), { count: chars });
+
+            if (range) {
+                range.collapse(false);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        }
+    }
+
+    highlightCode() {
+        const textAreaEle = document.getElementById('tryit-sling-div');
+        const caretPos = getCaretPosition(textAreaEle);
+        hljs.highlightElement(textAreaEle);
+        this.setCurrentCursorPosition(caretPos);
+    }
+
     onInput(event) {
         const state = getState();
         const fileIndex = state.getEditIndex();
-        this.fileService.updateFileData(fileIndex, event.target.value)
+        this.fileService.updateFileData(fileIndex, event.target.textContent);
+        this.highlightCode();
     }
 
     view() {
@@ -51,7 +106,7 @@ class SourcePanelComponent {
         const fileIndex = state.getEditIndex();
         const file = this.fileService.getFile(fileIndex);
         const fileList = this.fileService.getFileList();
-        const fileListLength = fileList ? fileList.length : 0;
+        // const fileListLength = fileList ? fileList.length : 0;
 
         return markup('div', {
             attrs: {
@@ -68,13 +123,18 @@ class SourcePanelComponent {
                         ] : []),
                     ]
                 }),
-                markup('textarea', {
+                markup('div', {
                     attrs: {
                         style: 'width: 100%; background-color: rgb(0, 0, 0); border: none; color: rgb(204, 204, 204); flex: 19;',
                         oninput: this.onInput.bind(this),
-                        id: 'tryit-sling-textarea',
-                        ...fileListLength === 0 && { 'readonly': 'true' }
-                    }
+                        id: 'tryit-sling-div',
+                        contenteditable: 'true',
+                        sldirective: 'useexsting',
+                        class: 'javascript'
+                    },
+                    children: [
+                        textNode(this.fileService.getFileData(fileIndex))
+                    ]
                 }),
                 this.wordSuggestionComp
             ]
