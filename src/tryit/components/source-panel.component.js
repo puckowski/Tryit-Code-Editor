@@ -24,8 +24,11 @@ class SourcePanelComponent {
 
                         textAreaEle.focus();
                         textAreaEle.textContent = fileData;
+
                         this.highlightCode();
-                        this.setCurrentCursorPosition(state.getCaretPositionToRestore());
+
+                        const caretRestore = state.getCaretPositionToRestore();
+                        this.setCurrentCursorPosition(caretRestore);
                     }, 100);
                 }
             }
@@ -88,17 +91,44 @@ class SourcePanelComponent {
     }
 
     highlightCode() {
-        const textAreaEle = document.getElementById('tryit-sling-div');
-        const caretPos = getCaretPosition(textAreaEle);
-        hljs.highlightElement(textAreaEle);
-        this.setCurrentCursorPosition(caretPos);
+        setTimeout(() => {
+            const state = getState();
+            const fileIndex = state.getEditIndex();
+            const fileData = this.fileService.getFileData(fileIndex);
+            let code = this.fileService.getFileData(fileIndex);
+            const textAreaEle = document.getElementById('tryit-sling-div');
+            textAreaEle.textContent = code;
+
+            hljs.highlightElement(textAreaEle);
+
+            const caretRestore = state.getCaretPositionToRestore();
+            this.setCurrentCursorPosition(caretRestore);
+
+            const sub = state.getHasHighlightedSubject();
+            sub.next(true);
+        }, 0);
     }
 
     onInput(event) {
         const state = getState();
+
+        const textAreaEle = document.getElementById('tryit-sling-div');
+        let caretPos = getCaretPosition(textAreaEle);
+
+        if (event && event.inputType === 'insertParagraph') {
+            let content = event.target.textContent;
+            content = content.substring(0, caretPos) + '\n' + content.substring(caretPos);
+            event.target.textContent = content;
+            caretPos++;
+        }
+
+        state.setCaretPositionToRestore(caretPos);
+
         const fileIndex = state.getEditIndex();
         this.fileService.updateFileData(fileIndex, event.target.textContent);
         this.highlightCode();
+
+        setState(state);
     }
 
     view() {
@@ -106,11 +136,11 @@ class SourcePanelComponent {
         const fileIndex = state.getEditIndex();
         const file = this.fileService.getFile(fileIndex);
         const fileList = this.fileService.getFileList();
-        // const fileListLength = fileList ? fileList.length : 0;
+        const fileListLength = fileList ? fileList.length : 0;
 
         return markup('div', {
             attrs: {
-                style: 'padding: 0.25rem; background-color: rgb(21, 24, 30); color: rgb(204, 204, 204); overflow: auto; height: calc(100% - 0.5rem); display: flex; flex-direction: column;'
+                style: 'padding: 0.25rem; background-color: rgb(21, 24, 30); color: rgb(204, 204, 204); height: calc(100% - 0.5rem); display: flex; flex-direction: column;'
             },
             children: [
                 markup('h4', {
@@ -125,12 +155,12 @@ class SourcePanelComponent {
                 }),
                 markup('div', {
                     attrs: {
-                        style: 'width: 100%; background-color: rgb(0, 0, 0); border: none; color: rgb(204, 204, 204); flex: 19;',
+                        style: 'width: 100%; background-color: rgb(0, 0, 0); border: none; color: rgb(204, 204, 204); flex: 19; white-space: pre; overflow: scroll; padding: 0.25rem;',
                         oninput: this.onInput.bind(this),
                         id: 'tryit-sling-div',
-                        contenteditable: 'true',
-                        sldirective: 'useexsting',
-                        class: 'javascript'
+                        sldirective: 'onlyself',
+                        class: 'javascript',
+                        ...fileListLength > 0 && { 'contenteditable': 'true' }
                     },
                     children: [
                         textNode(this.fileService.getFileData(fileIndex))

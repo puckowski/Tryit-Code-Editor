@@ -10,14 +10,19 @@ class StoreGlobal {
         this.inlineHeight = '';
         this.collapsedMode = false;
         this.showPreview = false;
-        this.version = '2.2';
+        this.version = '3.0';
         this.showHelp = false;
         this.sourceHasNewInput = BehaviorSubject(false);
         this.invalidScriptIndices = BehaviorSubject([]);
+        this.hasHighlighted = BehaviorSubject(false);
         this.caretPositionToRestore = 0;
         this.preserveFocus = false;
     }
 
+    getHasHighlightedSubject() {
+        return this.hasHighlighted;
+    }
+    
     setPreserveFocus(preserveState) {
         this.preserveFocus = preserveState;
     }

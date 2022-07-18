@@ -8,6 +8,7 @@ class PreviewComponent {
         this.fileService = new FileService();
         this.injectedList = '';
         this.isPreviewLoading = false;
+        this.CONTENT_LOAD_CHECK_COUNT = 34;
         this.onInvalidScriptFunction = () => {
             detectChanges();
         }
@@ -75,7 +76,7 @@ class PreviewComponent {
 
                             successRunCount++;
 
-                            if (successRunCount === 17) {
+                            if (successRunCount === this.CONTENT_LOAD_CHECK_COUNT) {
                                 clearInterval(checkSuccessInterval);
                                 this.isPreviewLoading = false;
                                 detectChanges();

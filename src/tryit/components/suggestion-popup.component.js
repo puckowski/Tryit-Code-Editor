@@ -37,6 +37,10 @@ export class WordSuggestionComponent {
         this.onDataChanged = () => {
             this.suggestion = '';
             this.input = '';
+            // this.attachScrollListener();
+        }
+        this.onHighlighted = () => {
+            // this.attachScrollListener();
         }
     }
 
@@ -52,11 +56,9 @@ export class WordSuggestionComponent {
             dataSub.subscribe(this.onDataChanged);
         }
 
-        const slingTextArea = document.getElementById('tryit-sling-div');
-        if (slingTextArea) {
-            slingTextArea.addEventListener("scroll", function (textArea, event) {
-                this.scrollY = textArea.scrollTop;
-            }.bind(this, slingTextArea), false);
+        const highlightSub = state.getHasHighlightedSubject();
+        if (!highlightSub.getHasSubscription(this.onHighlighted)) {
+            highlightSub.subscribe(this.onHighlighted);
         }
 
         s.DETACHED_SET_INTERVAL(() => {
@@ -105,6 +107,23 @@ export class WordSuggestionComponent {
         document.addEventListener('keydown', this.onDocumentKeyDown.bind(this));
     }
 
+    slAfterInit() {
+        this.attachScrollListener();
+    }
+
+    attachScrollListener() {
+        const slingTextArea = document.getElementById('tryit-sling-div');
+        if (slingTextArea) {
+            slingTextArea.addEventListener("scroll", function (textArea, event) {
+                this.updateScrollY(textArea);
+            }.bind(this, slingTextArea), false);
+        }
+    }
+
+    updateScrollY(textArea) {
+        this.scrollY = textArea.scrollTop;
+    }
+
     determineSuggestionIfPossible(fileData, index, textAreaEle) {
         if (this.input.startsWith('{')) {
             this.input = this.input.substring(this.input.indexOf('{') + 1);
@@ -131,16 +150,21 @@ export class WordSuggestionComponent {
                     this.suggestion = null;
                     detectChanges();
                 } else {
-                    const caret = getCaretCoordinates(textAreaEle, textAreaEle.selectionEnd);
+                    const currentPos = getCaretPosition(textAreaEle);
+                    const caret = getCaretCoordinates(textAreaEle, currentPos);
                     const rect = textAreaEle.getBoundingClientRect();
                     const lineHeight = this.getLineHeight(textAreaEle);
                     this.x = caret.left + rect.left;
-                    this.y = caret.top + rect.top - lineHeight - this.scrollY;
+                    this.y = caret.top + rect.top - lineHeight - this.convertRemToPixels(0.5) - this.scrollY;
 
                     detectChanges();
                 }
             }
         }
+    }
+
+    convertRemToPixels(rem) {    
+        return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
     }
 
     debounce(func, timeout = 300) {

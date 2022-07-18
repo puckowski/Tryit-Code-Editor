@@ -2,6 +2,9 @@ import { detectChanges, getState, markup, setState, textNode, version } from '..
 import ExportService from '../services/export.service';
 import FileService from '../services/file.service';
 import { SCRIPT_VALIDITY_CHECK_SOURCE } from '../stores/global.store';
+import { js_beautify } from '../../../js/beautify';
+import { css_beautify } from '../../../js/beautify-css';
+import { html_beautify } from '../../../js/beautify-html';
 
 class NavbarComponent {
 
@@ -37,7 +40,7 @@ class NavbarComponent {
         s.DETACHED_SET_TIMEOUT(() => {
             state.getDataSubject().next(true);
         }, 0);
-        
+
         setState(state);
     }
 
@@ -104,7 +107,7 @@ class NavbarComponent {
 
     removeLastOccurrence(textToReplace, str) {
         const charpos = str.lastIndexOf(textToReplace);
-        
+
         if (charpos < 0) {
             return str;
         }
@@ -180,7 +183,7 @@ class NavbarComponent {
                     }
 
                     document.body.removeChild(iframeEle);
-                    
+
                     const state = getState();
                     state.getDataSubject().next(true);
                     detectChanges();
@@ -212,6 +215,26 @@ class NavbarComponent {
         s.DETACHED_SET_TIMEOUT(() => {
             state.getDataSubject().next(true);
         }, 0);
+    }
+
+    onBeautify() {
+        const state = getState();
+        const fileIndex = state.getEditIndex();
+        const fileData = this.fileService.getFile(fileIndex);
+        let code = this.fileService.getFileData(fileIndex);
+
+        if (fileData.injectCss) {
+            code = css_beautify(code);
+        } else if (fileData.injectScript) {
+            code = js_beautify(code);
+        } else {
+            code = html_beautify(code);
+        }
+
+        this.fileService.updateFileData(fileIndex, code);
+
+        const sub = state.getDataSubject();
+        sub.next(true);
     }
 
     view() {
@@ -356,6 +379,16 @@ class NavbarComponent {
                     },
                     children: [
                         textNode('Clear Console')
+                    ]
+                }),
+                markup('button', {
+                    attrs: {
+                        id: 'tryit-sling-beautify',
+                        onclick: this.onBeautify.bind(this),
+                        style: 'margin-bottom: 0.25rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
+                    },
+                    children: [
+                        textNode('Format Code')
                     ]
                 }),
                 markup('button', {
