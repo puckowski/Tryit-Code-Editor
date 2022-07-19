@@ -12,7 +12,14 @@ class PreviewComponent {
         this.onInvalidScriptFunction = () => {
             detectChanges();
         }
+        this.previewPendingCount = 0;
         this.onFileChangeFunction = () => {
+            this.previewPendingCount++;
+
+            if (this.previewPendingCount > 1) {
+                return;
+            }
+
             this.injectedList = 'Injected files: ';
             const iframe = document.getElementById('tryit-sling-iframe');
 
@@ -122,6 +129,11 @@ class PreviewComponent {
                     }
 
                     htmlContainer.document.close();
+                    this.previewPendingCount--;
+
+                    if (this.previewPendingCount > 0) {
+                        this.onFileChangeFunction();
+                    }
                 }, 300);
 
                 fileListCss.forEach((injectedScript) => {
