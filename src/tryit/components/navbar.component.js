@@ -212,6 +212,7 @@ class NavbarComponent {
         const startIndex = this.fileService.buildSlingDemo();
         const state = getState();
         state.setEditIndex(startIndex);
+        setState(state);
         s.DETACHED_SET_TIMEOUT(() => {
             state.getDataSubject().next(true);
         }, 0);

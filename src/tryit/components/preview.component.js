@@ -31,77 +31,98 @@ class PreviewComponent {
             htmlContainer.document.write(fileData);
 
             if (htmlContainer.document.head) {
-                const consoleScript = document.createElement('script');
-                consoleScript.text = this.getConsoleScriptText();
-                consoleScript.type = 'module';
-                consoleScript.setAttribute('tryit-sling-script', 'true');
-                htmlContainer.document.head.appendChild(consoleScript);
+                setTimeout(() => {
+                    const iframe = document.getElementById('tryit-sling-iframe');
 
-                fileListJs.forEach((injectedScript) => {
-                    if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
-                        var script = document.createElement('script');
-                        script.text = injectedScript.data += '\n' + SCRIPT_VALIDITY_CHECK_SOURCE;
-                        script.type = 'module';
+                    const htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
+                    htmlContainer.document.open();
+                    htmlContainer.document.write(fileData);
 
-                        let tryitCountOriginal = localStorage.getItem('tryitCount');
-                        if (!tryitCountOriginal) {
-                            tryitCountOriginal = 0;
-                            localStorage.setItem('tryitCount', tryitCountOriginal);
-                        } else {
-                            tryitCountOriginal = Number(tryitCountOriginal);
-                        }
+                    const consoleScript = document.createElement('script');
+                    consoleScript.text = this.getConsoleScriptText();
+                    consoleScript.type = 'module';
+                    consoleScript.setAttribute('tryit-sling-script', 'true');
+                    htmlContainer.document.head.appendChild(consoleScript);
 
-                        let successRunCount = 0;
-                        this.isPreviewLoading = true;
+                    fileListJs.forEach((injectedScript) => {
+                        if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
+                            var script = document.createElement('script');
+                            script.text = injectedScript.data += '\n' + SCRIPT_VALIDITY_CHECK_SOURCE;
+                            script.type = 'module';
 
-                        const checkSuccessInterval = s.DETACHED_SET_INTERVAL(() => {
-                            const tryitCountFinal = Number(localStorage.getItem('tryitCount'));
-
-                            if (tryitCountOriginal === tryitCountFinal) {
-                                const invalidIndexSubject = state.getInvalidScriptIndexSubject();
-                                const indices = invalidIndexSubject.getData();
-                                if (!indices.includes(injectedScript.index)) {
-                                    indices.push(injectedScript.index);
-                                }
-                                invalidIndexSubject.next(indices);
+                            let tryitCountOriginal = localStorage.getItem('tryitCount');
+                            if (!tryitCountOriginal) {
+                                tryitCountOriginal = 0;
+                                localStorage.setItem('tryitCount', tryitCountOriginal);
                             } else {
-                                const invalidIndexSubject = state.getInvalidScriptIndexSubject();
-                                const indices = invalidIndexSubject.getData();
-                                const currentIndex = indices.indexOf(injectedScript.index);
-                                if (currentIndex > -1) {
-                                    indices.splice(currentIndex, 1);
+                                tryitCountOriginal = Number(tryitCountOriginal);
+                            }
+
+                            let successRunCount = 0;
+                            this.isPreviewLoading = true;
+
+                            const checkSuccessInterval = s.DETACHED_SET_INTERVAL(() => {
+                                const tryitCountFinal = Number(localStorage.getItem('tryitCount'));
+                                const fileList = this.fileService.getFileList();
+
+                                if (fileList.length === 0) {
+                                    this.injectedList = 'Injected files: ';
+                                    clearInterval(checkSuccessInterval);
+                                    this.isPreviewLoading = false;
+                                    detectChanges();
+                                } else if (tryitCountOriginal === tryitCountFinal) {
+                                    const invalidIndexSubject = state.getInvalidScriptIndexSubject();
+                                    const indices = invalidIndexSubject.getData();
+                                    if (!indices.includes(injectedScript.index)) {
+                                        indices.push(injectedScript.index);
+                                    }
+                                    invalidIndexSubject.next(indices);
+                                } else {
+                                    const invalidIndexSubject = state.getInvalidScriptIndexSubject();
+                                    const indices = invalidIndexSubject.getData();
+                                    const currentIndex = indices.indexOf(injectedScript.index);
+                                    if (currentIndex > -1) {
+                                        indices.splice(currentIndex, 1);
+                                    }
+                                    invalidIndexSubject.next(indices);
                                 }
-                                invalidIndexSubject.next(indices);
+
+                                successRunCount++;
+
+                                if (successRunCount === this.CONTENT_LOAD_CHECK_COUNT) {
+                                    clearInterval(checkSuccessInterval);
+                                    this.isPreviewLoading = false;
+                                    detectChanges();
+                                }
+                            }, 300);
+
+                            htmlContainer.document.head.appendChild(script);
+                            if (this.injectedList.length > 16) {
+                                this.injectedList += ', ';
                             }
 
-                            successRunCount++;
-
-                            if (successRunCount === this.CONTENT_LOAD_CHECK_COUNT) {
-                                clearInterval(checkSuccessInterval);
-                                this.isPreviewLoading = false;
-                                detectChanges();
+                            this.injectedList += (injectedScript.index + 1);
+                            if (injectedScript.name.length > 0) {
+                                this.injectedList += ' (' + injectedScript.name + ')';
                             }
-                        }, 300);
 
-                        htmlContainer.document.head.appendChild(script);
-                        if (this.injectedList.length > 16) {
-                            this.injectedList += ', ';
+                            const invalidIndexSubject = state.getInvalidScriptIndexSubject();
+                            const indices = invalidIndexSubject.getData();
+                            const currentIndex = indices.indexOf(injectedScript.index);
+                            if (currentIndex > -1) {
+                                indices.splice(currentIndex, 1);
+                            }
+                            invalidIndexSubject.next(indices);
                         }
+                    });
 
-                        this.injectedList += (injectedScript.index + 1);
-                        if (injectedScript.name.length > 0) {
-                            this.injectedList += ' (' + injectedScript.name + ')';
-                        }
-
-                        const invalidIndexSubject = state.getInvalidScriptIndexSubject();
-                        const indices = invalidIndexSubject.getData();
-                        const currentIndex = indices.indexOf(injectedScript.index);
-                        if (currentIndex > -1) {
-                            indices.splice(currentIndex, 1);
-                        }
-                        invalidIndexSubject.next(indices);
+                    if (fileListJs.length === 0) {
+                        const invalidScriptSub = state.getInvalidScriptIndexSubject();
+                        invalidScriptSub.next([]);
                     }
-                });
+
+                    htmlContainer.document.close();
+                }, 300);
 
                 fileListCss.forEach((injectedScript) => {
                     if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
@@ -118,6 +139,9 @@ class PreviewComponent {
                         }
                     }
                 });
+            } else {
+                const invalidScriptSub = state.getInvalidScriptIndexSubject();
+                invalidScriptSub.next([]);
             }
 
             htmlContainer.document.close();
@@ -163,7 +187,7 @@ class PreviewComponent {
         const indices = sub.getData();
 
         if (indices && indices.length > 0) {
-            let message = 'Invalid Files: ';
+            let message = 'Files Not Loaded: ';
 
             indices.forEach((fileIndex, index) => {
                 if (index > 0) {
