@@ -12,14 +12,20 @@ class PreviewComponent {
         this.onInvalidScriptFunction = () => {
             detectChanges();
         }
-        this.previewPendingCount = 0;
+        this.previewPendingData = { current: 0, old: 0 };
         this.onFileChangeFunction = () => {
-            this.previewPendingCount++;
+            if (this.previewPendingData.current === this.previewPendingData.old) {
+                this.previewPendingData.current = 0;
+            }
 
-            if (this.previewPendingCount > 1) {
+            this.previewPendingData.current++;
+
+            if (this.previewPendingData.current > 1) {
                 return;
             }
 
+            this.previewPendingData.old = this.previewPendingData.current;
+            
             this.injectedList = 'Injected files: ';
             const iframe = document.getElementById('tryit-sling-iframe');
 
@@ -129,9 +135,9 @@ class PreviewComponent {
                     }
 
                     htmlContainer.document.close();
-                    this.previewPendingCount--;
+                    this.previewPendingData.current--;
 
-                    if (this.previewPendingCount > 0) {
+                    if (this.previewPendingData.current > 0) {
                         this.onFileChangeFunction();
                     }
                 }, 300);
