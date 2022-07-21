@@ -52,7 +52,7 @@ class ContentPanelComponent {
             children: [
                 markup('div', {
                     attrs: {
-                        style: 'display: flex; justify-content: space-between;' + heightStr
+                        style: 'display: flex; justify-content: flex-start;' + heightStr
                     },
                     children: [
                         markup('div', {
@@ -86,7 +86,7 @@ class ContentPanelComponent {
                                 ...(showPreview === true ? [
                                     markup('div', {
                                         attrs: {
-                                            style: 'width: 88%; max-height: inherit;'
+                                            style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;'
                                         },
                                         children: [
                                             this.previewComp
@@ -96,7 +96,7 @@ class ContentPanelComponent {
                                 ...(showPreview === false ? [
                                     markup('div', {
                                         attrs: {
-                                            style: 'width: 88%; max-height: inherit;'
+                                            style: 'width: calc(100% - max(12%, 100px) - 0.5rem); max-height: inherit;'
                                         },
                                         children: [
                                             this.sourceComp
@@ -107,7 +107,7 @@ class ContentPanelComponent {
                         ] : [
                             markup('div', {
                                 attrs: {
-                                    style: 'width: 88%; max-height: inherit;'
+                                    style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;'
                                 },
                                 children: [
                                     new HelpComponent()
