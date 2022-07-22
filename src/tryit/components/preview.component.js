@@ -19,13 +19,14 @@ class PreviewComponent {
             }
 
             this.previewPendingData.current++;
+            const fileListCurrent = this.fileService.getFileList();
 
-            if (this.previewPendingData.current > 1) {
+            if (this.previewPendingData.current > 1 && fileListCurrent.length > 0) {
                 return;
             }
 
             this.previewPendingData.old = this.previewPendingData.current;
-            
+
             this.injectedList = 'Injected files: ';
             const iframe = document.getElementById('tryit-sling-iframe');
 
@@ -44,109 +45,8 @@ class PreviewComponent {
             htmlContainer.document.write(fileData);
 
             if (htmlContainer.document.head) {
-                setTimeout(() => {
-                    const iframe = document.getElementById('tryit-sling-iframe');
-
-                    const htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
-                    htmlContainer.document.open();
-                    htmlContainer.document.write(fileData);
-
-                    const consoleScript = document.createElement('script');
-                    consoleScript.text = this.getConsoleScriptText();
-                    consoleScript.type = 'module';
-                    consoleScript.setAttribute('tryit-sling-script', 'true');
-                    htmlContainer.document.head.appendChild(consoleScript);
-
-                    fileListJs.forEach((injectedScript) => {
-                        if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
-                            var script = document.createElement('script');
-                            script.text = injectedScript.data += '\n' + SCRIPT_VALIDITY_CHECK_SOURCE;
-                            script.type = 'module';
-
-                            let tryitCountOriginal = localStorage.getItem('tryitCount');
-                            if (!tryitCountOriginal) {
-                                tryitCountOriginal = 0;
-                                localStorage.setItem('tryitCount', tryitCountOriginal);
-                            } else {
-                                tryitCountOriginal = Number(tryitCountOriginal);
-                            }
-
-                            let successRunCount = 0;
-                            this.isPreviewLoading = true;
-
-                            const checkSuccessInterval = s.DETACHED_SET_INTERVAL(() => {
-                                const tryitCountFinal = Number(localStorage.getItem('tryitCount'));
-                                const fileList = this.fileService.getFileList();
-
-                                if (fileList.length === 0) {
-                                    this.injectedList = 'Injected files: ';
-                                    clearInterval(checkSuccessInterval);
-                                    this.isPreviewLoading = false;
-                                    detectChanges();
-                                } else if (tryitCountOriginal === tryitCountFinal) {
-                                    const invalidIndexSubject = state.getInvalidScriptIndexSubject();
-                                    const indices = invalidIndexSubject.getData();
-                                    if (!indices.includes(injectedScript.index)) {
-                                        indices.push(injectedScript.index);
-                                    }
-                                    invalidIndexSubject.next(indices);
-                                } else {
-                                    const invalidIndexSubject = state.getInvalidScriptIndexSubject();
-                                    const indices = invalidIndexSubject.getData();
-                                    const currentIndex = indices.indexOf(injectedScript.index);
-                                    if (currentIndex > -1) {
-                                        indices.splice(currentIndex, 1);
-                                    }
-                                    invalidIndexSubject.next(indices);
-                                }
-
-                                successRunCount++;
-
-                                if (successRunCount === this.CONTENT_LOAD_CHECK_COUNT) {
-                                    clearInterval(checkSuccessInterval);
-                                    this.isPreviewLoading = false;
-                                    detectChanges();
-                                }
-                            }, 300);
-
-                            htmlContainer.document.head.appendChild(script);
-                            if (this.injectedList.length > 16) {
-                                this.injectedList += ', ';
-                            }
-
-                            this.injectedList += (injectedScript.index + 1);
-                            if (injectedScript.name.length > 0) {
-                                this.injectedList += ' (' + injectedScript.name + ')';
-                            }
-
-                            const invalidIndexSubject = state.getInvalidScriptIndexSubject();
-                            const indices = invalidIndexSubject.getData();
-                            const currentIndex = indices.indexOf(injectedScript.index);
-                            if (currentIndex > -1) {
-                                indices.splice(currentIndex, 1);
-                            }
-                            invalidIndexSubject.next(indices);
-                        }
-                    });
-
-                    if (fileListJs.length === 0) {
-                        const invalidScriptSub = state.getInvalidScriptIndexSubject();
-                        invalidScriptSub.next([]);
-                    }
-
-                    htmlContainer.document.close();
-                    this.previewPendingData.current--;
-
-                    if (this.previewPendingData.current > 0) {
-                        this.onFileChangeFunction();
-                    }
-                }, 300);
-
                 fileListCss.forEach((injectedScript) => {
                     if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
-                        var stylesheet = document.createElement('style');
-                        stylesheet.textContent = injectedScript.data;
-                        htmlContainer.document.head.appendChild(stylesheet);
                         if (this.injectedList.length > 16) {
                             this.injectedList += ', ';
                         }
@@ -157,6 +57,107 @@ class PreviewComponent {
                         }
                     }
                 });
+
+                fileListJs.forEach((injectedScript) => {
+                    if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
+                        if (this.injectedList.length > 16) {
+                            this.injectedList += ', ';
+                        }
+
+                        this.injectedList += (injectedScript.index + 1);
+                        if (injectedScript.name.length > 0) {
+                            this.injectedList += ' (' + injectedScript.name + ')';
+                        }
+
+                        const invalidIndexSubject = state.getInvalidScriptIndexSubject();
+                        const indices = invalidIndexSubject.getData();
+                        const currentIndex = indices.indexOf(injectedScript.index);
+                        if (currentIndex > -1) {
+                            indices.splice(currentIndex, 1);
+                        }
+                        invalidIndexSubject.next(indices);
+                    }
+                });
+
+                detectChanges();
+                
+                const iframe = document.getElementById('tryit-sling-iframe');
+
+                const htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
+                htmlContainer.document.open();
+                htmlContainer.document.write(fileData);
+                
+                fileListCss.forEach((injectedScript) => {
+                    if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
+                        var stylesheet = document.createElement('style');
+                        stylesheet.textContent = injectedScript.data;
+                        htmlContainer.document.head.appendChild(stylesheet);
+                    }
+                });
+
+                const consoleScript = document.createElement('script');
+                consoleScript.text = this.getConsoleScriptText();
+                consoleScript.type = 'module';
+                consoleScript.setAttribute('tryit-sling-script', 'true');
+                htmlContainer.document.head.appendChild(consoleScript);
+
+                fileListJs.forEach((injectedScript) => {
+                    if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
+                        var script = document.createElement('script');
+                        script.text = injectedScript.data += '\n' + SCRIPT_VALIDITY_CHECK_SOURCE;
+                        script.type = 'module';
+
+                        let tryitCountOriginal = localStorage.getItem('tryitCount');
+                        if (!tryitCountOriginal) {
+                            tryitCountOriginal = 0;
+                            localStorage.setItem('tryitCount', tryitCountOriginal);
+                        } else {
+                            tryitCountOriginal = Number(tryitCountOriginal);
+                        }
+
+                        let successRunCount = 0;
+                        this.isPreviewLoading = true;
+
+                        const checkSuccessInterval = s.DETACHED_SET_INTERVAL(() => {
+                            const tryitCountFinal = Number(localStorage.getItem('tryitCount'));
+                            const fileList = this.fileService.getFileList();
+
+                            if (fileList.length === 0) {
+                                this.injectedList = 'Injected files: ';
+                                clearInterval(checkSuccessInterval);
+                                this.isPreviewLoading = false;
+                                detectChanges();
+                            } else if (tryitCountOriginal === tryitCountFinal) {
+                                const invalidIndexSubject = state.getInvalidScriptIndexSubject();
+                                const indices = invalidIndexSubject.getData();
+                                if (!indices.includes(injectedScript.index)) {
+                                    indices.push(injectedScript.index);
+                                }
+                                invalidIndexSubject.next(indices);
+                            } else {
+                                const invalidIndexSubject = state.getInvalidScriptIndexSubject();
+                                const indices = invalidIndexSubject.getData();
+                                const currentIndex = indices.indexOf(injectedScript.index);
+                                if (currentIndex > -1) {
+                                    indices.splice(currentIndex, 1);
+                                }
+                                invalidIndexSubject.next(indices);
+                            }
+
+                            successRunCount++;
+
+                            if (successRunCount === this.CONTENT_LOAD_CHECK_COUNT) {
+                                clearInterval(checkSuccessInterval);
+                                this.isPreviewLoading = false;
+                                detectChanges();
+                            }
+                        }, 300);
+
+                        htmlContainer.document.head.appendChild(script);
+                    }
+                });
+
+                this.previewPendingData.current--;
             } else {
                 const invalidScriptSub = state.getInvalidScriptIndexSubject();
                 invalidScriptSub.next([]);
