@@ -66,6 +66,16 @@ class HelpComponent {
                         }),
                         markup('p', {
                             children: [
+                                textNode('Click Format Code to format the code in the file editor.')
+                            ]
+                        }),
+                        markup('p', {
+                            children: [
+                                textNode('Click Toggle Mode to toggle collapsed editor mode.')
+                            ]
+                        }),
+                        markup('p', {
+                            children: [
                                 textNode('Click Sling.js Demo to build a \'Hello, world!\' Sling.js project.')
                             ]
                         }),

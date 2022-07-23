@@ -238,6 +238,23 @@ class NavbarComponent {
         sub.next(true);
     }
 
+    onToggleMode() {
+        const state = getState();
+
+        if (state.getCollapsedMode()) {
+            state.setCollapsedMode(false);
+        } else {
+            state.setCollapsedMode(true);
+        }
+
+        s.DETACHED_SET_TIMEOUT(() => {
+            state.getDataSubject().next(true);
+        }, 0);
+        
+        setState(state);
+        detectChanges();
+    }
+
     view() {
         const state = getState();
         const mod = state.getHeightModifier();
@@ -390,6 +407,16 @@ class NavbarComponent {
                     },
                     children: [
                         textNode('Format Code')
+                    ]
+                }),
+                markup('button', {
+                    attrs: {
+                        id: 'tryit-sling-toggle-mode',
+                        onclick: this.onToggleMode.bind(this),
+                        style: 'margin-bottom: 0.25rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; font: 400 13.3333px Arial; padding: 1px 6px;'
+                    },
+                    children: [
+                        textNode('Toggle Mode')
                     ]
                 }),
                 markup('button', {
