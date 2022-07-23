@@ -6,4 +6,4 @@ This is an in-browser JavaScript and HTML code editor built using the Sling.js f
 
 # Run
 
-To run, perform an ```npm install`` and then run ```npm run devServer```.
+To run, perform an ```npm install``` and then run ```npm run devServer```.
