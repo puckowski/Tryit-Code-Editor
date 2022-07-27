@@ -47,73 +47,136 @@ class ContentPanelComponent {
         const collapsedMode = state.getCollapsedMode();
         const showPreview = state.getShowPreview();
         const showHelp = state.getShowHelp();
+        const portraitMode = state.getPortraitMode();
+        
+        let rootDisplayStyle = 'display: flex;';
+        let fileTreeStyle = 'width: 12%;';
+        
+        if (portraitMode) {
+            rootDisplayStyle = 'display: block;'
+            fileTreeStyle = 'width: 100%;';
+        }
         
         return markup('div', {
             children: [
                 markup('div', {
                     attrs: {
-                        style: 'display: flex; justify-content: flex-start;' + heightStr
+                        style: rootDisplayStyle + ' justify-content: flex-start;' + heightStr
                     },
                     children: [
                         markup('div', {
                             attrs: {
-                                style: 'width: 12%; min-width: 100px; max-height: inherit;'
+                                style: fileTreeStyle + ' min-width: 100px; max-height: inherit;'
                             },
                             children: [
                                 this.fileTreeComp
                             ]
                         }),
-                        ...(showHelp === false ? [
-                            ...(collapsedMode === false ? [
-                                markup('div', {
-                                    attrs: {
-                                        style: 'width: 44%; max-height: inherit;'
-                                    },
-                                    children: [
-                                        this.sourceComp
-                                    ]
-                                }),
-                                markup('div', {
-                                    attrs: {
-                                        style: 'width: 44%; max-height: inherit;'
-                                    },
-                                    children: [
-                                        this.previewComp
-                                    ]
-                                })
-                            ] : []),
-                            ...(collapsedMode === true ? [
-                                ...(showPreview === true ? [
+                        ...(portraitMode === false ? [
+                            ...(showHelp === false ? [
+                                ...(collapsedMode === false ? [
                                     markup('div', {
                                         attrs: {
-                                            style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;'
+                                            style: 'width: 44%; max-height: inherit;'
+                                        },
+                                        children: [
+                                            this.sourceComp
+                                        ]
+                                    }),
+                                    markup('div', {
+                                        attrs: {
+                                            style: 'width: 44%; max-height: inherit;'
                                         },
                                         children: [
                                             this.previewComp
                                         ]
                                     })
                                 ] : []),
-                                ...(showPreview === false ? [
+                                ...(collapsedMode === true ? [
+                                    ...(showPreview === true ? [
+                                        markup('div', {
+                                            attrs: {
+                                                style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;'
+                                            },
+                                            children: [
+                                                this.previewComp
+                                            ]
+                                        })
+                                    ] : []),
+                                    ...(showPreview === false ? [
+                                        markup('div', {
+                                            attrs: {
+                                                style: 'width: calc(100% - max(12%, 100px) - 0.5rem); max-height: inherit;'
+                                            },
+                                            children: [
+                                                this.sourceComp
+                                            ]
+                                        })
+                                    ] : []),
+                                ] : [])
+                            ] : [
+                                markup('div', {
+                                    attrs: {
+                                        style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;'
+                                    },
+                                    children: [
+                                        new HelpComponent()
+                                    ]
+                                })
+                            ]),
+                        ] : [
+                            ...(showHelp === false ? [
+                                ...(collapsedMode === false ? [
                                     markup('div', {
                                         attrs: {
-                                            style: 'width: calc(100% - max(12%, 100px) - 0.5rem); max-height: inherit;'
+                                            style: 'width: 100%; max-height: inherit;'
                                         },
                                         children: [
                                             this.sourceComp
                                         ]
+                                    }),
+                                    markup('div', {
+                                        attrs: {
+                                            style: 'width: 100%; max-height: inherit;'
+                                        },
+                                        children: [
+                                            this.previewComp
+                                        ]
                                     })
                                 ] : []),
-                            ] : [])
-                        ] : [
-                            markup('div', {
-                                attrs: {
-                                    style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;'
-                                },
-                                children: [
-                                    new HelpComponent()
-                                ]
-                            })
-                        ]),
+                                ...(collapsedMode === true ? [
+                                    ...(showPreview === true ? [
+                                        markup('div', {
+                                            attrs: {
+                                                style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;'
+                                            },
+                                            children: [
+                                                this.previewComp
+                                            ]
+                                        })
+                                    ] : []),
+                                    ...(showPreview === false ? [
+                                        markup('div', {
+                                            attrs: {
+                                                style: 'width: calc(100% - max(12%, 100px) - 0.5rem); max-height: inherit;'
+                                            },
+                                            children: [
+                                                this.sourceComp
+                                            ]
+                                        })
+                                    ] : []),
+                                ] : [])
+                            ] : [
+                                markup('div', {
+                                    attrs: {
+                                        style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;'
+                                    },
+                                    children: [
+                                        new HelpComponent()
+                                    ]
+                                })
+                            ]),
+                        ])
                     ]
                 })
             ]

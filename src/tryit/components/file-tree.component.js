@@ -38,6 +38,11 @@ class FileTreeComponent {
     onRemoveFile(index) {
         this.fileService.removeFile(index);
         const state = getState();
+        let editIndex = state.getEditIndex();
+        if (editIndex >= index) {
+            editIndex--;
+        }
+        state.setEditIndex(editIndex);
         state.getDataSubject().next(true);
     }
 

@@ -9,10 +9,23 @@ class ScreenService {
     onWindowResize() {
         const state = getState();
 
-        if (window.outerWidth <= this.COLLAPSED_MODE_WIDTH) {
+        const resolution = window.outerHeight * window.outerWidth;
+
+        if (resolution < 1152000) {
+            state.setLowResolution(true);
+        } else {
+            state.setLowResolution(false);
+        }
+
+        if (window.outerWidth < window.outerHeight) {
+            state.setPortraitMode(true);
+            state.setCollapsedMode(false);
+        } else if (window.outerWidth <= this.COLLAPSED_MODE_WIDTH) {
             state.setCollapsedMode(true);
+            state.setPortraitMode(false);
         } else {
             state.setCollapsedMode(false);
+            state.setPortraitMode(false);
         }
 
         s.DETACHED_SET_TIMEOUT(() => {

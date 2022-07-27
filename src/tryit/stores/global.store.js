@@ -10,13 +10,31 @@ class StoreGlobal {
         this.inlineHeight = '';
         this.collapsedMode = false;
         this.showPreview = false;
-        this.version = '3.4';
+        this.version = '3.6';
         this.showHelp = false;
         this.sourceHasNewInput = BehaviorSubject(false);
         this.invalidScriptIndices = BehaviorSubject([]);
         this.hasHighlighted = BehaviorSubject(false);
         this.caretPositionToRestore = 0;
         this.preserveFocus = false;
+        this.portraitMode = false;
+        this.lowResolution = false;
+    }
+
+    getLowResolution() {
+        return this.lowResolution;
+    }
+
+    setLowResolution(state) {
+        this.lowResolution = state;
+    }
+
+    getPortraitMode() {
+        return this.portraitMode;
+    }
+
+    setPortraitMode(mode) {
+        this.portraitMode = mode;
     }
 
     getHasHighlightedSubject() {
