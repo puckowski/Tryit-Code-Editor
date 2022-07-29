@@ -4,14 +4,22 @@ class ScreenService {
 
     constructor() {
         this.COLLAPSED_MODE_WIDTH = 768;
+        this.LOW_RESOLUTION_AREA = 1152000;
+        this.lastWindowWidth = null;
     }
 
     onWindowResize() {
+        if (this.lastWindowWidth === window.outerWidth) {
+            return;
+        }
+
+        this.lastWindowWidth = window.outerWidth;
+
         const state = getState();
 
         const resolution = window.outerHeight * window.outerWidth;
 
-        if (resolution < 1152000) {
+        if (resolution < this.LOW_RESOLUTION_AREA) {
             state.setLowResolution(true);
         } else {
             state.setLowResolution(false);

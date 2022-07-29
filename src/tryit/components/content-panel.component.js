@@ -77,7 +77,7 @@ class ContentPanelComponent {
                                 ...(collapsedMode === false ? [
                                     markup('div', {
                                         attrs: {
-                                            style: 'width: 44%; max-height: inherit;'
+                                            style: 'width: 44%; max-height: inherit; height: calc(200% - 1rem);'
                                         },
                                         children: [
                                             this.sourceComp
@@ -85,7 +85,7 @@ class ContentPanelComponent {
                                     }),
                                     markup('div', {
                                         attrs: {
-                                            style: 'width: 44%; max-height: inherit;'
+                                            style: 'width: 44%; max-height: inherit;  height: calc(200% - 1rem);'
                                         },
                                         children: [
                                             this.previewComp
@@ -96,7 +96,7 @@ class ContentPanelComponent {
                                     ...(showPreview === true ? [
                                         markup('div', {
                                             attrs: {
-                                                style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;'
+                                                style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;  height: calc(200% - 1rem);'
                                             },
                                             children: [
                                                 this.previewComp
@@ -106,7 +106,7 @@ class ContentPanelComponent {
                                     ...(showPreview === false ? [
                                         markup('div', {
                                             attrs: {
-                                                style: 'width: calc(100% - max(12%, 100px) - 0.5rem); max-height: inherit;'
+                                                style: 'width: calc(100% - max(12%, 100px) - 0.5rem); max-height: inherit;  height: calc(200% - 1rem);'
                                             },
                                             children: [
                                                 this.sourceComp
@@ -117,7 +117,7 @@ class ContentPanelComponent {
                             ] : [
                                 markup('div', {
                                     attrs: {
-                                        style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;'
+                                        style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;  height: calc(200% - 1rem);'
                                     },
                                     children: [
                                         new HelpComponent()
@@ -129,7 +129,7 @@ class ContentPanelComponent {
                                 ...(collapsedMode === false ? [
                                     markup('div', {
                                         attrs: {
-                                            style: 'width: 100%; max-height: inherit;'
+                                            style: 'width: 100%; max-height: inherit;  height: calc(200% - 1rem);'
                                         },
                                         children: [
                                             this.sourceComp
@@ -137,7 +137,7 @@ class ContentPanelComponent {
                                     }),
                                     markup('div', {
                                         attrs: {
-                                            style: 'width: 100%; max-height: inherit;'
+                                            style: 'width: 100%; max-height: inherit;  height: calc(200% - 1rem);'
                                         },
                                         children: [
                                             this.previewComp
@@ -148,7 +148,7 @@ class ContentPanelComponent {
                                     ...(showPreview === true ? [
                                         markup('div', {
                                             attrs: {
-                                                style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;'
+                                                style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;  height: calc(200% - 1rem);'
                                             },
                                             children: [
                                                 this.previewComp
@@ -158,7 +158,7 @@ class ContentPanelComponent {
                                     ...(showPreview === false ? [
                                         markup('div', {
                                             attrs: {
-                                                style: 'width: calc(100% - max(12%, 100px) - 0.5rem); max-height: inherit;'
+                                                style: 'width: calc(100% - max(12%, 100px) - 0.5rem); max-height: inherit;  height: calc(200% - 1rem);'
                                             },
                                             children: [
                                                 this.sourceComp
@@ -169,7 +169,7 @@ class ContentPanelComponent {
                             ] : [
                                 markup('div', {
                                     attrs: {
-                                        style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;'
+                                        style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;  height: calc(200% - 1rem);'
                                     },
                                     children: [
                                         new HelpComponent()
