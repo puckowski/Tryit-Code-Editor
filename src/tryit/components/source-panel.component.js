@@ -137,7 +137,13 @@ class SourcePanelComponent {
         const file = this.fileService.getFile(fileIndex);
         const fileList = this.fileService.getFileList();
         const fileListLength = fileList ? fileList.length : 0;
+       
+        let font = ' font: 400 13.3333px Arial;';
 
+        if (state.getLowResolution()) {
+            font = ' font: 400 20px Arial;';
+        }
+       
         return markup('div', {
             attrs: {
                 style: 'padding: 0.25rem; background-color: rgb(21, 24, 30); color: rgb(204, 204, 204); height: calc(100% - 0.5rem); display: flex; flex-direction: column;'
@@ -155,7 +161,7 @@ class SourcePanelComponent {
                 }),
                 markup('div', {
                     attrs: {
-                        style: 'width: 100%; background-color: rgb(0, 0, 0); border: none; color: rgb(204, 204, 204); flex: 19; white-space: pre; overflow: auto; padding: 0.25rem;',
+                        style: 'width: 100%; background-color: rgb(0, 0, 0); border: none; color: rgb(204, 204, 204); flex: 19; white-space: pre; overflow: auto; padding: 0.25rem;' + font,
                         oninput: this.onInput.bind(this),
                         id: 'tryit-sling-div',
                         sldirective: 'onlyself',
