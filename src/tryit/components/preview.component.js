@@ -224,6 +224,13 @@ class PreviewComponent {
 
     view() {
         const invalidMessage = this.getInvalidScriptMessage();
+        const state = getState();
+
+        let font = ' font: 400 13.3333px Arial;';
+
+        if (state.getLowResolution()) {
+            font = ' font: 400 26px Arial;';
+        }
 
         return markup('div', {
             attrs: {
@@ -271,7 +278,7 @@ class PreviewComponent {
                     attrs: {
                         id: 'tryit-sling-console',
                         sldirective: 'onlyself',
-                        style: 'width: 100%; flex: 4;',
+                        style: 'width: 100%; flex: 4;' + font,
                         placeholder: 'Text will appear when logged'
                     }
                 })

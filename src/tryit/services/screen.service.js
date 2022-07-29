@@ -19,7 +19,7 @@ class ScreenService {
 
         const resolution = window.outerHeight * window.outerWidth;
 
-        if (resolution < this.LOW_RESOLUTION_AREA) {
+        if (resolution <= this.LOW_RESOLUTION_AREA) {
             state.setLowResolution(true);
         } else {
             state.setLowResolution(false);

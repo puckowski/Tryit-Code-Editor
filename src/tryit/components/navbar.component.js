@@ -93,8 +93,15 @@ class NavbarComponent {
                 reader.readAsText(file, 'UTF-8');
                 reader.onload = (readEvent) => {
                     const state = getState();
-                    const fileIndex = state.getEditIndex();
-                    this.fileService.updateFileData(fileIndex, readEvent.target.result);
+                    if (file.name.toLowerCase().includes('.js')) {
+                        this.fileService.addFile(readEvent.target.result, true, false);
+                    } else if (file.name.toLowerCase().includes('.css')) {
+                        this.fileService.addFile(readEvent.target.result, false, true);
+                    } else if (file.name.toLowerCase().includes('.html')) {
+                        this.fileService.addFile(readEvent.target.result, false, false);
+                    } else {
+                        this.fileService.addFile(readEvent.target.result, false, false);
+                    }
                     state.getDataSubject().next(true);
                 };
             }
@@ -283,13 +290,16 @@ class NavbarComponent {
                     children: [
                         markup('h4', {
                             attrs: {
-                                style: 'margin: 0px; display: inline-block; margin-right: 0.25rem;'
+                                style: 'margin: 0px; display: inline-block; margin-right: 0.25rem;' + font
                             },
                             children: [
                                 textNode('Code Editor')
                             ]
                         }),
                         markup('span', {
+                            attrs: {
+                                style: font
+                            },
                             children: [
                                 textNode(versionStr)
                             ]

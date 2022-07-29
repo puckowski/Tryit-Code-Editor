@@ -31,8 +31,8 @@ class FileTreeComponent {
         if (this.editNameIndex >= 0) {
             state.setPreserveFocus(true);
         }
-        state.getDataSubject().next(true);
         setState(state);
+        state.getDataSubject().next(true);
     }
 
     onRemoveFile(index) {
@@ -43,6 +43,7 @@ class FileTreeComponent {
             editIndex--;
         }
         state.setEditIndex(editIndex);
+        setState(state);
         state.getDataSubject().next(true);
     }
 
@@ -65,9 +66,15 @@ class FileTreeComponent {
         const state = getState();
         const editIndex = state.getEditIndex();
 
+        let font = ' font: 400 13.3333px Arial;';
+
+        if (state.getLowResolution()) {
+            font = ' font: 400 26px Arial;';
+        }
+
         return markup('div', {
             attrs: {
-                style: 'background-color: rgb(32, 35, 39); color: rgb(204, 204, 204); overflow: auto; max-height: inherit;'
+                style: 'background-color: rgb(32, 35, 39); color: rgb(204, 204, 204); overflow: auto; max-height: inherit;' + font
             },
             children: [
                 ...Array.from(fileList, (file, index) =>
@@ -81,7 +88,7 @@ class FileTreeComponent {
                         children: [
                             markup('button', {
                                 attrs: {
-                                    style: 'margin: 0 0.5rem 0.5rem 0; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204);',
+                                    style: 'word-break: break-word; margin: 0 0.5rem 0.5rem 0; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204);' + font,
                                     ...file.index !== this.editNameIndex && { onclick: this.onEditName.bind(this, file.index) },
                                     ...file.index === this.editNameIndex && { onclick: this.onFinishEditName.bind(this, file.index) },
                                 },
@@ -96,7 +103,7 @@ class FileTreeComponent {
                             }),
                             markup('button', {
                                 attrs: {
-                                    style: 'margin-right: 0 0.5rem 0.5rem 0; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204);',
+                                    style: 'word-break: break-word; margin: 0 0.5rem 0.5rem 0; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204);' + font,
                                     onclick: this.onRemoveFile.bind(this, file.index)
                                 },
                                 children: [

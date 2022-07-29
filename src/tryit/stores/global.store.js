@@ -1,4 +1,5 @@
 import { BehaviorSubject } from '../../../dist/sling-reactive.min';
+import FileService from '../services/file.service';
 
 export const SCRIPT_VALIDITY_CHECK_SOURCE = 'let slTryItCount = Number(localStorage.getItem(\'tryitCount\')); slTryItCount++; localStorage.setItem(\'tryitCount\', slTryItCount);';
 
@@ -10,7 +11,7 @@ class StoreGlobal {
         this.inlineHeight = '';
         this.collapsedMode = false;
         this.showPreview = false;
-        this.version = '3.7';
+        this.version = '3.8';
         this.showHelp = false;
         this.sourceHasNewInput = BehaviorSubject(false);
         this.invalidScriptIndices = BehaviorSubject([]);
@@ -19,6 +20,7 @@ class StoreGlobal {
         this.preserveFocus = false;
         this.portraitMode = false;
         this.lowResolution = false;
+        this.fileService = new FileService();
     }
 
     getLowResolution() {
@@ -110,7 +112,14 @@ class StoreGlobal {
     }
 
     setEditIndex(newIndex) {
-        this.editIndex = newIndex;
+        const fileList = this.fileService.getFileList();
+        const usedIndices = new Set(fileList.map(file => file.index));
+
+        if (usedIndices.has(newIndex)) {
+            this.editIndex = newIndex; 
+        } else {
+            this.editIndex = 0;
+        }
     }
 
     getHeightModifier() {
