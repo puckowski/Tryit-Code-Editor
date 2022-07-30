@@ -29,6 +29,7 @@ export class WordSuggestionComponent {
         this.input = '';
         this.newInput = false;
         this.scrollY = 0;
+        this.leftCorrectedValue = null;
         this.onSourceHasNewInput = () => {
             this.newInput = true;
         };
@@ -37,10 +38,6 @@ export class WordSuggestionComponent {
         this.onDataChanged = () => {
             this.suggestion = '';
             this.input = '';
-            // this.attachScrollListener();
-        }
-        this.onHighlighted = () => {
-            // this.attachScrollListener();
         }
     }
 
@@ -163,7 +160,7 @@ export class WordSuggestionComponent {
         }
     }
 
-    convertRemToPixels(rem) {    
+    convertRemToPixels(rem) {
         return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
     }
 
@@ -295,16 +292,47 @@ export class WordSuggestionComponent {
         sub.next(true);
     }
 
+    correctLeftIfNeeded() {
+        const ele = document.getElementById('tryit-sling-suggestion');
+
+        while (this.x + ele.offsetWidth > window.outerWidth) {
+            this.x -= 4;
+
+            if (this.x < 0) {
+                this.x = 0;
+
+                break;
+            }
+        }
+
+        if (this.leftCorrectedValue === null || this.leftCorrectedValue !== this.x) {
+            this.leftCorrectedValue = this.x;
+            detectChanges();
+        }
+    }
+
     view() {
+        const state = getState();
+
+        let font = ' font: 400 13.3333px Arial;';
+
+        if (state.getLowResolution()) {
+            font = ' font: 400 26px Arial;';
+        }
+
         let leftAndTopAndDisplay = 'left: ' + this.x + 'px; top: ' + this.y + 'px;';
 
         if (!this.suggestion || this.suggestion.length === 0) {
             leftAndTopAndDisplay += ' display: none;';
+        } else if (this.leftCorrectedValue === null || this.leftCorrectedValue !== this.x) {
+            this.leftCorrectedValue = this.x;
+            setTimeout(() => this.correctLeftIfNeeded(), 0);
         }
 
         return markup('div', {
             attrs: {
-                style: leftAndTopAndDisplay + 'position: fixed; padding: 0.25rem; background-color: rgb(60, 68, 83); color: rgb(204, 204, 204); z-index: 1000;',
+                id: 'tryit-sling-suggestion',
+                style: leftAndTopAndDisplay + 'position: fixed; padding: 0.25rem; background-color: rgb(60, 68, 83); color: rgb(204, 204, 204); z-index: 1000;' + font,
                 onclick: this.insertSuggestion.bind(this)
             },
             children: [
