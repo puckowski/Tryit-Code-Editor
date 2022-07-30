@@ -117,18 +117,21 @@ class SourcePanelComponent {
 
         if (event && event.inputType === 'insertParagraph') {
             let content = event.target.textContent;
-            content = content.substring(0, caretPos) + '\n' + content.substring(caretPos);
+            if (content.length === caretPos) {
+                content = content.substring(0, caretPos) + '\n\n' + content.substring(caretPos);
+            } else {
+                content = content.substring(0, caretPos) + '\n' + content.substring(caretPos);
+            }
             event.target.textContent = content;
             caretPos++;
         }
 
         state.setCaretPositionToRestore(caretPos);
+        setState(state);
 
         const fileIndex = state.getEditIndex();
         this.fileService.updateFileData(fileIndex, event.target.textContent);
         this.highlightCode();
-
-        setState(state);
     }
 
     view() {
@@ -137,13 +140,13 @@ class SourcePanelComponent {
         const file = this.fileService.getFile(fileIndex);
         const fileList = this.fileService.getFileList();
         const fileListLength = fileList ? fileList.length : 0;
-       
+
         let font = ' font: 400 13.3333px Arial;';
 
         if (state.getLowResolution()) {
             font = ' font: 400 26px Arial;';
         }
-       
+
         return markup('div', {
             attrs: {
                 style: 'padding: 0.25rem; background-color: rgb(21, 24, 30); color: rgb(204, 204, 204); height: calc(100% - 0.5rem); display: flex; flex-direction: column;'
