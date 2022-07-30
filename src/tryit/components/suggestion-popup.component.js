@@ -118,7 +118,6 @@ export class WordSuggestionComponent {
     }
 
     getTextWidth(text, font) {
-        // re-use canvas object for better performance
         const canvas = this.getTextWidth.canvas || (this.getTextWidth.canvas = document.createElement("canvas"));
         const context = canvas.getContext("2d");
         context.font = font;
@@ -299,6 +298,7 @@ export class WordSuggestionComponent {
 
     onDocumentKeyDown(event) {
         if (event && event.keyCode === 9 && this.suggestion && this.suggestion.length > 0 && this.input && this.input.length > 0) {
+            event.preventDefault();
             this.insertSuggestion();
         }
     }
