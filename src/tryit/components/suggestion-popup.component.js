@@ -29,7 +29,6 @@ export class WordSuggestionComponent {
         this.input = '';
         this.newInput = false;
         this.scrollY = 0;
-        this.leftCorrectedValue = null;
         this.onSourceHasNewInput = () => {
             this.newInput = true;
         };
@@ -51,11 +50,6 @@ export class WordSuggestionComponent {
         const dataSub = state.getDataSubject();
         if (!dataSub.getHasSubscription(this.onDataChanged)) {
             dataSub.subscribe(this.onDataChanged);
-        }
-
-        const highlightSub = state.getHasHighlightedSubject();
-        if (!highlightSub.getHasSubscription(this.onHighlighted)) {
-            highlightSub.subscribe(this.onHighlighted);
         }
 
         s.DETACHED_SET_INTERVAL(() => {
@@ -108,6 +102,15 @@ export class WordSuggestionComponent {
         this.attachScrollListener();
     }
 
+    getTextWidth(text, font) {
+        // re-use canvas object for better performance
+        const canvas = this.getTextWidth.canvas || (this.getTextWidth.canvas = document.createElement("canvas"));
+        const context = canvas.getContext("2d");
+        context.font = font;
+        const metrics = context.measureText(text);
+        return metrics.width;
+    }
+
     attachScrollListener() {
         const slingTextArea = document.getElementById('tryit-sling-div');
         if (slingTextArea) {
@@ -149,10 +152,25 @@ export class WordSuggestionComponent {
                 } else {
                     const currentPos = getCaretPosition(textAreaEle);
                     const caret = getCaretCoordinates(textAreaEle, currentPos);
-                    const rect = textAreaEle.getBoundingClientRect();
                     const lineHeight = this.getLineHeight(textAreaEle);
-                    this.x = caret.left + rect.left;
-                    this.y = caret.top + rect.top - lineHeight - this.convertRemToPixels(0.5) - this.scrollY;
+
+                    this.x = caret.left;
+
+                    const state = getState();
+                    let font = '400 13.3333px Arial';
+
+                    if (state.getLowResolution()) {
+                        font = '400 26px Arial';
+                    }
+
+                    const textWidth = this.getTextWidth(this.suggestion, font);
+
+                    if (this.x + textWidth > window.outerWidth) {
+                        this.x -= textWidth;
+                        this.x -= this.convertRemToPixels(0.5);
+                    }
+
+                    this.y = caret.top - lineHeight - this.convertRemToPixels(0.5);
 
                     detectChanges();
                 }
@@ -292,25 +310,6 @@ export class WordSuggestionComponent {
         sub.next(true);
     }
 
-    correctLeftIfNeeded() {
-        const ele = document.getElementById('tryit-sling-suggestion');
-
-        while (this.x + ele.offsetWidth > window.outerWidth) {
-            this.x -= 4;
-
-            if (this.x < 0) {
-                this.x = 0;
-
-                break;
-            }
-        }
-
-        if (this.leftCorrectedValue === null || this.leftCorrectedValue !== this.x) {
-            this.leftCorrectedValue = this.x;
-            detectChanges();
-        }
-    }
-
     view() {
         const state = getState();
 
@@ -324,9 +323,6 @@ export class WordSuggestionComponent {
 
         if (!this.suggestion || this.suggestion.length === 0) {
             leftAndTopAndDisplay += ' display: none;';
-        } else if (this.leftCorrectedValue === null || this.leftCorrectedValue !== this.x) {
-            this.leftCorrectedValue = this.x;
-            setTimeout(() => this.correctLeftIfNeeded(), 0);
         }
 
         return markup('div', {
