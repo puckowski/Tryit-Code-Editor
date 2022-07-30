@@ -79,9 +79,24 @@ export class WordSuggestionComponent {
                             this.input = this.input.trim();
                         }
 
+                        if (this.input.includes('\n')) {
+                            this.input = after.substring(after.lastIndexOf('\n') + 1);
+                            this.input = this.input.trim();
+                        }
+
                         this.determineSuggestionIfPossible(fileData, index, textAreaEle);
                     } else if (after && after.includes(' ')) {
                         this.input = after.substring(after.lastIndexOf(' ') + 1);
+                        this.input = this.input.trim();
+
+                        if (this.input.includes('\n')) {
+                            this.input = after.substring(after.lastIndexOf('\n') + 1);
+                            this.input = this.input.trim();
+                        }
+
+                        this.determineSuggestionIfPossible(fileData, index, textAreaEle);
+                    } else if (after && after.includes('\n')) {
+                        this.input = after.substring(after.lastIndexOf('\n') + 1);
                         this.input = this.input.trim();
 
                         this.determineSuggestionIfPossible(fileData, index, textAreaEle);
@@ -136,17 +151,14 @@ export class WordSuggestionComponent {
             let suggestionRank = 0;
 
             for (const key of Object.keys(freqMap)) {
-                if (key.startsWith(this.input) && freqMap[key] > suggestionRank) {
+                if (key.startsWith(this.input) && key !== this.input && freqMap[key] > suggestionRank) {
                     suggestionRank = freqMap[key];
                     this.suggestion = key;
                 }
             }
 
             if (this.suggestion && this.suggestion.length > 0) {
-                const suggestionMinusInput = this.suggestion.replace(this.input, '');
-                const afterData = fileData.substring(index + 16, index + 16 + suggestionMinusInput.length);
-
-                if (this.suggestion === this.input || afterData === suggestionMinusInput) {
+                if (this.suggestion === this.input) {
                     this.suggestion = null;
                     detectChanges();
                 } else {
@@ -210,7 +222,7 @@ export class WordSuggestionComponent {
         let word = '';
 
         for (let i = 0; i < string.length; ++i) {
-            if (string[i] !== ' ' && string[i] !== '(' && string[i] !== '{' && string[i] !== ';') {
+            if (string[i] !== '\n' && string[i] !== ' ' && string[i] !== '(' && string[i] !== '{' && string[i] !== ';') {
                 word += string[i];
             } else if (word.length > 0) {
                 const trimmed = word.trim();
