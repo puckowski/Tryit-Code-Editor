@@ -132,6 +132,9 @@ class SourcePanelComponent {
         const fileIndex = state.getEditIndex();
         this.fileService.updateFileData(fileIndex, event.target.textContent);
         this.highlightCode();
+
+        const caretRestore = state.getCaretPositionToRestore();
+        this.setCurrentCursorPosition(caretRestore);
     }
 
     view() {
