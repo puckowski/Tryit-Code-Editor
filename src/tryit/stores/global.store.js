@@ -21,6 +21,11 @@ class StoreGlobal {
         this.portraitMode = false;
         this.lowResolution = false;
         this.fileService = new FileService();
+        this.dismissSuggestionSubject = BehaviorSubject(false);
+    }
+
+    getDismissSuggestionSubject() {
+        return this.dismissSuggestionSubject;
     }
 
     getLowResolution() {

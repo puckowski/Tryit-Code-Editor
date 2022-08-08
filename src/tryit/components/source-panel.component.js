@@ -126,6 +126,7 @@ class SourcePanelComponent {
             caretPos++;
         }
 
+        state.getDismissSuggestionSubject().next(true);
         state.setCaretPositionToRestore(caretPos);
         setState(state);
 

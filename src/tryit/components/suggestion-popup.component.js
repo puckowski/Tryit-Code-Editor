@@ -1,4 +1,4 @@
-import { detectChanges, getState, markup, textNode } from '../../../dist/sling.min';
+import { detectChanges, getState, markup, setState, textNode } from '../../../dist/sling.min';
 import { getCaretCoordinates, getCaretPosition } from '../services/caret.service';
 import FileService from '../services/file.service';
 
@@ -38,6 +38,10 @@ export class WordSuggestionComponent {
             this.suggestion = '';
             this.input = '';
         }
+        this.onSuggestionDismiss = () => {
+            this.suggestion = '';
+            detectChanges();
+        }
     }
 
     slOnInit() {
@@ -50,6 +54,11 @@ export class WordSuggestionComponent {
         const dataSub = state.getDataSubject();
         if (!dataSub.getHasSubscription(this.onDataChanged)) {
             dataSub.subscribe(this.onDataChanged);
+        }
+
+        const dismissSubject = state.getDismissSuggestionSubject();
+        if (!dismissSubject.getHasSubscription(this.onSuggestionDismiss)) {
+            dismissSubject.subscribe(this.onSuggestionDismiss);
         }
 
         s.DETACHED_SET_INTERVAL(() => {
@@ -136,6 +145,10 @@ export class WordSuggestionComponent {
 
     updateScrollY(textArea) {
         this.scrollY = textArea.scrollTop;
+
+        const state = getState();
+        state.getDismissSuggestionSubject().next(true);
+        setState(state);
     }
 
     determineSuggestionIfPossible(fileData, index, textAreaEle) {
