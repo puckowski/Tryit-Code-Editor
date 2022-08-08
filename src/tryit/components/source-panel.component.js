@@ -151,6 +151,8 @@ class SourcePanelComponent {
             font = ' font: 400 26px Arial;';
         }
 
+        font += ' filter: brightness(125%);'
+
         return markup('div', {
             attrs: {
                 style: 'padding: 0.25rem; background-color: rgb(21, 24, 30); color: rgb(204, 204, 204); height: calc(100% - 0.5rem); display: flex; flex-direction: column;'
