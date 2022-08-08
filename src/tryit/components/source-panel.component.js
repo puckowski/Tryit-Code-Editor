@@ -19,6 +19,14 @@ class SourcePanelComponent {
                 if (textAreaEle) {
                     s.DETACHED_SET_TIMEOUT(() => {
                         state = getState();
+
+                        const collapsedMode = state.getCollapsedMode();
+                        const showPreview = state.getShowPreview();
+
+                        if (collapsedMode && showPreview) {
+                            return;
+                        }
+
                         const fileIndex = state.getEditIndex();
                         const fileData = this.fileService.getFileData(fileIndex);
 
@@ -93,8 +101,15 @@ class SourcePanelComponent {
     highlightCode() {
         setTimeout(() => {
             const state = getState();
+
+            const collapsedMode = state.getCollapsedMode();
+            const showPreview = state.getShowPreview();
+
+            if (collapsedMode && showPreview) {
+                return;
+            }
+
             const fileIndex = state.getEditIndex();
-            const fileData = this.fileService.getFileData(fileIndex);
             let code = this.fileService.getFileData(fileIndex);
             const textAreaEle = document.getElementById('tryit-sling-div');
             textAreaEle.textContent = code;
