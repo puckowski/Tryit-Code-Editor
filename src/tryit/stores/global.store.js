@@ -11,7 +11,7 @@ class StoreGlobal {
         this.inlineHeight = '';
         this.collapsedMode = false;
         this.showPreview = false;
-        this.version = '3.9';
+        this.version = '4.0';
         this.showHelp = false;
         this.sourceHasNewInput = BehaviorSubject(false);
         this.invalidScriptIndices = BehaviorSubject([]);
@@ -21,6 +21,11 @@ class StoreGlobal {
         this.portraitMode = false;
         this.lowResolution = false;
         this.fileService = new FileService();
+        this.dismissSuggestionSubject = BehaviorSubject(false);
+    }
+
+    getDismissSuggestionSubject() {
+        return this.dismissSuggestionSubject;
     }
 
     getLowResolution() {

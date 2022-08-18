@@ -25,12 +25,20 @@ class PreviewComponent {
                 return;
             }
 
+            const state = getState();
+            
+            const collapsedMode = state.getCollapsedMode();
+            const showPreview = state.getShowPreview();
+
+            if (collapsedMode && !showPreview) {
+                return;
+            }
+            
             this.previewPendingData.old = this.previewPendingData.current;
 
             this.injectedList = 'Injected files: ';
             const iframe = document.getElementById('tryit-sling-iframe');
 
-            const state = getState();
             const fileIndex = state.getEditIndex();
             const fileData = this.fileService.getFileData(fileIndex);
 
@@ -80,13 +88,13 @@ class PreviewComponent {
                 });
 
                 detectChanges();
-                
+
                 const iframe = document.getElementById('tryit-sling-iframe');
 
                 const htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
                 htmlContainer.document.open();
                 htmlContainer.document.write(fileData);
-                
+
                 fileListCss.forEach((injectedScript) => {
                     if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
                         var stylesheet = document.createElement('style');

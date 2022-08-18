@@ -114,12 +114,22 @@ class FileTreeComponent {
                                 children: [
                                     ...(editIndex === file.index ? [
                                         markup('strong', {
+                                            attrs: {
+                                                style: 'word-break: break-word;'
+                                            },
                                             children: [
                                                 textNode('File ' + (file.index + 1) + ': ' + file.name)
                                             ]
                                         })
                                     ] : [
-                                        textNode('File ' + (file.index + 1) + ': ' + file.name)
+                                        markup('div', {
+                                            attrs: {
+                                                style: 'word-break: break-word;'
+                                            },
+                                            children: [
+                                                textNode('File ' + (file.index + 1) + ': ' + file.name)
+                                            ]
+                                        })
                                     ])
                                 ]
                             }),
