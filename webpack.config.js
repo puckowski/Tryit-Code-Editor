@@ -56,7 +56,8 @@ var config = {
     plugins: [
         new CopyWebpackPlugin([
             { from: './*.html', to: '' },
-            { from: './css', to: '' }
+            { from: './css', to: '' },
+            { from: './js', to: '' }
         ]),
     ]
 };

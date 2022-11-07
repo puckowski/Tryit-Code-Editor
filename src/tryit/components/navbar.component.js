@@ -11,6 +11,8 @@ class NavbarComponent {
     constructor() {
         this.fileService = new FileService();
         this.exportService = new ExportService();
+        this.CSS_MODE_LESS = 1;
+        this.CSS_MODE_STANDARD = 0;
     }
 
     addFile() {
@@ -261,7 +263,24 @@ class NavbarComponent {
         s.DETACHED_SET_TIMEOUT(() => {
             state.getDataSubject().next(true);
         }, 0);
-        
+
+        setState(state);
+        detectChanges();
+    }
+
+    onToggleCss() {
+        const state = getState();
+
+        if (state.getCssMode() === this.CSS_MODE_LESS) {
+            state.setCssMode(this.CSS_MODE_STANDARD);
+        }  else {
+            state.setCssMode(this.CSS_MODE_LESS);
+        }
+
+        s.DETACHED_SET_TIMEOUT(() => {
+            state.getDataSubject().next(true);
+        }, 0);
+
         setState(state);
         detectChanges();
     }
@@ -437,6 +456,16 @@ class NavbarComponent {
                     },
                     children: [
                         textNode('Toggle Mode')
+                    ]
+                }),
+                markup('button', {
+                    attrs: {
+                        id: 'tryit-sling-toggle-css',
+                        onclick: this.onToggleCss.bind(this),
+                        style: 'margin-bottom: 0.25rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; padding: 1px 6px;' + font
+                    },
+                    children: [
+                        ...(state.getCssMode() === this.CSS_MODE_LESS ? [textNode('Use CSS')] : [textNode('Use Less.js 4.1.3')]),
                     ]
                 }),
                 markup('button', {

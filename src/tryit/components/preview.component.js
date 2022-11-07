@@ -1,4 +1,5 @@
-import { detectChanges, getState, markup, setState, textNode, version } from '../../../dist/sling.min';
+import { detectChanges, getState, markup, textNode } from '../../../dist/sling.min';
+import { slGet } from '../../../dist/sling-xhr.min';
 import FileService from '../services/file.service';
 import { SCRIPT_VALIDITY_CHECK_SOURCE } from '../stores/global.store';
 
@@ -9,6 +10,8 @@ class PreviewComponent {
         this.injectedList = '';
         this.isPreviewLoading = false;
         this.CONTENT_LOAD_CHECK_COUNT = 34;
+        this.CSS_MODE_LESS = 1;
+        this.lessScriptData = null;
         this.onInvalidScriptFunction = () => {
             detectChanges();
         }
@@ -26,14 +29,14 @@ class PreviewComponent {
             }
 
             const state = getState();
-            
+
             const collapsedMode = state.getCollapsedMode();
             const showPreview = state.getShowPreview();
 
             if (collapsedMode && !showPreview) {
                 return;
             }
-            
+
             this.previewPendingData.old = this.previewPendingData.current;
 
             this.injectedList = 'Injected files: ';
@@ -99,6 +102,11 @@ class PreviewComponent {
                     if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
                         var stylesheet = document.createElement('style');
                         stylesheet.textContent = injectedScript.data;
+
+                        if (state.getCssMode() === this.CSS_MODE_LESS) {
+                            stylesheet.type = 'text/less';
+                        }
+
                         htmlContainer.document.head.appendChild(stylesheet);
                     }
                 });
@@ -164,6 +172,26 @@ class PreviewComponent {
                         htmlContainer.document.head.appendChild(script);
                     }
                 });
+
+                if (state.getCssMode() === this.CSS_MODE_LESS) {
+                    if (this.lessScriptData === null) {
+                        slGet('less.min.js').then(xhrResp => {
+                            this.lessScriptData = xhrResp.response;
+
+                            var script = document.createElement('script');
+                            script.text = this.lessScriptData;
+                            script.type = 'module';
+
+                            htmlContainer.document.head.appendChild(script);
+                        });
+                    } else {
+                        var script = document.createElement('script');
+                        script.text = this.lessScriptData;
+                        script.type = 'module';
+
+                        htmlContainer.document.head.appendChild(script);
+                    }
+                }
 
                 this.previewPendingData.current--;
             } else {
