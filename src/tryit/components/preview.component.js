@@ -11,7 +11,9 @@ class PreviewComponent {
         this.isPreviewLoading = false;
         this.CONTENT_LOAD_CHECK_COUNT = 34;
         this.CSS_MODE_LESS = 1;
+        this.CSS_MODE_NESS = 2;
         this.lessScriptData = null;
+        this.nessScriptData = null;
         this.onInvalidScriptFunction = () => {
             detectChanges();
         }
@@ -187,6 +189,24 @@ class PreviewComponent {
                     } else {
                         var script = document.createElement('script');
                         script.text = this.lessScriptData;
+                        script.type = 'module';
+
+                        htmlContainer.document.head.appendChild(script);
+                    }
+                } else if (state.getCssMode() === this.CSS_MODE_NESS) {
+                    if (this.nessScriptData === null) {
+                        slGet('ness.min.js').then(xhrResp => {
+                            this.nessScriptData = xhrResp.response;
+
+                            var script = document.createElement('script');
+                            script.text = this.nessScriptData;
+                            script.type = 'module';
+
+                            htmlContainer.document.head.appendChild(script);
+                        });
+                    } else {
+                        var script = document.createElement('script');
+                        script.text = this.nessScriptData;
                         script.type = 'module';
 
                         htmlContainer.document.head.appendChild(script);
