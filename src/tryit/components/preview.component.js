@@ -57,6 +57,9 @@ class PreviewComponent {
             htmlContainer.document.open();
             htmlContainer.document.write(fileData);
 
+            const invalidIndexInitialSubject = state.getInvalidScriptIndexSubject();
+            invalidIndexInitialSubject.next([]);
+
             if (htmlContainer.document.head) {
                 fileListCss.forEach((injectedScript) => {
                     if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {

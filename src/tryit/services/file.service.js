@@ -173,14 +173,18 @@ class FileService {
             if (!file.injectScript) {
                 if (value === null || value === undefined) {
                     file.injectScript = true;
+                    file.injectCss = false;
                 } else {
                     file.injectScript = value;
+                    file.injectCss = !value;
                 }
             } else {
                 if (value === null || value === undefined) {
                     file.injectScript = !file.injectScript;
+                    file.injectCss = !file.injectScript;
                 } else {
                     file.injectScript = value;
+                    file.injectCss = !value;
                 }
             }
         }
@@ -194,14 +198,18 @@ class FileService {
             if (!file.injectCss) {
                 if (value === null || value === undefined) {
                     file.injectCss = true;
+                    file.injectScript = false;
                 } else {
                     file.injectCss = value;
+                    file.injectScript = !value;
                 }
             } else {
                 if (value === null || value === undefined) {
                     file.injectCss = !file.injectCss;
+                    file.injectScript = !file.injectCss;
                 } else {
                     file.injectCss = value;
+                    file.injectScript = !value;
                 }
             }
         }

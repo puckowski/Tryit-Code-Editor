@@ -61,6 +61,25 @@ class FileTreeComponent {
         state.getDataSubject().next(true);
     }
 
+    applyCheckedValuesAfterRender() {
+        const fileList = this.fileService.getFileList();
+
+        const divTreeElement = document.getElementById('div-file-tree');
+        const checkboxElements = divTreeElement.querySelectorAll('input[type=checkbox]');
+
+        for (let i = 0; i < checkboxElements.length; ++i) {
+            const file = fileList[Math.floor(i / 2)];
+
+            if (i % 2 === 0 && file.injectScript) {
+                checkboxElements[i].checked = true;
+            } else if (i % 2 !== 0 && file.injectCss) {
+                checkboxElements[i].checked = true;
+            } else {
+                checkboxElements[i].checked = false;
+            }
+        }
+    }
+
     view() {
         const fileList = this.fileService.getFileList();
         const state = getState();
@@ -72,9 +91,14 @@ class FileTreeComponent {
             font = ' font: 400 26px Arial;';
         }
 
+        s.DETACHED_SET_TIMEOUT(() => {
+            this.applyCheckedValuesAfterRender();
+        }, 0);
+
         return markup('div', {
             attrs: {
-                style: 'background-color: rgb(32, 35, 39); color: rgb(204, 204, 204); overflow: auto; max-height: inherit;' + font
+                style: 'background-color: rgb(32, 35, 39); color: rgb(204, 204, 204); overflow: auto; max-height: inherit;' + font,
+                id: 'div-file-tree'
             },
             children: [
                 ...Array.from(fileList, (file, index) =>
