@@ -103,14 +103,22 @@ class PreviewComponent {
                 htmlContainer.document.open();
                 htmlContainer.document.write(fileData);
 
+                const indexFileObj = this.fileService.getFileList()[fileIndex];
+                const documentChildren = htmlContainer.document.children;
+                if (documentChildren && documentChildren.length > 0) {
+                    htmlContainer.document.children[0].setAttribute('tryit-filename', indexFileObj.name ? indexFileObj.name : '');
+                }
+
                 fileListCss.forEach((injectedScript) => {
                     if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
-                        var stylesheet = document.createElement('style');
+                        const stylesheet = document.createElement('style');
                         stylesheet.textContent = injectedScript.data;
 
                         if (state.getCssMode() === this.CSS_MODE_LESS) {
                             stylesheet.type = 'text/less';
                         }
+
+                        stylesheet.setAttribute('tryit-filename', injectedScript.name ? injectedScript.name : '');
 
                         htmlContainer.document.head.appendChild(stylesheet);
                     }
@@ -124,7 +132,7 @@ class PreviewComponent {
 
                 fileListJs.forEach((injectedScript) => {
                     if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
-                        var script = document.createElement('script');
+                        const script = document.createElement('script');
                         script.text = injectedScript.data += '\n' + SCRIPT_VALIDITY_CHECK_SOURCE;
                         script.type = 'module';
 
@@ -173,6 +181,8 @@ class PreviewComponent {
                                 detectChanges();
                             }
                         }, 300);
+
+                        script.setAttribute('tryit-filename', injectedScript.name ? injectedScript.name : '');
 
                         htmlContainer.document.head.appendChild(script);
                     }

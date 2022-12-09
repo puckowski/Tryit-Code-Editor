@@ -146,13 +146,21 @@ class NavbarComponent {
 
                     htmlContainer.document.close();
 
+                    const fileList = this.fileService.getFileList();
+                    let lastFileIndex = fileList.length;
+
                     if (iframeEle.contentDocument) {
                         const scriptList = iframeEle.contentDocument.head.querySelectorAll('script');
                         for (let i = 0; i < scriptList.length; ++i) {
                             let scriptText = scriptList[i].textContent;
                             scriptText = this.removeLastOccurrence(SCRIPT_VALIDITY_CHECK_SOURCE, scriptText);
 
+                            const filename = scriptList[i].getAttribute('tryit-filename');
+                            scriptList[i].removeAttribute('tryit-filename');
+                            
                             this.fileService.addFile(scriptText, true, false);
+                            this.fileService.setFileName(lastFileIndex, filename);
+                            lastFileIndex++;
                         }
                         for (let i = 0; i < scriptList.length; ++i) {
                             iframeEle.contentDocument.head.removeChild(scriptList[i]);
@@ -160,21 +168,43 @@ class NavbarComponent {
 
                         const styleList = iframeEle.contentDocument.head.querySelectorAll('style');
                         for (let i = 0; i < styleList.length; ++i) {
+                            const filename = styleList[i].getAttribute('tryit-filename');
+                            styleList[i].removeAttribute('tryit-filename');
+
                             this.fileService.addFile(styleList[i].textContent, false, true);
+                            this.fileService.setFileName(lastFileIndex, filename);
+                            lastFileIndex++;
                         }
                         for (let i = 0; i < styleList.length; ++i) {
                             iframeEle.contentDocument.head.removeChild(styleList[i]);
                         }
 
+                        const contentChildren = iframeEle.contentDocument.children;
+                        let filename = null;
+
+                        if (contentChildren && contentChildren.length > 0) {
+                            filename = iframeEle.contentDocument.children[0].getAttribute('tryit-filename');
+                            iframeEle.contentDocument.children[0].removeAttribute('tryit-filename');
+                        }
+
                         const text = iframeEle.contentDocument.documentElement.outerHTML;
                         this.fileService.addFile(text);
+
+                        if (filename) {
+                            this.fileService.setFileName(lastFileIndex, filename);
+                        }
                     } else if (iframeEle.contentWindow) {
                         const scriptList = iframeEle.contentWindow.document.head.querySelectorAll('script');
                         for (let i = 0; i < scriptList.length; ++i) {
                             let scriptText = scriptList[i].textContent;
                             scriptText = this.removeLastOccurrence(SCRIPT_VALIDITY_CHECK_SOURCE, scriptText);
 
+                            const filename = scriptList[i].getAttribute('tryit-filename');
+                            scriptList[i].removeAttribute('tryit-filename');
+
                             this.fileService.addFile(scriptText, true, false);
+                            this.fileService.setFileName(lastFileIndex, filename);
+                            lastFileIndex++;
                         }
                         for (let i = 0; i < scriptList.length; ++i) {
                             iframeEle.contentWindow.document.head.removeChild(scriptList[i]);
@@ -182,14 +212,31 @@ class NavbarComponent {
 
                         const styleList = iframeEle.contentDocument.head.querySelectorAll('style');
                         for (let i = 0; i < styleList.length; ++i) {
+                            const filename = styleList[i].getAttribute('tryit-filename');
+                            styleList[i].removeAttribute('tryit-filename');
+
                             this.fileService.addFile(styleList[i].textContent, false, true);
+                            this.fileService.setFileName(lastFileIndex, filename);
+                            lastFileIndex++;
                         }
                         for (let i = 0; i < scriptList.length; ++i) {
                             iframeEle.contentWindow.document.head.removeChild(styleList[i]);
                         }
 
+                        const rootElement = iframeEle.contentWindow.document.documentElement;
+                        let filename = null;
+
+                        if (rootElement) {
+                            filename = iframeEle.contentWindow.document.documentElement.getAttribute('tryit-filename');
+                            iframeEle.contentWindow.document.documentElement.removeAttribute('tryit-filename');
+                        }
+
                         const text = iframeEle.contentWindow.document.documentElement.outerHTML;
                         this.fileService.addFile(text);
+
+                        if (filename) {
+                            this.fileService.setFileName(lastFileIndex, filename);
+                        }
                     }
 
                     document.body.removeChild(iframeEle);
