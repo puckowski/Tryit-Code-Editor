@@ -38,98 +38,97 @@ class FileService {
         '    }\n' + 
         '}';
 
-        this.SLING_DEMO_JAVASCRIPT = `
-        import {
-          textNode,
-          markup,
-          addRoute,
-          route
-        } from "https://cdn.jsdelivr.net/npm/slingjs@18.0.0/sling.min.js";
-                    
-        class HideComponent {
-          hideWelcome() {
-            route("show");
-          }
-          
-          slDetachedOnNodeDestroy(node) {
-            return node;
-          }
-          
-          view() {
-            return markup("div", {
-              attrs: {
-                id: "divRouterOutlet",
-                class: "visible",
-                style:
-                  "display: flex; justify-content: center; align-items: center; height: 100%;",
-                slanimatedestroy: "hide",
-                slanimatedestroytarget: this.slDetachedOnNodeDestroy.bind(this)
-              },
-              children: [
-                markup("h1", {
-                  children: [
-                    textNode("Hello, world!"),
-                    markup("button", {
-                      attrs: {
-                        onclick: this.hideWelcome.bind(this)
-                      },
-                      children: [textNode("Hide")]
-                    })
-                  ]
-                })
-              ]
-            });
-          }
-        }
-          
-        class ShowComponent {
-          hideWelcome() {
-            route("hide");
-          }
-          
-          slDetachedOnNodeDestroy(node) {
-            return node;
-          }
-          
-          view() {
-            return markup("div", {
-              attrs: {
-                id: "divRouterOutlet",
-                class: "visible",
-                style:
-                  "display: flex; justify-content: center; align-items: center; height: 100%;",
-                slanimatedestroy: "hide",
-                slanimatedestroytarget: this.slDetachedOnNodeDestroy.bind(this)
-              },
-              children: [
-                markup("h1", {
-                  children: [
-                    markup("button", {
-                      attrs: {
-                        onclick: this.hideWelcome.bind(this)
-                      },
-                      children: [textNode("Show")]
-                    })
-                  ]
-                })
-              ]
-            });
-          }
-        }
-          
-        addRoute("hide", {
-          component: new HideComponent(),
-          root: "divRouterOutlet",
-          animateDestroy: true
-        });
-        addRoute("show", {
-          component: new ShowComponent(),
-          root: "divRouterOutlet",
-          animateDestroy: true
-        });
-          
-        route("hide");
-        `;
+        this.SLING_DEMO_JAVASCRIPT = 
+        'import {\n' + 
+        '  textNode,\n' + 
+        '  markup,\n' + 
+        '  addRoute,\n' + 
+        '  route\n' + 
+        '} from "https://cdn.jsdelivr.net/npm/slingjs@18.1.0/sling.min.js";\n' + 
+        '\n' +             
+        'class HideComponent {\n' + 
+        '  hideWelcome() {\n' + 
+        '    route("show");\n' + 
+        '  }\n' + 
+        '  \n' + 
+        '  slDetachedOnNodeDestroy(node) {\n' + 
+        '    return node;\n' + 
+        '  }\n' + 
+        '  \n' + 
+        '  view() {\n' + 
+        '    return markup("div", {\n' + 
+        '      attrs: {\n' + 
+        '        id: "divRouterOutlet",\n' + 
+        '        class: "visible",\n' + 
+        '        style:\n' + 
+        '          "display: flex; justify-content: center; align-items: center; height: 100%;",\n' + 
+        '        slanimatedestroy: "hide",\n' + 
+        '        slanimatedestroytarget: this.slDetachedOnNodeDestroy.bind(this)\n' + 
+        '      },\n' + 
+        '      children: [\n' + 
+        '        markup("h1", {\n' + 
+        '          children: [\n' + 
+        '            textNode("Hello, world!"),\n' + 
+        '            markup("button", {\n' + 
+        '              attrs: {\n' + 
+        '                onclick: this.hideWelcome.bind(this)\n' + 
+        '              },\n' + 
+        '              children: [textNode("Hide")]\n' + 
+        '            })\n' + 
+        '          ]\n' + 
+        '        })\n' + 
+        '      ]\n' + 
+        '    });\n' + 
+        '  }\n' + 
+        '}\n' + 
+        '  \n' + 
+        'class ShowComponent {\n' + 
+        '  hideWelcome() {\n' + 
+        '    route("hide");\n' + 
+        '  }\n' + 
+        '  \n' + 
+        '  slDetachedOnNodeDestroy(node) {\n' + 
+        '    return node;\n' + 
+        '  }\n' + 
+        '  \n' + 
+        '  view() {\n' + 
+        '    return markup("div", {\n' + 
+        '      attrs: {\n' + 
+        '        id: "divRouterOutlet",\n' + 
+        '        class: "visible",\n' + 
+        '        style:\n' + 
+        '          "display: flex; justify-content: center; align-items: center; height: 100%;",\n' + 
+        '        slanimatedestroy: "hide",\n' + 
+        '        slanimatedestroytarget: this.slDetachedOnNodeDestroy.bind(this)\n' + 
+        '      },\n' + 
+        '      children: [\n' + 
+        '        markup("h1", {\n' + 
+        '          children: [\n' + 
+        '            markup("button", {\n' + 
+        '              attrs: {\n' + 
+        '                onclick: this.hideWelcome.bind(this)\n' + 
+        '              },\n' + 
+        '              children: [textNode("Show")]\n' + 
+        '            })\n' + 
+        '          ]\n' + 
+        '        })\n' + 
+        '      ]\n' + 
+        '    });\n' + 
+        '  }\n' + 
+        '}\n' + 
+        '  \n' + 
+        'addRoute("hide", {\n' + 
+        '  component: new HideComponent(),\n' + 
+        '  root: "divRouterOutlet",\n' + 
+        '  animateDestroy: true\n' + 
+        '});\n' + 
+        'addRoute("show", {\n' + 
+        '  component: new ShowComponent(),\n' + 
+        '  root: "divRouterOutlet",\n' + 
+        '  animateDestroy: true\n' + 
+        '});\n' + 
+        '  \n' + 
+        'route("hide");\n';
 
         this.fileListObject = 'filelist';
         this.initializeFileList();

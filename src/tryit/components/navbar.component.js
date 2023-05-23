@@ -16,6 +16,16 @@ class NavbarComponent {
         this.CSS_MODE_STANDARD = 0;
     }
 
+    slAfterInit() {
+        document.addEventListener('keydown', function (event) {
+            if ((event.ctrlKey || event.metaKey) && event.key === 'f') {
+                event.preventDefault();
+
+                this.onBeautify();
+            }
+        }.bind(this));
+    }
+
     addFile() {
         this.fileService.addFile();
     }
@@ -157,7 +167,7 @@ class NavbarComponent {
 
                             const filename = scriptList[i].getAttribute('tryit-filename');
                             scriptList[i].removeAttribute('tryit-filename');
-                            
+
                             this.fileService.addFile(scriptText, true, false);
                             this.fileService.setFileName(lastFileIndex, filename);
                             lastFileIndex++;
@@ -321,7 +331,7 @@ class NavbarComponent {
 
         if (state.getCssMode() === this.CSS_MODE_LESS) {
             state.setCssMode(this.CSS_MODE_NESS);
-        }  else if (state.getCssMode() === this.CSS_MODE_NESS) {
+        } else if (state.getCssMode() === this.CSS_MODE_NESS) {
             state.setCssMode(this.CSS_MODE_STANDARD);
         } else {
             state.setCssMode(this.CSS_MODE_LESS);
