@@ -18,7 +18,7 @@ class NavbarComponent {
 
     slAfterInit() {
         document.addEventListener('keydown', function (event) {
-            if ((event.ctrlKey || event.metaKey) && event.key === 'f') {
+            if ((event.ctrlKey || event.metaKey) && event.key === 'j') {
                 event.preventDefault();
 
                 this.onBeautify();
