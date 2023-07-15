@@ -6,6 +6,7 @@ class TryitEditorComponent {
 
     constructor() {
         this.contentPanelComp = new ContentPanelComponent();
+        this.navbarComp = new NavbarComponent();
     }
 
     slOnInit() {
@@ -23,7 +24,7 @@ class TryitEditorComponent {
                style: 'background-color: rgb(21, 24, 30); width: 100%;'
            },
            children: [
-               new NavbarComponent(),
+               this.navbarComp,
                this.contentPanelComp
            ]
         });

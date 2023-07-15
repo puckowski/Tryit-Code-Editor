@@ -287,6 +287,36 @@ class FileService {
             }
         }
     }
+
+    addFilesFromUrl() {
+        const fileList = this.getFileList();
+        const fromUrl = this.getFileDataFromUrl();
+        let count = fileList.length - 1;
+        fromUrl.forEach(fileObj => {
+            count++;
+            fileObj.index = count;
+            fileList.push(fileObj);
+        });
+        this.setFileList(fileList);
+
+        const url = new URL(window.location.href);
+        url.search = '';
+        const updatedURL = url.toString();
+        window.history.pushState({ path: updatedURL }, '', updatedURL);
+    }
+
+    getFileDataFromUrl() {
+        const url = new URL(window.location.href);
+
+        if (url.searchParams.has('files')) {
+            const filesParam = url.searchParams.get('files');
+            var jsonData = JSON.parse(filesParam);
+
+            return jsonData;
+        } else {
+            return [];
+        }
+    }
 }
 
 export default FileService;

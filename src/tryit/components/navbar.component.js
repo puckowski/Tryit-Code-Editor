@@ -1,10 +1,11 @@
-import { detectChanges, getState, markup, setState, textNode, version } from '../../../dist/sling.min';
+import { detectChanges, getState, markup, setState, textNode, mount } from '../../../dist/sling.min';
 import ExportService from '../services/export.service';
 import FileService from '../services/file.service';
 import { SCRIPT_VALIDITY_CHECK_SOURCE } from '../stores/global.store';
 import { js_beautify } from '../../../js/beautify';
 import { css_beautify } from '../../../js/beautify-css';
 import { html_beautify } from '../../../js/beautify-html';
+import ShareDialogComponent from './share-dialog.component';
 
 class NavbarComponent {
 
@@ -14,6 +15,7 @@ class NavbarComponent {
         this.CSS_MODE_NESS = 2;
         this.CSS_MODE_LESS = 1;
         this.CSS_MODE_STANDARD = 0;
+        this.fileService.addFilesFromUrl();
     }
 
     slAfterInit() {
@@ -285,6 +287,18 @@ class NavbarComponent {
         }, 0);
     }
 
+    onShare() {
+        const fileData = this.fileService.getFileList();
+        const jsonString = JSON.stringify(fileData);
+        const encodedString = encodeURIComponent(jsonString);
+        let currentURL = window.location.origin;
+        if (!currentURL.endsWith('/')) {
+            currentURL += '/';
+        }
+        const url = currentURL + '?files=' + encodedString;
+        mount('tryit-sling-share', new ShareDialogComponent(url), s.CHANGE_DETECTOR_DETACHED);
+    }
+
     onBeautify() {
         const state = getState();
         const fileIndex = state.getEditIndex();
@@ -533,10 +547,19 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.onSlingDemo.bind(this),
-                        style: 'margin-bottom: 0.25rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); align-self: center; padding: 1px 6px;' + font
+                        style: 'margin-bottom: 0.25rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); margin-right: 0.5rem; align-self: center; padding: 1px 6px;' + font
                     },
                     children: [
                         textNode('Sling.js Demo')
+                    ]
+                }),
+                markup('button', {
+                    attrs: {
+                        onclick: this.onShare.bind(this),
+                        style: 'margin-bottom: 0.25rem; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); align-self: center; padding: 1px 6px;' + font
+                    },
+                    children: [
+                        textNode('Share')
                     ]
                 })
             ]
