@@ -290,7 +290,7 @@ class NavbarComponent {
     onShare() {
         const fileData = this.fileService.getFileList();
         const jsonString = JSON.stringify(fileData);
-        const encodedString = encodeURIComponent(jsonString);
+        const encodedString = encodeURIComponent(btoa(jsonString));
         let currentURL = window.location.origin;
         if (!currentURL.endsWith('/')) {
             currentURL += '/';

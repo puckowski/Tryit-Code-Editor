@@ -309,7 +309,7 @@ class FileService {
         const url = new URL(window.location.href);
 
         if (url.searchParams.has('files')) {
-            const filesParam = url.searchParams.get('files');
+            const filesParam = atob(decodeURIComponent(url.searchParams.get('files')));
             var jsonData = JSON.parse(filesParam);
 
             return jsonData;
