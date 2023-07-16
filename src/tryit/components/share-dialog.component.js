@@ -4,6 +4,7 @@ export class ShareDialogComponent {
 
     constructor(link) {
         this.link = link;
+        this.MAX_SHARE_URL_LENGTH = 65000;
     }
 
     slAfterInit() {
@@ -28,7 +29,7 @@ export class ShareDialogComponent {
             font = ' font: 400 26px Arial;';
         }
 
-        if (this.link && this.link.length > 32000) {
+        if (this.link && this.link.length > this.MAX_SHARE_URL_LENGTH) {
             this.showToast('Failed to copy link. Too much code.', font);
         } else {
             navigator.clipboard.writeText(this.link)
