@@ -49,14 +49,24 @@ class FileTreeComponent {
 
     onToggleInject(index) {
         this.fileService.updateFileInject(index);
-        this.fileService.updateFileInjectCss(index, false);
+
+        if (!this.fileService.getFile(index).injectScript) {
+            const ele = document.getElementById('file-inject-script-checkbox' + index);
+            ele.checked = false;
+        }
+
         const state = getState();
         state.getDataSubject().next(true);
     }
 
     onToggleInjectCss(index) {
         this.fileService.updateFileInjectCss(index);
-        this.fileService.updateFileInject(index, false);
+
+        if (!this.fileService.getFile(index).injectCss) {
+            const ele = document.getElementById('file-inject-css-checkbox' + index);
+            ele.checked = false;
+        }
+
         const state = getState();
         state.getDataSubject().next(true);
     }
@@ -180,6 +190,7 @@ class FileTreeComponent {
                                     }),
                                     markup('input', {
                                         attrs: {
+                                            id: 'file-inject-script-checkbox' + file.index,
                                             type: 'checkbox',
                                             ...file.injectScript && { checked: 'true' },
                                             onchange: this.onToggleInject.bind(this, file.index)
@@ -199,6 +210,7 @@ class FileTreeComponent {
                                     }),
                                     markup('input', {
                                         attrs: {
+                                            id: 'file-inject-css-checkbox' + file.index,
                                             type: 'checkbox',
                                             ...file.injectCss && { checked: 'true' },
                                             onchange: this.onToggleInjectCss.bind(this, file.index)

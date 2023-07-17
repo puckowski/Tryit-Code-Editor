@@ -207,22 +207,10 @@ class FileService {
         const fileList = this.getFileList();
         const file = fileList.find(file => file.index === index);
         if (file) {
-            if (!file.injectScript) {
-                if (value === null || value === undefined) {
-                    file.injectScript = true;
-                    file.injectCss = false;
-                } else {
-                    file.injectScript = value;
-                    file.injectCss = !value;
-                }
-            } else {
-                if (value === null || value === undefined) {
-                    file.injectScript = !file.injectScript;
-                    file.injectCss = !file.injectScript;
-                } else {
-                    file.injectScript = value;
-                    file.injectCss = !value;
-                }
+            file.injectScript = !file.injectScript;
+
+            if (file.injectScript) {
+                file.injectCss = false;
             }
         }
         this.setFileList(fileList);
@@ -232,22 +220,10 @@ class FileService {
         const fileList = this.getFileList();
         const file = fileList.find(file => file.index === index);
         if (file) {
-            if (!file.injectCss) {
-                if (value === null || value === undefined) {
-                    file.injectCss = true;
-                    file.injectScript = false;
-                } else {
-                    file.injectCss = value;
-                    file.injectScript = !value;
-                }
-            } else {
-                if (value === null || value === undefined) {
-                    file.injectCss = !file.injectCss;
-                    file.injectScript = !file.injectCss;
-                } else {
-                    file.injectCss = value;
-                    file.injectScript = !value;
-                }
+            file.injectCss = !file.injectCss;
+
+            if (file.injectCss) {
+                file.injectScript = false;
             }
         }
         this.setFileList(fileList);
