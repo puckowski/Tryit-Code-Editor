@@ -6,6 +6,7 @@ import { js_beautify } from '../../../js/beautify';
 import { css_beautify } from '../../../js/beautify-css';
 import { html_beautify } from '../../../js/beautify-html';
 import ShareDialogComponent from './share-dialog.component';
+import pako from '../../../js/pako.min';
 
 class NavbarComponent {
 
@@ -292,7 +293,8 @@ class NavbarComponent {
         const jsonString = JSON.stringify(fileData);
 
         const utf8Bytes = new TextEncoder().encode(jsonString);
-        const base64String = btoa(String.fromCharCode.apply(null, utf8Bytes));
+        const compressedData = pako.deflate(utf8Bytes);
+        const base64String = btoa(String.fromCharCode.apply(null, compressedData));
         const filesEncodedString = encodeURIComponent(base64String);
 
         let currentURL = window.location.origin;

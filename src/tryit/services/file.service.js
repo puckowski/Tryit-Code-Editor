@@ -1,4 +1,5 @@
 import { getState } from "../../../dist/sling.min";
+import pako from '../../../js/pako.min';
 
 class FileService {
 
@@ -289,22 +290,12 @@ class FileService {
 
         if (url.searchParams.has(this.filesParam)) {
             const urlEncodedString = url.searchParams.get(this.filesParam);
+            const filesBase64String = decodeURIComponent(urlEncodedString);
+            const compressedFileData = Uint8Array.from(atob(filesBase64String), c => c.charCodeAt(0));
+            const decompressedFileData = pako.inflate(compressedFileData);
+            const fileData = JSON.parse(new TextDecoder().decode(decompressedFileData));
 
-            const base64String = decodeURIComponent(urlEncodedString);
-
-            const byteCharacters = atob(base64String);
-            const byteNumbers = new Array(byteCharacters.length);
-            for (var i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
-
-            const decoder = new TextDecoder('utf-8');
-            const decodedText = decoder.decode(byteArray);
-
-            const jsonData = JSON.parse(decodedText);
-
-            return jsonData;
+            return fileData;
         } else {
             return [];
         }
