@@ -11,7 +11,7 @@ class StoreGlobal {
         this.inlineHeight = '';
         this.collapsedMode = false;
         this.showPreview = false;
-        this.version = '5.2';
+        this.version = '5.3';
         this.showHelp = false;
         this.sourceHasNewInput = BehaviorSubject(false);
         this.invalidScriptIndices = BehaviorSubject([]);
@@ -22,7 +22,18 @@ class StoreGlobal {
         this.lowResolution = false;
         this.fileService = new FileService();
         this.dismissSuggestionSubject = BehaviorSubject(false);
-        this.cssMode = 0;
+        this.cssModeObject = 'cssmode';
+        this.initializeCssMode();
+    }
+
+    initializeCssMode() {
+        const cssModeStored = localStorage.getItem(this.cssModeObject);
+
+        if (cssModeStored !== null) {
+            this.cssMode = parseInt(cssModeStored);
+        } else {
+            this.cssMode = 0;
+        }
     }
 
     getCssMode() {
@@ -31,6 +42,7 @@ class StoreGlobal {
 
     setCssMode(mode) {
         this.cssMode = mode;
+        localStorage.setItem(this.cssModeObject, this.cssMode);
     }
 
     getDismissSuggestionSubject() {
@@ -56,7 +68,7 @@ class StoreGlobal {
     getHasHighlightedSubject() {
         return this.hasHighlighted;
     }
-    
+
     setPreserveFocus(preserveState) {
         this.preserveFocus = preserveState;
     }
@@ -72,7 +84,7 @@ class StoreGlobal {
     setCaretPositionToRestore(position) {
         this.caretPositionToRestore = position;
     }
-    
+
     getInvalidScriptIndexSubject() {
         return this.invalidScriptIndices;
     }
@@ -130,7 +142,7 @@ class StoreGlobal {
         const usedIndices = new Set(fileList.map(file => file.index));
 
         if (usedIndices.has(newIndex)) {
-            this.editIndex = newIndex; 
+            this.editIndex = newIndex;
         } else {
             this.editIndex = 0;
         }

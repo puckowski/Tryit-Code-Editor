@@ -130,6 +130,8 @@ class FileService {
 
         this.fileListObject = 'filelist';
         this.initializeFileList();
+        this.filesParam = 'files';
+        this.modeParam = 'mode';
     }
 
     buildSlingDemo() {
@@ -267,6 +269,7 @@ class FileService {
     addFilesFromUrl() {
         const fileList = this.getFileList();
         const fromUrl = this.getFileDataFromUrl();
+        this.setCssModeFromUrl();
         let count = fileList.length - 1;
         fromUrl.forEach(fileObj => {
             count++;
@@ -284,13 +287,38 @@ class FileService {
     getFileDataFromUrl() {
         const url = new URL(window.location.href);
 
-        if (url.searchParams.has('files')) {
-            const filesParam = atob(decodeURIComponent(url.searchParams.get('files')));
-            var jsonData = JSON.parse(filesParam);
+        if (url.searchParams.has(this.filesParam)) {
+            const urlEncodedString = url.searchParams.get(this.filesParam);
+
+            const base64String = decodeURIComponent(urlEncodedString);
+
+            const byteCharacters = atob(base64String);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (var i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+
+            const decoder = new TextDecoder('utf-8');
+            const decodedText = decoder.decode(byteArray);
+
+            const jsonData = JSON.parse(decodedText);
 
             return jsonData;
         } else {
             return [];
+        }
+    }
+
+    setCssModeFromUrl() {
+        const url = new URL(window.location.href);
+
+        if (url.searchParams.has(this.modeParam)) {
+            const modeParam = decodeURIComponent(atob(url.searchParams.get(this.modeParam)));
+            const cssModeParam = parseInt(modeParam);
+
+            const state = getState();
+            state.setCssMode(cssModeParam);
         }
     }
 }

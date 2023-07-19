@@ -290,12 +290,20 @@ class NavbarComponent {
     onShare() {
         const fileData = this.fileService.getFileList();
         const jsonString = JSON.stringify(fileData);
-        const encodedString = encodeURIComponent(btoa(jsonString));
+
+        const utf8Bytes = new TextEncoder().encode(jsonString);
+        const base64String = btoa(String.fromCharCode.apply(null, utf8Bytes));
+        const filesEncodedString = encodeURIComponent(base64String);
+
         let currentURL = window.location.origin;
         if (!currentURL.endsWith('/')) {
             currentURL += '/';
         }
-        const url = currentURL + '?files=' + encodedString;
+
+        const state = getState();
+        const cssEncodedString = encodeURIComponent(btoa(state.getCssMode()));
+
+        const url = currentURL + '?files=' + filesEncodedString + '&mode=' + cssEncodedString;
         mount('tryit-sling-share', new ShareDialogComponent(url), s.CHANGE_DETECTOR_DETACHED);
     }
 
