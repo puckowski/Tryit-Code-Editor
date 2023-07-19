@@ -4,7 +4,7 @@ export class ShareDialogComponent {
 
     constructor(link) {
         this.link = link;
-        this.MAX_SHARE_URL_LENGTH = 65000;
+        this.MAX_SHARE_URL_LENGTH = 6237;
     }
 
     slAfterInit() {

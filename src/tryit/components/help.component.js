@@ -91,7 +91,7 @@ class HelpComponent {
                         }),
                         markup('p', {
                             children: [
-                                textNode('The Share feature is limited to links that are 65,000 characters or less.')
+                                textNode('The Share feature is limited to links that are 6,237 characters or less.')
                             ]
                         })
                     ]

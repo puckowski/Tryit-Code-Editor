@@ -1,4 +1,4 @@
-import { getState, m, markup, setState, textNode, version } from '../../../dist/sling.min';
+import { getState, markup, setState } from '../../../dist/sling.min';
 import ContentPanelComponent from './content-panel.component';
 import NavbarComponent from './navbar.component';
 
