@@ -150,7 +150,7 @@ class FileTreeComponent {
                                 markup('div', {
                                     children: [
                                         ...(editIndex === file.index ? [
-                                            markup('strong', {
+                                            markup('span', {
                                                 attrs: {
                                                     style: 'word-break: break-word;'
                                                 },
