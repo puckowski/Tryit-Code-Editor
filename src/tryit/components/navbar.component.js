@@ -163,7 +163,7 @@ class NavbarComponent {
                     let lastFileIndex = fileList.length;
 
                     if (iframeEle.contentDocument) {
-                        const scriptList = iframeEle.contentDocument.head.querySelectorAll('script');
+                        const scriptList = iframeEle.contentDocument.head.querySelectorAll('script[tryit-filename]');
                         for (let i = 0; i < scriptList.length; ++i) {
                             let scriptText = scriptList[i].textContent;
                             scriptText = this.removeLastOccurrence(SCRIPT_VALIDITY_CHECK_SOURCE, scriptText);
@@ -178,8 +178,13 @@ class NavbarComponent {
                         for (let i = 0; i < scriptList.length; ++i) {
                             iframeEle.contentDocument.head.removeChild(scriptList[i]);
                         }
+                       
+                        const orphanScriptList = iframeEle.contentDocument.head.querySelectorAll('script:not([tryit-filename]');
+                        for (let i = 0; i < orphanScriptList.length; ++i) {
+                            iframeEle.contentDocument.head.removeChild(orphanScriptList[i]);
+                        }
 
-                        const styleList = iframeEle.contentDocument.head.querySelectorAll('style');
+                        const styleList = iframeEle.contentDocument.head.querySelectorAll('style[tryit-filename]');
                         for (let i = 0; i < styleList.length; ++i) {
                             const filename = styleList[i].getAttribute('tryit-filename');
                             styleList[i].removeAttribute('tryit-filename');

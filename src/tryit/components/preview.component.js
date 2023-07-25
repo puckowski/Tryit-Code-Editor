@@ -103,7 +103,7 @@ class PreviewComponent {
                 htmlContainer.document.open();
                 htmlContainer.document.write(fileData);
 
-                const indexFileObj = this.fileService.getFileList()[fileIndex];
+                const indexFileObj = this.fileService.getFile(fileIndex);
                 const documentChildren = htmlContainer.document.children;
                 if (documentChildren && documentChildren.length > 0) {
                     htmlContainer.document.children[0].setAttribute('tryit-filename', indexFileObj.name ? indexFileObj.name : '');

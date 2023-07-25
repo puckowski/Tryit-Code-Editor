@@ -45,7 +45,7 @@ class FileService {
             '    markup,\n' +
             '    addRoute,\n' +
             '    route\n' +
-            '} from "https://cdn.jsdelivr.net/npm/slingjs@18.1.0/sling.min.js";\n' +
+            '} from "https://cdn.jsdelivr.net/npm/slingjs@19.0.1/sling.min.js";\n' +
             '\n' +
             'class HideComponent {\n' +
             '    hideWelcome() {\n' +
