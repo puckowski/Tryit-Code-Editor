@@ -175,7 +175,7 @@ class SourcePanelComponent {
             children: [
                 markup('h4', {
                     attrs: {
-                        style: 'margin: 0px; flex: 1;'
+                        style: 'margin: 0px; flex-shrink: 1;'
                     },
                     children: [
                         ...(file ? [

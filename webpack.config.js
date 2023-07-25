@@ -57,7 +57,8 @@ var config = {
         new CopyWebpackPlugin([
             { from: './*.html', to: '' },
             { from: './css', to: '' },
-            { from: './js', to: '' }
+            { from: './js', to: '' },
+            { from: './icons', to: '' }
         ]),
     ]
 };

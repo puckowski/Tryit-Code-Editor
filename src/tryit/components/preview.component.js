@@ -308,7 +308,7 @@ class PreviewComponent {
             children: [
                 markup('h4', {
                     attrs: {
-                        style: 'margin: 0px; flex: 1;'
+                        style: 'margin: 0px; flex-shrink: 1;'
                     },
                     children: [
                         ...(invalidMessage.length === 0 && !this.isPreviewLoading ? textNode('Preview') : []),
@@ -327,7 +327,7 @@ class PreviewComponent {
                 ...(this.injectedList.length > 16 ? [
                     markup('div', {
                         attrs: {
-                            style: 'background-color: rgb(46, 49, 56); padding: 0.25rem; flex: 1;'
+                            style: 'background-color: rgb(46, 49, 56); padding: 0.25rem; flex-shrink: 1;'
                         },
                         children: [
                             textNode(this.injectedList)
