@@ -381,6 +381,8 @@ class NavbarComponent {
             font = ' font: 400 26px Arial;';
         }
 
+        font += ' font-weight: 900;';
+
         return markup('div', {
             attrs: {
                 style: 'padding: 0.5rem; background-color: rgb(46, 49, 56); display: flex; flex-direction: row; flex-wrap: wrap;'

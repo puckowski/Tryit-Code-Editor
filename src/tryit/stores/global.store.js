@@ -7,11 +7,12 @@ class StoreGlobal {
     constructor() {
         this.editIndex = 0;
         this.dataUpdated = BehaviorSubject(false);
-        this.heightModifier = 0;
+        this.heightModifierObject = 'height';
+        this.initializeHeightModifier();
         this.inlineHeight = '';
         this.collapsedMode = false;
         this.showPreview = false;
-        this.version = '5.5';
+        this.version = '5.6';
         this.showHelp = false;
         this.sourceHasNewInput = BehaviorSubject(false);
         this.invalidScriptIndices = BehaviorSubject([]);
@@ -154,6 +155,17 @@ class StoreGlobal {
 
     setHeightModifier(newModifier) {
         this.heightModifier = newModifier;
+        localStorage.setItem(this.heightModifierObject, this.heightModifier);
+    }
+
+    initializeHeightModifier() {
+        const heightModifierStored = localStorage.getItem(this.heightModifierObject);
+
+        if (heightModifierStored !== null) {
+            this.heightModifier = parseInt(heightModifierStored);
+        } else {
+            this.heightModifier = 0;
+        }
     }
 }
 

@@ -101,6 +101,8 @@ class FileTreeComponent {
             font = ' font: 400 26px Arial;';
         }
 
+        font += ' font-weight: 900;';
+
         s.DETACHED_SET_TIMEOUT(() => {
             this.applyCheckedValuesAfterRender();
         }, 0);

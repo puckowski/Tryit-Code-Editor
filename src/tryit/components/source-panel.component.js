@@ -166,7 +166,7 @@ class SourcePanelComponent {
             font = ' font: 400 26px Arial;';
         }
 
-        font += ' filter: brightness(125%);'
+        font += ' filter: brightness(190%);'
 
         return markup('div', {
             attrs: {
