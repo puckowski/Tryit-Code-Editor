@@ -18,7 +18,7 @@ class NavbarComponent {
         this.CSS_MODE_STANDARD = 0;
         this.fileService.addFilesFromUrl();
         this.NAVBAR_VH_TARGET = 40;
-        this.NAVBAR_PIXEL_HEIGHT_MAX = 280;
+        this.NAVBAR_PIXEL_HEIGHT_MAX = 240;
     }
 
     slAfterInit() {
