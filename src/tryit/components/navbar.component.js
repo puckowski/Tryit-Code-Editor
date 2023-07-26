@@ -394,7 +394,6 @@ class NavbarComponent {
 
         if (lowResolution) {
             font = ' font: 400 26px Arial;';
-            padding = ' padding: 2px 12px;';
             marginBottom = ' margin-bottom: 0.75rem;';
             marginRight = ' margin-right: 0.75rem;';
             headerPadding = ' padding: 1rem 0.5rem 0.25rem 0.5rem;';
