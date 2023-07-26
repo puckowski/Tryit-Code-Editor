@@ -411,7 +411,7 @@ class NavbarComponent {
                 fourtyVhOrMax = this.NAVBAR_PIXEL_HEIGHT_MAX;
             }
 
-            headerAlign += ' min-height: ' + fourtyVhOrMax + 'px; max-height: ' + fourtyVhOrMax + 'px; ';
+            headerAlign += ' min-height: ' + fourtyVhOrMax + 'px; ';
             padding = ' padding: 12px 12px;';
         }
 
