@@ -12,7 +12,7 @@ class StoreGlobal {
         this.inlineHeight = '';
         this.collapsedMode = false;
         this.showPreview = false;
-        this.version = '5.6';
+        this.version = '5.7';
         this.showHelp = false;
         this.sourceHasNewInput = BehaviorSubject(false);
         this.invalidScriptIndices = BehaviorSubject([]);
