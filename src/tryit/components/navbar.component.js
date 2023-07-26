@@ -405,13 +405,13 @@ class NavbarComponent {
         if (portraitMode && lowResolution && window.screen.width < window.screen.height) {
             const vh = window.innerHeight / 100;
 
-            let fourtyVh = vh * this.NAVBAR_VH_TARGET;
+            let fourtyVhOrMax = vh * this.NAVBAR_VH_TARGET;
 
-            if (fourtyVh > this.NAVBAR_PIXEL_HEIGHT_MAX) {
-                fourtyVh = this.NAVBAR_PIXEL_HEIGHT_MAX;
+            if (fourtyVhOrMax > this.NAVBAR_PIXEL_HEIGHT_MAX) {
+                fourtyVhOrMax = this.NAVBAR_PIXEL_HEIGHT_MAX;
             }
 
-            headerAlign += ' min-height: ' + fourtyVh + 'px; max-height: ' + fourtyVh + 'px; ';
+            headerAlign += ' min-height: ' + fourtyVhOrMax + 'px; max-height: ' + fourtyVhOrMax + 'px; ';
         }
 
         font += ' font-weight: 900;';
