@@ -109,6 +109,19 @@ class HelpComponent {
                         }),
                         markup('p', {
                             children: [
+                                textNode('A custom build of Less.js 4.1.3 is used that supports CSS Container Queries. '),
+                                markup('a', {
+                                    attrs: {
+                                        href: 'https://github.com/puckowski/less.js'
+                                    },
+                                    children: [
+                                        textNode('(https://github.com/puckowski/less.js)')
+                                    ]
+                                })
+                            ]
+                        }),
+                        markup('p', {
+                            children: [
                                 textNode('To reset Code Editor to original state, click the following button.'),
                             ]
                         }),
