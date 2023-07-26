@@ -17,6 +17,8 @@ class NavbarComponent {
         this.CSS_MODE_LESS = 1;
         this.CSS_MODE_STANDARD = 0;
         this.fileService.addFilesFromUrl();
+        this.NAVBAR_VH_TARGET = 40;
+        this.NAVBAR_PIXEL_HEIGHT_MAX = 280;
     }
 
     slAfterInit() {
@@ -178,7 +180,7 @@ class NavbarComponent {
                         for (let i = 0; i < scriptList.length; ++i) {
                             iframeEle.contentDocument.head.removeChild(scriptList[i]);
                         }
-                       
+
                         const orphanScriptList = iframeEle.contentDocument.head.querySelectorAll('script:not([tryit-filename]');
                         for (let i = 0; i < orphanScriptList.length; ++i) {
                             iframeEle.contentDocument.head.removeChild(orphanScriptList[i]);
@@ -379,28 +381,44 @@ class NavbarComponent {
         const mod = state.getHeightModifier();
         const collapsedMode = state.getCollapsedMode();
         const versionStr = state.getVersion();
+        const portraitMode = state.getPortraitMode();
+        const lowResolution = state.getLowResolution();
 
         let font = ' font: 400 13.3333px Arial;';
         let padding = ' padding: 1px 6px;';
         let marginBottom = ' margin-bottom: 0.25rem;';
-        let marginRight = ' margin-right: 0.25rem;'; 
-        let headerPadding = '';
+        let marginRight = ' margin-right: 0.25rem;';
+        let headerPadding = ' padding: 0.5rem; ';
         let headerMargin = ' margin-bottom: 0.25rem;';
+        let headerAlign = '';
 
-        if (state.getLowResolution()) {
+        if (lowResolution) {
             font = ' font: 400 26px Arial;';
             padding = ' padding: 2px 12px;';
             marginBottom = ' margin-bottom: 0.75rem;';
-            marginRight = ' margin-right: 0.75rem;'; 
+            marginRight = ' margin-right: 0.75rem;';
             headerPadding = ' padding: 1rem 0.5rem 0.25rem 0.5rem;';
             headerMargin = ' margin-top: -0.75rem;';
+            headerAlign = ' align-items: stretch; ';
+        }
+
+        if (portraitMode && lowResolution && window.screen.width < window.screen.height) {
+            const vh = window.innerHeight / 100;
+
+            let fourtyVh = vh * this.NAVBAR_VH_TARGET;
+
+            if (fourtyVh > this.NAVBAR_PIXEL_HEIGHT_MAX) {
+                fourtyVh = this.NAVBAR_PIXEL_HEIGHT_MAX;
+            }
+
+            headerAlign += ' min-height: ' + fourtyVh + 'px; max-height: ' + fourtyVh + 'px; ';
         }
 
         font += ' font-weight: 900;';
 
         return markup('div', {
             attrs: {
-                style: 'padding: 0.5rem; background-color: rgb(46, 49, 56); display: flex; flex-direction: row; flex-wrap: wrap;' + headerPadding
+                style: 'background-color: rgb(46, 49, 56); display: flex; flex-direction: row; flex-wrap: wrap;' + headerPadding + headerAlign
             },
             children: [
                 markup('div', {
@@ -429,7 +447,7 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.addFile.bind(this),
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + ' align-self: center; ' + font + padding
+                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
                     },
                     children: [
                         textNode('Add File')
@@ -438,7 +456,7 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.expandHeight.bind(this),
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + ' align-self: center; ' + font + padding
+                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
                     },
                     children: [
                         textNode('Expand')
@@ -448,7 +466,7 @@ class NavbarComponent {
                     markup('button', {
                         attrs: {
                             onclick: this.shrinkHeight.bind(this),
-                            style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + ' align-self: center; ' + font + padding
+                            style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
                         },
                         children: [
                             textNode('Shrink')
@@ -458,7 +476,7 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.onRun.bind(this),
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + ' align-self: center; ' + font + padding
+                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
                     },
                     children: [
                         textNode('Run')
@@ -468,7 +486,7 @@ class NavbarComponent {
                     markup('button', {
                         attrs: {
                             onclick: this.togglePreview.bind(this),
-                            style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + ' align-self: center; ' + font + padding
+                            style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
                         },
                         children: [
                             textNode('Toggle Preview')
@@ -478,7 +496,7 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.onExport.bind(this),
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + ' align-self: center; ' + font + padding
+                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
                     },
                     children: [
                         textNode('Export')
@@ -488,7 +506,7 @@ class NavbarComponent {
                     attrs: {
                         id: 'try-sling-import-label',
                         for: 'tryit-sling-import',
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + ' align-self: center; ' + font + padding,
+                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); display: flex; align-items: center; ' + marginRight + '  ' + font + padding,
                     },
                     children: [
                         textNode('Import File')
@@ -498,7 +516,7 @@ class NavbarComponent {
                     attrs: {
                         id: 'try-sling-import-workspace-label',
                         for: 'tryit-sling-import-workspace',
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + ' align-self: center; ' + font + padding,
+                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); display: flex; align-items: center; ' + marginRight + '  ' + font + padding,
                     },
                     children: [
                         textNode('Import Workspace')
@@ -523,7 +541,7 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.onHelpToggle.bind(this),
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + ' align-self: center; ' + font + padding
+                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
                     },
                     children: [
                         textNode('Toggle Help')
@@ -533,7 +551,7 @@ class NavbarComponent {
                     attrs: {
                         id: 'tryit-sling-clear-console',
                         onclick: this.onClearConsole.bind(this),
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + ' align-self: center; ' + font + padding
+                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
                     },
                     children: [
                         textNode('Clear Console')
@@ -543,7 +561,7 @@ class NavbarComponent {
                     attrs: {
                         id: 'tryit-sling-beautify',
                         onclick: this.onBeautify.bind(this),
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + ' align-self: center; ' + font + padding
+                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
                     },
                     children: [
                         textNode('Format Code')
@@ -553,7 +571,7 @@ class NavbarComponent {
                     attrs: {
                         id: 'tryit-sling-toggle-mode',
                         onclick: this.onToggleMode.bind(this),
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + ' align-self: center; ' + font + padding
+                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
                     },
                     children: [
                         textNode('Toggle Mode')
@@ -563,7 +581,7 @@ class NavbarComponent {
                     attrs: {
                         id: 'tryit-sling-toggle-css',
                         onclick: this.onToggleCss.bind(this),
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + ' align-self: center; ' + font + padding
+                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
                     },
                     children: [
                         ...(state.getCssMode() === this.CSS_MODE_LESS ? [textNode('Use Ness.js 1.3.0')] : []),
@@ -574,7 +592,7 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.onSlingDemo.bind(this),
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + ' align-self: center; ' + font + padding
+                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
                     },
                     children: [
                         textNode('Sling.js Demo')
@@ -583,7 +601,7 @@ class NavbarComponent {
                 markup('button', {
                     attrs: {
                         onclick: this.onShare.bind(this),
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); align-self: center; ' + font + padding
+                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204);  ' + font + padding
                     },
                     children: [
                         textNode('Share')

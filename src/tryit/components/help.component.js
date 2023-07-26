@@ -1,11 +1,24 @@
-import { markup, textNode } from '../../../dist/sling.min';
+import { markup, textNode, getState, mount } from '../../../dist/sling.min';
+import ResetDialogComponent from './reset-dialog.component';
 
 class HelpComponent {
 
     constructor() {
     }
 
+    onReset() {
+        mount('tryit-sling-reset', new ResetDialogComponent(), s.CHANGE_DETECTOR_DETACHED);
+    }
+
     view() {
+        const state = getState();
+
+        let font = ' font: 400 13.3333px Arial;';
+
+        if (state.getLowResolution()) {
+            font = ' font: 400 26px Arial;';
+        }
+
         return markup('div', {
             attrs: {
                 style: 'padding: 0.25rem; background-color: rgb(21, 24, 30); color: rgb(204, 204, 204); overflow: auto; height: calc(100% - 0.5rem); display: flex; flex-direction: column;'
@@ -92,6 +105,24 @@ class HelpComponent {
                         markup('p', {
                             children: [
                                 textNode('The Share feature is limited to links that are 6,237 characters or less.')
+                            ]
+                        }),
+                        markup('p', {
+                            children: [
+                                textNode('To reset Code Editor to original state, click the following button.'),
+                            ]
+                        }),
+                        markup('div', {
+                            children: [
+                                markup('button', {
+                                    attrs: {
+                                        onclick: this.onReset.bind(this),
+                                        style: 'background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); align-self: center;' + font
+                                    },
+                                    children: [
+                                        textNode('Reset')
+                                    ]
+                                })
                             ]
                         })
                     ]

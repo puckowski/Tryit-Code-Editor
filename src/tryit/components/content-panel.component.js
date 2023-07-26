@@ -12,6 +12,7 @@ class ContentPanelComponent {
         this.fileTreeComp = new FileTreeComponent();
         this.previewComp = new PreviewComponent();
         this.sourceComp = new SourcePanelComponent();
+        this.helpComp = new HelpComponent();
         this.unitList = [
             'cm', 'mm', 'in', 'px', 'pt', 'pc', 'em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax', '%'
         ];
@@ -120,7 +121,7 @@ class ContentPanelComponent {
                                         style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;  height: calc(200% - 1rem);'
                                     },
                                     children: [
-                                        new HelpComponent()
+                                        this.helpComp
                                     ]
                                 })
                             ]),
@@ -172,7 +173,7 @@ class ContentPanelComponent {
                                         style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;  height: calc(200% - 1rem);'
                                     },
                                     children: [
-                                        new HelpComponent()
+                                        this.helpComp
                                     ]
                                 })
                             ]),
