@@ -4,6 +4,9 @@
 
 This is an in-browser JavaScript and HTML code editor built using the Sling.js framework.
 
+Beta-1 [Edit JavaScript](https://editjavascript.com)
+Stable [Cloud JavaScript](https://cloudjavascript.com)
+
 # Run
 
 To run, perform an ```npm install``` and then run ```npm run devServer```.
