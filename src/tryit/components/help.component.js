@@ -115,7 +115,20 @@ class HelpComponent {
                                         href: 'https://github.com/puckowski/less.js'
                                     },
                                     children: [
-                                        textNode('(https://github.com/puckowski/less.js)')
+                                        textNode('https://github.com/puckowski/less.js')
+                                    ]
+                                })
+                            ]
+                        }),
+                        markup('p', {
+                            children: [
+                                textNode('Ness.js 1.3.0 supports SCSS-style CSS nesting and nested @media queries. '),
+                                markup('a', {
+                                    attrs: {
+                                        href: 'https://github.com/puckowski/Ness.js'
+                                    },
+                                    children: [
+                                        textNode('https://github.com/puckowski/Ness.js')
                                     ]
                                 })
                             ]
@@ -134,6 +147,19 @@ class HelpComponent {
                                     },
                                     children: [
                                         textNode('Reset')
+                                    ]
+                                })
+                            ]
+                        }),
+                        markup('p', {
+                            children: [
+                                textNode('If you encounter any issues, please log an issue on GitHub: '),
+                                markup('a', {
+                                    attrs: {
+                                        href: 'https://github.com/puckowski/Tryit-Code-Editor'
+                                    },
+                                    children: [
+                                        textNode('https://github.com/puckowski/Tryit-Code-Editor')
                                     ]
                                 })
                             ]

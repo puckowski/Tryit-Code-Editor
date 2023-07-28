@@ -49,15 +49,15 @@ class ContentPanelComponent {
         const showPreview = state.getShowPreview();
         const showHelp = state.getShowHelp();
         const portraitMode = state.getPortraitMode();
-        
+
         let rootDisplayStyle = 'display: flex;';
         let fileTreeStyle = 'width: 12%;';
-        
+
         if (portraitMode) {
             rootDisplayStyle = 'display: block;'
             fileTreeStyle = 'width: 100%;';
         }
-        
+
         return markup('div', {
             children: [
                 markup('div', {
@@ -168,14 +168,36 @@ class ContentPanelComponent {
                                     ] : []),
                                 ] : [])
                             ] : [
-                                markup('div', {
-                                    attrs: {
-                                        style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;  height: calc(200% - 1rem);'
-                                    },
-                                    children: [
-                                        this.helpComp
-                                    ]
-                                })
+                                ...(collapsedMode === false && portraitMode === true ? [
+                                    markup('div', {
+                                        attrs: {
+                                            style: 'width: 100%; max-height: inherit;  height: calc(200% - 1rem);'
+                                        },
+                                        children: [
+                                            this.helpComp
+                                        ]
+                                    })
+                                ] : []),
+                                ...(collapsedMode === true ? [
+                                    markup('div', {
+                                        attrs: {
+                                            style: 'width: 100%; max-height: inherit;  height: calc(200% - 1rem);'
+                                        },
+                                        children: [
+                                            this.helpComp
+                                        ]
+                                    })
+                                ] : []),
+                                ...(collapsedMode === false && portraitMode === false ? [
+                                    markup('div', {
+                                        attrs: {
+                                            style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;  height: calc(200% - 1rem);'
+                                        },
+                                        children: [
+                                            this.helpComp
+                                        ]
+                                    })
+                                ] : []),
                             ]),
                         ])
                     ]
