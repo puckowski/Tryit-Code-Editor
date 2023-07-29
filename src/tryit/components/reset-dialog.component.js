@@ -29,6 +29,12 @@ export class ResetDialogComponent {
 
         const state = getState();
 
+        state.setShowHelp(false);
+        let mod = state.getHeightModifier();
+        mod = 0;
+        state.setHeightModifier(mod);
+        setState(state);
+
         let font = ' font: 400 13.3333px Arial;';
 
         if (state.getLowResolution()) {
