@@ -585,7 +585,7 @@ class NavbarComponent {
                         style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
                     },
                     children: [
-                        ...(state.getCssMode() === this.CSS_MODE_LESS ? [textNode('Use Ness.js 1.3.0')] : []),
+                        ...(state.getCssMode() === this.CSS_MODE_LESS ? [textNode('Use Ness.js 1.4.0')] : []),
                         ...(state.getCssMode() === this.CSS_MODE_NESS ? [textNode('Use CSS')] : []),
                         ...(state.getCssMode() === this.CSS_MODE_STANDARD ? [textNode('Use Less.js 4.1.3')] : []),
                     ]
