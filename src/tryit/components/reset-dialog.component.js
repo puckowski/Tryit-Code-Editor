@@ -1,4 +1,4 @@
-import { getState, markup, textNode } from '../../../dist/sling.min';
+import { getState, markup, textNode, setState } from '../../../dist/sling.min';
 import FileService from '../services/file.service';
 
 export class ResetDialogComponent {
