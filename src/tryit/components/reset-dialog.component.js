@@ -5,6 +5,7 @@ export class ResetDialogComponent {
 
     constructor() {
         this.fileService = new FileService();
+        this.CSS_MODE_STANDARD = 0;
     }
 
     slAfterInit() {
@@ -30,6 +31,7 @@ export class ResetDialogComponent {
         const state = getState();
 
         state.setShowHelp(false);
+        state.setCssMode(this.CSS_MODE_STANDARD);
         let mod = state.getHeightModifier();
         mod = 0;
         state.setHeightModifier(mod);
