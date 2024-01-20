@@ -54,7 +54,6 @@ class PreviewComponent {
             fileListCss = fileListCss.filter(file => file.injectCss);
 
             const htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
-            htmlContainer.document.open();
             htmlContainer.document.write(fileData);
 
             const invalidIndexInitialSubject = state.getInvalidScriptIndexSubject();
@@ -100,7 +99,6 @@ class PreviewComponent {
                 const iframe = document.getElementById('tryit-sling-iframe');
 
                 const htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
-                htmlContainer.document.open();
                 htmlContainer.document.write(fileData);
 
                 const indexFileObj = this.fileService.getFile(fileIndex);
@@ -150,6 +148,7 @@ class PreviewComponent {
                         const checkSuccessInterval = s.DETACHED_SET_INTERVAL(() => {
                             const tryitCountFinal = Number(localStorage.getItem('tryitCount'));
                             const fileList = this.fileService.getFileList();
+                            const invalidIndexSubject = state.getInvalidScriptIndexSubject();
 
                             if (fileList.length === 0) {
                                 this.injectedList = 'Injected files: ';
@@ -157,14 +156,12 @@ class PreviewComponent {
                                 this.isPreviewLoading = false;
                                 detectChanges();
                             } else if (tryitCountOriginal === tryitCountFinal) {
-                                const invalidIndexSubject = state.getInvalidScriptIndexSubject();
                                 const indices = invalidIndexSubject.getData();
                                 if (!indices.includes(injectedScript.index)) {
                                     indices.push(injectedScript.index);
                                 }
                                 invalidIndexSubject.next(indices);
                             } else {
-                                const invalidIndexSubject = state.getInvalidScriptIndexSubject();
                                 const indices = invalidIndexSubject.getData();
                                 const currentIndex = indices.indexOf(injectedScript.index);
                                 if (currentIndex > -1) {
@@ -175,7 +172,7 @@ class PreviewComponent {
 
                             successRunCount++;
 
-                            if (successRunCount === this.CONTENT_LOAD_CHECK_COUNT) {
+                            if (successRunCount === this.CONTENT_LOAD_CHECK_COUNT || invalidIndexSubject.getData().length === 0) {
                                 clearInterval(checkSuccessInterval);
                                 this.isPreviewLoading = false;
                                 detectChanges();
@@ -231,8 +228,6 @@ class PreviewComponent {
                 const invalidScriptSub = state.getInvalidScriptIndexSubject();
                 invalidScriptSub.next([]);
             }
-
-            htmlContainer.document.close();
 
             if (htmlContainer.document.head) {
                 detectChanges();
