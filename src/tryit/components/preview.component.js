@@ -294,6 +294,7 @@ class PreviewComponent {
 
         return htmlContainer;
     }
+    
     getConsoleScriptText() {
         const consoleScript = 'const console=(function(oldCons) { return {' +
             'log: function(text) { oldCons.log(text); window.parent.document.getElementById(\'tryit-sling-console\').value += text + \'\\r\\n\'; },' +

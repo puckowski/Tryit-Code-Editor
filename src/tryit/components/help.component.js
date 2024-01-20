@@ -122,7 +122,7 @@ class HelpComponent {
                         }),
                         markup('p', {
                             children: [
-                                textNode('Ness.js 1.4.0 supports SCSS-style CSS nesting, nested @media, and nested @layer queries. '),
+                                textNode('Ness.js 1.5.0 supports SCSS-style CSS nesting, nested @media, and nested @layer queries. '),
                                 markup('a', {
                                     attrs: {
                                         href: 'https://github.com/puckowski/Ness.js'
