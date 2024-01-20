@@ -48,6 +48,11 @@ class PreviewComponent {
             const fileData = this.fileService.getFileData(fileIndex);
 
             let fileListJs = this.fileService.getFileList();
+
+            if (fileListJs.length === 0) {
+                return;
+            }
+            
             fileListJs = fileListJs.filter(file => file.injectScript);
 
             let fileListCss = this.fileService.getFileList();
@@ -60,182 +65,203 @@ class PreviewComponent {
             const invalidIndexInitialSubject = state.getInvalidScriptIndexSubject();
             invalidIndexInitialSubject.next([]);
 
-            if (htmlContainer.document.head) {
-                fileListCss.forEach((injectedScript) => {
-                    if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
-                        if (this.injectedList.length > 16) {
-                            this.injectedList += ', ';
-                        }
+            if (fileData === '') {
+                htmlContainer.document.close();
+            }
 
-                        this.injectedList += (injectedScript.index + 1);
-                        if (injectedScript.name.length > 0) {
-                            this.injectedList += ' (' + injectedScript.name + ')';
-                        }
-                    }
-                });
-
-                fileListJs.forEach((injectedScript) => {
-                    if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
-                        if (this.injectedList.length > 16) {
-                            this.injectedList += ', ';
-                        }
-
-                        this.injectedList += (injectedScript.index + 1);
-                        if (injectedScript.name.length > 0) {
-                            this.injectedList += ' (' + injectedScript.name + ')';
-                        }
-
-                        const invalidIndexSubject = state.getInvalidScriptIndexSubject();
-                        const indices = invalidIndexSubject.getData();
-                        const currentIndex = indices.indexOf(injectedScript.index);
-                        if (currentIndex > -1) {
-                            indices.splice(currentIndex, 1);
-                        }
-                        invalidIndexSubject.next(indices);
-                    }
-                });
-
-                detectChanges();
-
+            s.DETACHED_SET_TIMEOUT(() => {
                 const iframe = document.getElementById('tryit-sling-iframe');
-
                 const htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
                 htmlContainer.document.open();
                 htmlContainer.document.write(fileData);
 
-                const indexFileObj = this.fileService.getFile(fileIndex);
-                const documentChildren = htmlContainer.document.children;
-                if (documentChildren && documentChildren.length > 0) {
-                    htmlContainer.document.children[0].setAttribute('tryit-filename', indexFileObj.name ? indexFileObj.name : '');
+                if (fileData === '') {
+                    htmlContainer.document.close();
                 }
 
-                fileListCss.forEach((injectedScript) => {
-                    if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
-                        const stylesheet = document.createElement('style');
-                        stylesheet.textContent = injectedScript.data;
+                if (htmlContainer.document.head) {
+                    this.injectedList = 'Injected files: ';
 
-                        if (state.getCssMode() === this.CSS_MODE_LESS) {
-                            stylesheet.type = 'text/less';
+                    fileListCss.forEach((injectedScript) => {
+                        if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
+                            if (this.injectedList.length > 16) {
+                                this.injectedList += ', ';
+                            }
+
+                            this.injectedList += (injectedScript.index + 1);
+                            if (injectedScript.name.length > 0) {
+                                this.injectedList += ' (' + injectedScript.name + ')';
+                            }
                         }
+                    });
 
-                        stylesheet.setAttribute('tryit-filename', injectedScript.name ? injectedScript.name : '');
+                    fileListJs.forEach((injectedScript) => {
+                        if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
+                            if (this.injectedList.length > 16) {
+                                this.injectedList += ', ';
+                            }
 
-                        htmlContainer.document.head.appendChild(stylesheet);
-                    }
-                });
+                            this.injectedList += (injectedScript.index + 1);
+                            if (injectedScript.name.length > 0) {
+                                this.injectedList += ' (' + injectedScript.name + ')';
+                            }
 
-                const consoleScript = document.createElement('script');
-                consoleScript.text = this.getConsoleScriptText();
-                consoleScript.type = 'module';
-                consoleScript.setAttribute('tryit-sling-script', 'true');
-                htmlContainer.document.head.appendChild(consoleScript);
-
-                fileListJs.forEach((injectedScript) => {
-                    if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
-                        const script = document.createElement('script');
-                        script.text = injectedScript.data += '\n' + SCRIPT_VALIDITY_CHECK_SOURCE;
-                        script.type = 'module';
-
-                        let tryitCountOriginal = localStorage.getItem('tryitCount');
-                        if (!tryitCountOriginal) {
-                            tryitCountOriginal = 0;
-                            localStorage.setItem('tryitCount', tryitCountOriginal);
-                        } else {
-                            tryitCountOriginal = Number(tryitCountOriginal);
-                        }
-
-                        let successRunCount = 0;
-                        this.isPreviewLoading = true;
-
-                        const checkSuccessInterval = s.DETACHED_SET_INTERVAL(() => {
-                            const tryitCountFinal = Number(localStorage.getItem('tryitCount'));
-                            const fileList = this.fileService.getFileList();
                             const invalidIndexSubject = state.getInvalidScriptIndexSubject();
-
-                            if (fileList.length === 0) {
-                                this.injectedList = 'Injected files: ';
-                                clearInterval(checkSuccessInterval);
-                                this.isPreviewLoading = false;
-                                detectChanges();
-                            } else if (tryitCountOriginal === tryitCountFinal) {
-                                const indices = invalidIndexSubject.getData();
-                                if (!indices.includes(injectedScript.index)) {
-                                    indices.push(injectedScript.index);
-                                }
-                                invalidIndexSubject.next(indices);
-                            } else {
-                                const indices = invalidIndexSubject.getData();
-                                const currentIndex = indices.indexOf(injectedScript.index);
-                                if (currentIndex > -1) {
-                                    indices.splice(currentIndex, 1);
-                                }
-                                invalidIndexSubject.next(indices);
+                            const indices = invalidIndexSubject.getData();
+                            const currentIndex = indices.indexOf(injectedScript.index);
+                            if (currentIndex > -1) {
+                                indices.splice(currentIndex, 1);
                             }
+                            invalidIndexSubject.next(indices);
+                        }
+                    });
 
-                            successRunCount++;
+                    detectChanges();
 
-                            if (successRunCount === this.CONTENT_LOAD_CHECK_COUNT || invalidIndexSubject.getData().length === 0) {
-                                clearInterval(checkSuccessInterval);
-                                this.isPreviewLoading = false;
-                                detectChanges();
-                            }
-                        }, 300);
+                    const iframe = document.getElementById('tryit-sling-iframe');
 
-                        script.setAttribute('tryit-filename', injectedScript.name ? injectedScript.name : '');
+                    const htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
+                    htmlContainer.document.open();
+                    htmlContainer.document.write(fileData);
 
-                        htmlContainer.document.head.appendChild(script);
+                    if (fileData === '') {
+                        htmlContainer.document.close();
                     }
-                });
 
-                if (state.getCssMode() === this.CSS_MODE_LESS) {
-                    if (this.lessScriptData === null) {
-                        slGet('less.min.js').then(xhrResp => {
-                            this.lessScriptData = xhrResp.response;
+                    const indexFileObj = this.fileService.getFile(fileIndex);
+                    const documentChildren = htmlContainer.document.children;
+                    if (documentChildren && documentChildren.length > 0) {
+                        htmlContainer.document.children[0].setAttribute('tryit-filename', indexFileObj.name ? indexFileObj.name : '');
+                    }
 
+                    fileListCss.forEach((injectedScript) => {
+                        if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
+                            const stylesheet = document.createElement('style');
+                            stylesheet.textContent = injectedScript.data;
+
+                            if (state.getCssMode() === this.CSS_MODE_LESS) {
+                                stylesheet.type = 'text/less';
+                            }
+
+                            stylesheet.setAttribute('tryit-filename', injectedScript.name ? injectedScript.name : '');
+
+                            htmlContainer.document.head.appendChild(stylesheet);
+                        }
+                    });
+
+                    const consoleScript = document.createElement('script');
+                    consoleScript.text = this.getConsoleScriptText();
+                    consoleScript.type = 'module';
+                    consoleScript.setAttribute('tryit-sling-script', 'true');
+                    htmlContainer.document.head.appendChild(consoleScript);
+
+                    fileListJs.forEach((injectedScript) => {
+                        if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
+                            const script = document.createElement('script');
+                            script.text = injectedScript.data += '\n' + SCRIPT_VALIDITY_CHECK_SOURCE;
+                            script.type = 'module';
+
+                            let tryitCountOriginal = localStorage.getItem('tryitCount');
+                            if (!tryitCountOriginal) {
+                                tryitCountOriginal = 0;
+                                localStorage.setItem('tryitCount', tryitCountOriginal);
+                            } else {
+                                tryitCountOriginal = Number(tryitCountOriginal);
+                            }
+
+                            let successRunCount = 0;
+                            this.isPreviewLoading = true;
+
+                            const checkSuccessInterval = s.DETACHED_SET_INTERVAL(() => {
+                                const tryitCountFinal = Number(localStorage.getItem('tryitCount'));
+                                const fileList = this.fileService.getFileList();
+                                const invalidIndexSubject = state.getInvalidScriptIndexSubject();
+
+                                if (fileList.length === 0) {
+                                    this.injectedList = 'Injected files: ';
+                                    clearInterval(checkSuccessInterval);
+                                    this.isPreviewLoading = false;
+                                    detectChanges();
+                                } else if (tryitCountOriginal === tryitCountFinal) {
+                                    const indices = invalidIndexSubject.getData();
+                                    if (!indices.includes(injectedScript.index)) {
+                                        indices.push(injectedScript.index);
+                                    }
+                                    invalidIndexSubject.next(indices);
+                                } else {
+                                    const indices = invalidIndexSubject.getData();
+                                    const currentIndex = indices.indexOf(injectedScript.index);
+                                    if (currentIndex > -1) {
+                                        indices.splice(currentIndex, 1);
+                                    }
+                                    invalidIndexSubject.next(indices);
+                                }
+
+                                successRunCount++;
+
+                                if (successRunCount === this.CONTENT_LOAD_CHECK_COUNT || invalidIndexSubject.getData().length === 0) {
+                                    clearInterval(checkSuccessInterval);
+                                    this.isPreviewLoading = false;
+                                    detectChanges();
+                                }
+                            }, 300);
+
+                            script.setAttribute('tryit-filename', injectedScript.name ? injectedScript.name : '');
+
+                            htmlContainer.document.head.appendChild(script);
+                        }
+                    });
+
+                    if (state.getCssMode() === this.CSS_MODE_LESS) {
+                        if (this.lessScriptData === null) {
+                            slGet('less.min.js').then(xhrResp => {
+                                this.lessScriptData = xhrResp.response;
+
+                                var script = document.createElement('script');
+                                script.text = this.lessScriptData;
+                                script.type = 'module';
+
+                                htmlContainer.document.head.appendChild(script);
+                            });
+                        } else {
                             var script = document.createElement('script');
                             script.text = this.lessScriptData;
                             script.type = 'module';
 
                             htmlContainer.document.head.appendChild(script);
-                        });
-                    } else {
-                        var script = document.createElement('script');
-                        script.text = this.lessScriptData;
-                        script.type = 'module';
+                        }
+                    } else if (state.getCssMode() === this.CSS_MODE_NESS) {
+                        if (this.nessScriptData === null) {
+                            slGet('ness.min.js').then(xhrResp => {
+                                this.nessScriptData = xhrResp.response;
 
-                        htmlContainer.document.head.appendChild(script);
-                    }
-                } else if (state.getCssMode() === this.CSS_MODE_NESS) {
-                    if (this.nessScriptData === null) {
-                        slGet('ness.min.js').then(xhrResp => {
-                            this.nessScriptData = xhrResp.response;
+                                var script = document.createElement('script');
+                                script.text = this.nessScriptData;
+                                script.type = 'module';
 
+                                htmlContainer.document.head.appendChild(script);
+                            });
+                        } else {
                             var script = document.createElement('script');
                             script.text = this.nessScriptData;
                             script.type = 'module';
 
                             htmlContainer.document.head.appendChild(script);
-                        });
-                    } else {
-                        var script = document.createElement('script');
-                        script.text = this.nessScriptData;
-                        script.type = 'module';
-
-                        htmlContainer.document.head.appendChild(script);
+                        }
                     }
+
+                    this.previewPendingData.current--;
+                } else {
+                    const invalidScriptSub = state.getInvalidScriptIndexSubject();
+                    invalidScriptSub.next([]);
                 }
 
-                this.previewPendingData.current--;
-            } else {
-                const invalidScriptSub = state.getInvalidScriptIndexSubject();
-                invalidScriptSub.next([]);
-            }
+                htmlContainer.document.close();
 
-            htmlContainer.document.close();
-            
-            if (htmlContainer.document.head) {
-                detectChanges();
-            }
+                if (htmlContainer.document.head) {
+                    detectChanges();
+                }
+            }, 0);
         };
     }
 
