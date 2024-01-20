@@ -54,6 +54,7 @@ class PreviewComponent {
             fileListCss = fileListCss.filter(file => file.injectCss);
 
             const htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
+            htmlContainer.document.open();
             htmlContainer.document.write(fileData);
 
             const invalidIndexInitialSubject = state.getInvalidScriptIndexSubject();
@@ -99,6 +100,7 @@ class PreviewComponent {
                 const iframe = document.getElementById('tryit-sling-iframe');
 
                 const htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
+                htmlContainer.document.open();
                 htmlContainer.document.write(fileData);
 
                 const indexFileObj = this.fileService.getFile(fileIndex);
@@ -229,6 +231,8 @@ class PreviewComponent {
                 invalidScriptSub.next([]);
             }
 
+            htmlContainer.document.close();
+            
             if (htmlContainer.document.head) {
                 detectChanges();
             }
