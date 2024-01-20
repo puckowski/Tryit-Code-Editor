@@ -50,9 +50,14 @@ class PreviewComponent {
             let fileListJs = this.fileService.getFileList();
 
             if (fileListJs.length === 0) {
+                this.prepareHtmlContainer(iframe, fileData);
+
+                const invalidScriptSub = state.getInvalidScriptIndexSubject();
+                invalidScriptSub.next([]);
+
                 return;
             }
-            
+
             fileListJs = fileListJs.filter(file => file.injectScript);
 
             let fileListCss = this.fileService.getFileList();
@@ -71,13 +76,7 @@ class PreviewComponent {
 
             s.DETACHED_SET_TIMEOUT(() => {
                 const iframe = document.getElementById('tryit-sling-iframe');
-                const htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
-                htmlContainer.document.open();
-                htmlContainer.document.write(fileData);
-
-                if (fileData === '') {
-                    htmlContainer.document.close();
-                }
+                const htmlContainer = this.prepareHtmlContainer(iframe, fileData);
 
                 if (htmlContainer.document.head) {
                     this.injectedList = 'Injected files: ';
@@ -129,6 +128,11 @@ class PreviewComponent {
                     }
 
                     const indexFileObj = this.fileService.getFile(fileIndex);
+
+                    if (!indexFileObj) {
+                        return;
+                    }
+
                     const documentChildren = htmlContainer.document.children;
                     if (documentChildren && documentChildren.length > 0) {
                         htmlContainer.document.children[0].setAttribute('tryit-filename', indexFileObj.name ? indexFileObj.name : '');
@@ -279,6 +283,17 @@ class PreviewComponent {
         }
     }
 
+    prepareHtmlContainer(iframe, fileData) {
+        const htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
+        htmlContainer.document.open();
+        htmlContainer.document.write(fileData);
+
+        if (fileData === '') {
+            htmlContainer.document.close();
+        }
+
+        return htmlContainer;
+    }
     getConsoleScriptText() {
         const consoleScript = 'const console=(function(oldCons) { return {' +
             'log: function(text) { oldCons.log(text); window.parent.document.getElementById(\'tryit-sling-console\').value += text + \'\\r\\n\'; },' +
