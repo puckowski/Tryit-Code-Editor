@@ -5,10 +5,10 @@ class FileService {
 
     constructor() {
         this.SLING_DEMO_HTML =
-            '<html>' +
-            '<body>' +
-            '<div id="divRouterOutlet"></div>' +
-            '</body>' +
+            '<html>\n' +
+            '<body>\n' +
+            '    <div id="divRouterOutlet"></div>\n' +
+            '</body>\n' +
             '</html>';
 
         this.SLING_DEMO_CSS =

@@ -23,10 +23,23 @@ class NavbarComponent {
 
     slAfterInit() {
         document.addEventListener('keydown', function (event) {
-            if ((event.ctrlKey || event.metaKey) && event.key === 'j') {
-                event.preventDefault();
+            if (event.ctrlKey || event.metaKey) {
+                switch (event.key) {
+                    case 'j': {
+                        event.preventDefault();
 
-                this.onBeautify();
+                        this.onBeautify();
+
+                        break;
+                    }
+                    case 'h': {
+                        event.preventDefault();
+
+                        this.onRun();
+
+                        break;
+                    }
+                }
             }
         }.bind(this));
     }

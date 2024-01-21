@@ -14,6 +14,7 @@ class PreviewComponent {
         this.CSS_MODE_NESS = 2;
         this.lessScriptData = null;
         this.nessScriptData = null;
+        this.STANDARD_DELAY_MILLISECONDS = 300;
         this.onInvalidScriptFunction = () => {
             detectChanges();
         }
@@ -47,11 +48,11 @@ class PreviewComponent {
             const fileIndex = state.getEditIndex();
             const fileData = this.fileService.getFileData(fileIndex);
 
+            this.prepareHtmlContainer(iframe, fileData);
+
             let fileListJs = this.fileService.getFileList();
 
             if (fileListJs.length === 0) {
-                this.prepareHtmlContainer(iframe, fileData);
-
                 const invalidScriptSub = state.getInvalidScriptIndexSubject();
                 invalidScriptSub.next([]);
 
@@ -63,16 +64,8 @@ class PreviewComponent {
             let fileListCss = this.fileService.getFileList();
             fileListCss = fileListCss.filter(file => file.injectCss);
 
-            const htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
-            htmlContainer.document.open();
-            htmlContainer.document.write(fileData);
-
             const invalidIndexInitialSubject = state.getInvalidScriptIndexSubject();
             invalidIndexInitialSubject.next([]);
-
-            if (fileData === '') {
-                htmlContainer.document.close();
-            }
 
             s.DETACHED_SET_TIMEOUT(() => {
                 const iframe = document.getElementById('tryit-sling-iframe');
@@ -118,14 +111,7 @@ class PreviewComponent {
                     detectChanges();
 
                     const iframe = document.getElementById('tryit-sling-iframe');
-
-                    const htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
-                    htmlContainer.document.open();
-                    htmlContainer.document.write(fileData);
-
-                    if (fileData === '') {
-                        htmlContainer.document.close();
-                    }
+                    const htmlContainer = this.prepareHtmlContainer(iframe, fileData);
 
                     const indexFileObj = this.fileService.getFile(fileIndex);
 
@@ -208,7 +194,7 @@ class PreviewComponent {
                                     this.isPreviewLoading = false;
                                     detectChanges();
                                 }
-                            }, 300);
+                            }, this.STANDARD_DELAY_MILLISECONDS);
 
                             script.setAttribute('tryit-filename', injectedScript.name ? injectedScript.name : '');
 
@@ -273,13 +259,22 @@ class PreviewComponent {
         const state = getState();
         const sub = state.getDataSubject();
         if (!sub.getHasSubscription(this.onFileChangeFunction)) {
-            sub.subscribe(this.onFileChangeFunction);
+            sub.subscribe(this.debounce(this.onFileChangeFunction, this.STANDARD_DELAY_MILLISECONDS));
             sub.next(true);
         }
 
         const subInvalid = state.getInvalidScriptIndexSubject();
         if (!subInvalid.getHasSubscription(this.onInvalidScriptFunction)) {
             subInvalid.subscribe(this.onInvalidScriptFunction);
+        }
+    }
+
+    debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+            const context = this;
+            clearTimeout(timeout);
+            timeout = s.DETACHED_SET_TIMEOUT(() => func.apply(context, args), wait);
         }
     }
 
@@ -294,7 +289,7 @@ class PreviewComponent {
 
         return htmlContainer;
     }
-    
+
     getConsoleScriptText() {
         const consoleScript = 'const console=(function(oldCons) { return {' +
             'log: function(text) { oldCons.log(text); window.parent.document.getElementById(\'tryit-sling-console\').value += text + \'\\r\\n\'; },' +
