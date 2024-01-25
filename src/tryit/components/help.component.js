@@ -94,7 +94,7 @@ class HelpComponent {
                         }),
                         markup('p', {
                             children: [
-                                textNode('Press Tab or click on the suggested word popup to insert the suggested word.')
+                                textNode('Press Control/Command and A or click on the suggested word popup to insert the suggested word.')
                             ]
                         }),
                         markup('p', {

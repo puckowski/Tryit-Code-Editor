@@ -310,23 +310,50 @@ export class WordSuggestionComponent {
     }
 
     onDocumentKeyDown(event) {
-        if (event && event.keyCode === 9 && this.suggestion && this.suggestion.length > 0 && this.input && this.input.length > 0) {
+        if (this.suggestion && this.suggestion.length > 0 && this.input && this.input.length > 0) {
+            if (event && (event.ctrlKey || event.metaKey) && event.keyCode === 65) {
+                event.preventDefault();
+                this.insertSuggestion();
+            }
+        } else if (event && event.keyCode === 9) {
             event.preventDefault();
-            this.insertSuggestion();
+            this.insertTab();
         }
+    }
+
+    insertTab() {
+        const state = getState();
+        const fileIndex = state.getEditIndex();
+        const fileData = this.fileService.getFileData(fileIndex);
+
+        const textAreaEle = document.getElementById('tryit-sling-div');
+        const selectionEnd = getCaretPosition(textAreaEle);
+
+        const before = fileData.substring(0, selectionEnd);
+        let after = fileData.substring(selectionEnd);
+        after = '\t' + after;
+
+        this.fileService.updateFileData(fileIndex, before + after);
+        state.setCaretPositionToRestore(selectionEnd + 1);
+
+        const sub = state.getDataSubject();
+        sub.next(true);
     }
 
     insertSuggestion() {
         const state = getState();
         const fileIndex = state.getEditIndex();
         const fileData = this.fileService.getFileData(fileIndex);
-        const selectionIndices = this.getIndicesOf(this.selectionText, fileData, true);
-        const index = selectionIndices[this.occurrence - 1];
-        const before = fileData.substring(0, index + (16 - this.input.length));
-        let after = fileData.substring(index + (16 - this.input.length));
-        after = after.replace(this.input, this.suggestion);
+
+        const textAreaEle = document.getElementById('tryit-sling-div');
+        const selectionEnd = getCaretPosition(textAreaEle);
+
+        const before = fileData.substring(0, selectionEnd);
+        let after = fileData.substring(selectionEnd);
+        after = this.suggestion + after;
+
         this.fileService.updateFileData(fileIndex, before + after);
-        state.setCaretPositionToRestore(index + this.suggestion.length + (16 - this.input.length));
+        state.setCaretPositionToRestore(selectionEnd + this.suggestion.length);
 
         this.suggestion = null;
         this.input = null;
