@@ -176,27 +176,30 @@ export class WordSuggestionComponent {
                 } else {
                     const currentPos = getCaretPosition(textAreaEle);
                     const caret = getCaretCoordinates(textAreaEle, currentPos);
-                    const lineHeight = this.getLineHeight(textAreaEle);
 
-                    this.x = caret.left;
+                    if (caret) {
+                        const lineHeight = this.getLineHeight(textAreaEle);
 
-                    const state = getState();
-                    let font = '400 13.3333px Arial';
+                        this.x = caret.left;
 
-                    if (state.getLowResolution()) {
-                        font = '400 26px Arial';
+                        const state = getState();
+                        let font = '400 13.3333px Arial';
+
+                        if (state.getLowResolution()) {
+                            font = '400 26px Arial';
+                        }
+
+                        const textWidth = this.getTextWidth(this.suggestion, font);
+
+                        if (this.x + textWidth > window.outerWidth) {
+                            this.x -= textWidth;
+                            this.x -= this.convertRemToPixels(0.5);
+                        }
+
+                        this.y = caret.top - lineHeight - this.convertRemToPixels(0.5);
+
+                        detectChanges();
                     }
-
-                    const textWidth = this.getTextWidth(this.suggestion, font);
-
-                    if (this.x + textWidth > window.outerWidth) {
-                        this.x -= textWidth;
-                        this.x -= this.convertRemToPixels(0.5);
-                    }
-
-                    this.y = caret.top - lineHeight - this.convertRemToPixels(0.5);
-
-                    detectChanges();
                 }
             }
         }
@@ -310,14 +313,14 @@ export class WordSuggestionComponent {
     }
 
     onDocumentKeyDown(event) {
-        if (this.suggestion && this.suggestion.length > 0 && this.input && this.input.length > 0) {
+        if (event && event.keyCode === 9) {
+            event.preventDefault();
+            this.insertTab();
+        } else if (this.suggestion && this.suggestion.length > 0 && this.input && this.input.length > 0) {
             if (event && (event.ctrlKey || event.metaKey) && event.keyCode === 65) {
                 event.preventDefault();
                 this.insertSuggestion();
             }
-        } else if (event && event.keyCode === 9) {
-            event.preventDefault();
-            this.insertTab();
         }
     }
 
@@ -330,11 +333,15 @@ export class WordSuggestionComponent {
         const selectionEnd = getCaretPosition(textAreaEle);
 
         const before = fileData.substring(0, selectionEnd);
+
         let after = fileData.substring(selectionEnd);
         after = '\t' + after;
 
         this.fileService.updateFileData(fileIndex, before + after);
         state.setCaretPositionToRestore(selectionEnd + 1);
+
+        this.suggestion = null;
+        this.input = null;
 
         const sub = state.getDataSubject();
         sub.next(true);
@@ -348,12 +355,19 @@ export class WordSuggestionComponent {
         const textAreaEle = document.getElementById('tryit-sling-div');
         const selectionEnd = getCaretPosition(textAreaEle);
 
-        const before = fileData.substring(0, selectionEnd);
+        let before = fileData.substring(0, selectionEnd);
+        const inputLocation = before.lastIndexOf(this.input);
+        if (inputLocation >= 0) {
+            const beforeInput = before.substring(0, inputLocation);
+            const afterInput = before.substring(inputLocation + this.input.length);
+            before = beforeInput + afterInput;
+        }
+
         let after = fileData.substring(selectionEnd);
         after = this.suggestion + after;
 
         this.fileService.updateFileData(fileIndex, before + after);
-        state.setCaretPositionToRestore(selectionEnd + this.suggestion.length);
+        state.setCaretPositionToRestore(selectionEnd + (this.suggestion.length - this.input.length));
 
         this.suggestion = null;
         this.input = null;

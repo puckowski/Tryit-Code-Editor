@@ -71,27 +71,64 @@ class SourcePanelComponent {
                     chars.count = 0;
                 }
             } else {
-                for (var lp = 0; lp < node.childNodes.length; lp++) {
-                    range = this.createRange(node.childNodes[lp], chars, range);
-
-                    if (chars.count === 0) {
-                        break;
-                    }
-                }
+                range.setEnd(node, node.childNodes.length);
+                chars.count = 0;
             }
         }
 
         return range;
     }
 
-    setCurrentCursorPosition(chars) {
-        if (chars >= 0) {
-            var selection = window.getSelection();
+    addRangeToSelection(currentNode, charCount, totalCharacters) {
+        // Set the selection range
+        const selection = window.getSelection();
+        const range = document.createRange();
 
-            const range = this.createRange(document.getElementById('tryit-sling-div'), { count: chars });
+        range.setStart(currentNode, charCount - (totalCharacters - currentNode.length));
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
 
-            if (range) {
-                range.collapse(false);
+    setCurrentCursorPosition(charCount) {
+        if (charCount >= 0) {
+            const el = document.getElementById('tryit-sling-div');
+
+            // Ensure the element is a contenteditable div
+            if (el.nodeType === Node.ELEMENT_NODE && el.isContentEditable) {
+                let currentNode = el.firstChild;
+                let totalCharacters = 0;
+
+                while (currentNode) {
+                    if (currentNode.nodeType === Node.TEXT_NODE) {
+                        totalCharacters += currentNode.length;
+
+                        // Check if the total characters exceed the specified count
+                        if (totalCharacters >= charCount) {
+                            this.addRangeToSelection(currentNode, charCount, totalCharacters);
+
+                            return;
+                        }
+                    } else {
+                        totalCharacters += currentNode.textContent.length;
+
+                        // Check if the total characters exceed the specified count
+                        if (totalCharacters >= charCount) {
+                            this.addRangeToSelection(currentNode, charCount, totalCharacters);
+
+                            return;
+                        }
+                    }
+
+                    // Move to the next node
+                    currentNode = currentNode.nextSibling;
+                }
+
+                // If charCount is greater than the total characters, set the cursor at the end
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.setStart(el, el.childNodes.length);
+                range.collapse(true);
                 selection.removeAllRanges();
                 selection.addRange(range);
             }
@@ -133,7 +170,11 @@ class SourcePanelComponent {
         if (event && event.inputType === 'insertParagraph') {
             let content = event.target.textContent;
             if (content.length === caretPos) {
-                content = content.substring(0, caretPos) + '\n\n' + content.substring(caretPos);
+                if (content.endsWith('\n')) {
+                    content = content.substring(0, caretPos) + '\n';
+                } else {
+                    content = content.substring(0, caretPos) + '\n\n';
+                }
             } else {
                 content = content.substring(0, caretPos) + '\n' + content.substring(caretPos);
             }

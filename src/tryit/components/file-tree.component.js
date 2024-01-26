@@ -43,6 +43,7 @@ class FileTreeComponent {
             editIndex--;
         }
         state.setEditIndex(editIndex);
+        state.setCaretPositionToRestore(0);
         setState(state);
         state.getDataSubject().next(true);
     }
