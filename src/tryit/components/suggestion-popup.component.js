@@ -1,6 +1,7 @@
 import { detectChanges, getState, markup, setState, textNode } from '../../../dist/sling.min';
 import { getCaretCoordinates, getCaretPosition } from '../services/caret.service';
 import FileService from '../services/file.service';
+import { debounce } from '../services/throttle.service';
 
 export class WordSuggestionComponent {
 
@@ -21,6 +22,8 @@ export class WordSuggestionComponent {
             'source', 'span', 'strong', 'style', 'sub', 'summary', 'sup', 'svg', 'table', 'tbody', 'td', 'template', 'textarea',
             'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'u', 'ul', 'var', 'video', 'wbr']
         this.fileService = new FileService();
+        this.debounce = debounce;
+        this.WORD_SUGGESTION_THROTTLE_MILLISECONDS = 300;
         this.selectionText = null;
         this.occurrence = -1;
         this.x = -1;
@@ -32,7 +35,7 @@ export class WordSuggestionComponent {
         this.onSourceHasNewInput = () => {
             this.newInput = true;
         };
-        this.processSourceHasNewInput = this.debounce(() => this.onSourceHasNewInput());
+        this.processSourceHasNewInput = this.debounce(() => this.onSourceHasNewInput(), this.WORD_SUGGESTION_THROTTLE_MILLISECONDS);
         this.CHECK_DIRTY_INTERVAL = 300;
         this.onDataChanged = () => {
             this.suggestion = '';
@@ -209,14 +212,6 @@ export class WordSuggestionComponent {
         return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
     }
 
-    debounce(func, timeout = 300) {
-        let timer;
-        return (...args) => {
-            clearTimeout(timer);
-            timer = setTimeout(() => { func.apply(this, args); }, timeout);
-        };
-    }
-
     getLineHeight(el) {
         const temp = document.createElement(el.nodeName);
         let ret;
@@ -342,7 +337,7 @@ export class WordSuggestionComponent {
         }
         
         after = '    ' + after;
-        
+
         this.fileService.updateFileData(fileIndex, before + after);
         state.setCaretPositionToRestore(selectionEnd + charsInserted);
 

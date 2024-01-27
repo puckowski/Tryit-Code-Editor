@@ -2,6 +2,7 @@ import { detectChanges, getState, markup, textNode } from '../../../dist/sling.m
 import { slGet } from '../../../dist/sling-xhr.min';
 import FileService from '../services/file.service';
 import { SCRIPT_VALIDITY_CHECK_SOURCE } from '../stores/global.store';
+import { debounce } from '../services/throttle.service';
 
 class PreviewComponent {
 
@@ -15,6 +16,7 @@ class PreviewComponent {
         this.lessScriptData = null;
         this.nessScriptData = null;
         this.STANDARD_DELAY_MILLISECONDS = 300;
+        this.debounce = debounce;
         this.onInvalidScriptFunction = () => {
             detectChanges();
         }
@@ -266,15 +268,6 @@ class PreviewComponent {
         const subInvalid = state.getInvalidScriptIndexSubject();
         if (!subInvalid.getHasSubscription(this.onInvalidScriptFunction)) {
             subInvalid.subscribe(this.onInvalidScriptFunction);
-        }
-    }
-
-    debounce(func, wait) {
-        let timeout;
-        return function (...args) {
-            const context = this;
-            clearTimeout(timeout);
-            timeout = s.DETACHED_SET_TIMEOUT(() => func.apply(context, args), wait);
         }
     }
 

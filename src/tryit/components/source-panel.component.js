@@ -53,54 +53,56 @@ class SourcePanelComponent {
         }
     }
 
-    setCaretPosition(el, charOffset) {
-        const range = document.createRange();
-        const sel = window.getSelection();
-        let currentNode = el.firstChild;
-        let totalOffset = 0;
-        let foundNode = null;
-
-        while (currentNode) {
-            if (currentNode.nodeType === Node.TEXT_NODE) {
-                const nodeLength = currentNode.length;
-                if (totalOffset + nodeLength >= charOffset) {
-                    foundNode = currentNode;
-                    break;
-                } else {
-                    totalOffset += nodeLength;
-                }
-            } else if (currentNode.nodeType === Node.ELEMENT_NODE) {
-                const textContent = currentNode.textContent;
-                const nodeLength = textContent.length;
-                if (totalOffset + nodeLength >= charOffset) {
-                    currentNode = currentNode.firstChild;
-                    while (currentNode.textContent.length + totalOffset < charOffset) {
-                        totalOffset += currentNode.textContent.length;
-                        currentNode = currentNode.nextSibling;
-                    }
-
-                    continue;
-                } else {
-                    totalOffset += nodeLength;
-                }
-            }
-            currentNode = currentNode.nextSibling;
-        }
-
-        if (foundNode) {
-            const start = charOffset - totalOffset;
-
-            range.setStart(foundNode, start);
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
-        }
-    }
-
-    setCurrentCursorPosition(charCount) {
-        if (charCount >= 0) {
+    setCurrentCursorPosition(charOffset) {
+        if (charOffset >= 0) {
             const el = document.getElementById('tryit-sling-div');
-            this.setCaretPosition(el, charCount);
+            const range = document.createRange();
+            const selection = window.getSelection();
+
+            let currentNode = el.firstChild;
+            let totalOffset = 0;
+            let foundNode = null;
+
+            while (currentNode) {
+                if (currentNode.nodeType === Node.TEXT_NODE) {
+                    const nodeLength = currentNode.length;
+
+                    if (totalOffset + nodeLength >= charOffset) {
+                        foundNode = currentNode;
+
+                        break;
+                    } else {
+                        totalOffset += nodeLength;
+                    }
+                } else if (currentNode.nodeType === Node.ELEMENT_NODE) {
+                    const textContent = currentNode.textContent;
+                    const nodeLength = textContent.length;
+
+                    if (totalOffset + nodeLength >= charOffset) {
+                        currentNode = currentNode.firstChild;
+
+                        while (currentNode.textContent.length + totalOffset < charOffset) {
+                            totalOffset += currentNode.textContent.length;
+                            currentNode = currentNode.nextSibling;
+                        }
+
+                        continue;
+                    } else {
+                        totalOffset += nodeLength;
+                    }
+                }
+
+                currentNode = currentNode.nextSibling;
+            }
+
+            if (foundNode) {
+                const start = charOffset - totalOffset;
+
+                range.setStart(foundNode, start);
+                range.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
         }
     }
 
