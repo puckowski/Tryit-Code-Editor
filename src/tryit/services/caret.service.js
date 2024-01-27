@@ -53,9 +53,16 @@ export function getCaretPosition(element) {
         if (selection.rangeCount !== 0) {
             const range = window.getSelection().getRangeAt(0);
             const preCaretRange = range.cloneRange();
+            
             preCaretRange.selectNodeContents(element);
             preCaretRange.setEnd(range.endContainer, range.endOffset);
-            position = preCaretRange.toString().length;
+            
+            const textWithNewlines = preCaretRange.toString();
+            if (textWithNewlines) {
+                position = textWithNewlines.length + textWithNewlines.split('\n').length;
+            } else {
+                position = 0;
+            }
         }
     }
     return position;
