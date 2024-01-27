@@ -56,10 +56,10 @@ export function getCaretPosition(element) {
             
             preCaretRange.selectNodeContents(element);
             preCaretRange.setEnd(range.endContainer, range.endOffset);
-            
+
             const textWithNewlines = preCaretRange.toString();
             if (textWithNewlines) {
-                position = textWithNewlines.length + textWithNewlines.split('\n').length;
+                position = textWithNewlines.length;// + (textWithNewlines.split('\n').length - 1);
             } else {
                 position = 0;
             }
