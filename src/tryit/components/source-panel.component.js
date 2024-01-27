@@ -79,22 +79,7 @@ class SourcePanelComponent {
         return range;
     }
 
-    addRangeToSelection(currentNode, charCount, totalCharacters) {
-        // Set the selection range
-        const selection = window.getSelection();
-        const range = document.createRange();
-
-        let start = charCount - (totalCharacters - currentNode.length);
-        if (start < 0) {
-            start = 0;
-        }
-
-        range.setStart(currentNode, start);
-        selection.removeAllRanges();
-        selection.addRange(range);
-    }
-
-    setCaretPosition2(el, charOffset) {
+    setCaretPosition(el, charOffset) {
         const range = document.createRange();
         const sel = window.getSelection();
         let currentNode = el.firstChild;
@@ -126,9 +111,8 @@ class SourcePanelComponent {
                         totalOffset += currentNode.textContent.length;
                         currentNode = currentNode.nextSibling;
                     }
-                    //foundNode = currentNode;
-                   // break;
-                   continue;
+
+                    continue;
                 } else {
                     totalOffset += nodeLength;
                 }
@@ -139,27 +123,13 @@ class SourcePanelComponent {
         }
 
         if (foundNode) {
-            let start = charOffset - (totalOffset );//+ newlinesBeforeMatchingNode);
-            let str = currentNode.textContent.substring(0,start);
-            newlinesInCurrentNode = str.split('\n').length-1;
+            let start = charOffset - (totalOffset);//+ newlinesBeforeMatchingNode);
+            let str = currentNode.textContent.substring(0, start);
+            newlinesInCurrentNode = str.split('\n').length - 1;
             let newlinesInCurrentNode2 = str.endsWith('\n') ? 1 : 0;
             if ((newlinesInCurrentNode - newlinesInCurrentNode2) === 0 && start > 0 && str !== '\n') {
-               // start--;
+                // start--;
             }
-            
-            /*let newlineBeforeCaretCount = (charOffset - totalOffset - (currentNode.textContent.length - newlinesInCurrentNode) - newlinesBeforeMatchingNode) / 2;
-
-            if (newlineBeforeCaretCount > 0) {
-                start = Math.ceil(start - newlineBeforeCaretCount);
-            }
-            else {
-                start--;
-            }
-
-            if (start < 0) {
-                if (charOffset - totalOffset > 0) start = charOffset - totalOffset; else
-                start = 0;
-            }*/
 
             range.setStart(foundNode, start);
             range.collapse(true);
@@ -182,46 +152,7 @@ class SourcePanelComponent {
     setCurrentCursorPosition(charCount) {
         if (charCount >= 0) {
             const el = document.getElementById('tryit-sling-div');
-            this.setCaretPosition2(el, charCount);
-            /*
-                        // Ensure the element is a contenteditable div
-                        if (el.nodeType === Node.ELEMENT_NODE && el.isContentEditable) {
-                            let currentNode = el.firstChild;
-                            let totalCharacters = 0;
-            
-                            while (currentNode) {
-                                if (currentNode.nodeType === Node.TEXT_NODE) {
-                                    totalCharacters += currentNode.length;
-            
-                                    // Check if the total characters exceed the specified count
-                                    if (totalCharacters >= charCount) {
-                                        this.addRangeToSelection(currentNode, charCount, totalCharacters);
-            
-                                        return;
-                                    }
-                                } else {
-                                    totalCharacters += currentNode.textContent.length;
-            
-                                    // Check if the total characters exceed the specified count
-                                    if (totalCharacters >= charCount) {
-                                        this.addRangeToSelection(currentNode, charCount, totalCharacters);
-            
-                                        return;
-                                    }
-                                }
-            
-                                // Move to the next node
-                                currentNode = currentNode.nextSibling;
-                            }
-            
-                            // If charCount is greater than the total characters, set the cursor at the end
-                            const selection = window.getSelection();
-                            const range = document.createRange();
-                            range.setStart(el, el.childNodes.length);
-                            range.collapse(true);
-                            selection.removeAllRanges();
-                            selection.addRange(range);
-                        }*/
+            this.setCaretPosition(el, charCount);
         }
     }
 
@@ -260,7 +191,7 @@ class SourcePanelComponent {
         if (event && event.inputType === 'insertParagraph') {
             let content = event.target.textContent;
             const contentLength = content.length;// + content.split('\n').length;
-            
+
             if (contentLength === caretPos) {
                 if (content.endsWith('\n')) {
                     content = content.substring(0, caretPos) + '\n';
@@ -269,8 +200,8 @@ class SourcePanelComponent {
                 }
             } else {
                 let before = content.substring(0, caretPos);
-               // const newlineCount = (before.split('\n').length - 1);
-               // before = before.substring(0, before.length - newlineCount);
+                // const newlineCount = (before.split('\n').length - 1);
+                // before = before.substring(0, before.length - newlineCount);
                 content = before + '\n' + content.substring(caretPos);// - newlineCount);
             }
             event.target.textContent = content;
