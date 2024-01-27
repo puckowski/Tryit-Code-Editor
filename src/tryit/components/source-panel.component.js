@@ -53,59 +53,26 @@ class SourcePanelComponent {
         }
     }
 
-    createRange(node, chars, range) {
-        if (!range) {
-            range = document.createRange()
-            range.selectNode(node);
-            range.setStart(node, 0);
-        }
-
-        if (chars.count === 0) {
-            range.setEnd(node, chars.count);
-        } else if (node && chars.count > 0) {
-            if (node.nodeType === Node.TEXT_NODE) {
-                if (node.textContent.length < chars.count) {
-                    chars.count -= node.textContent.length;
-                } else {
-                    range.setEnd(node, chars.count);
-                    chars.count = 0;
-                }
-            } else {
-                range.setEnd(node, node.childNodes.length);
-                chars.count = 0;
-            }
-        }
-
-        return range;
-    }
-
     setCaretPosition(el, charOffset) {
         const range = document.createRange();
         const sel = window.getSelection();
         let currentNode = el.firstChild;
         let totalOffset = 0;
-        let newlinesBeforeMatchingNode = 0;
-        let newlinesInCurrentNode = 0;
         let foundNode = null;
-        let lastNode = null;
 
         while (currentNode) {
             if (currentNode.nodeType === Node.TEXT_NODE) {
                 const nodeLength = currentNode.length;
                 if (totalOffset + nodeLength >= charOffset) {
-                    newlinesInCurrentNode = currentNode.textContent.split('\n').length;
                     foundNode = currentNode;
                     break;
                 } else {
                     totalOffset += nodeLength;
                 }
-                newlinesBeforeMatchingNode += currentNode.textContent.split('\n').length - 1;
             } else if (currentNode.nodeType === Node.ELEMENT_NODE) {
-                // Skip elements, adjust offset accordingly
                 const textContent = currentNode.textContent;
                 const nodeLength = textContent.length;
                 if (totalOffset + nodeLength >= charOffset) {
-                    newlinesInCurrentNode = currentNode.textContent.split('\n').length;
                     currentNode = currentNode.firstChild;
                     while (currentNode.textContent.length + totalOffset < charOffset) {
                         totalOffset += currentNode.textContent.length;
@@ -116,33 +83,14 @@ class SourcePanelComponent {
                 } else {
                     totalOffset += nodeLength;
                 }
-                newlinesBeforeMatchingNode += textContent.split('\n').length - 1;
             }
-            lastNode = currentNode;
             currentNode = currentNode.nextSibling;
         }
 
         if (foundNode) {
-            let start = charOffset - (totalOffset);//+ newlinesBeforeMatchingNode);
-            let str = currentNode.textContent.substring(0, start);
-            newlinesInCurrentNode = str.split('\n').length - 1;
-            let newlinesInCurrentNode2 = str.endsWith('\n') ? 1 : 0;
-            if ((newlinesInCurrentNode - newlinesInCurrentNode2) === 0 && start > 0 && str !== '\n') {
-                // start--;
-            }
+            const start = charOffset - totalOffset;
 
             range.setStart(foundNode, start);
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
-        } else if (lastNode) {
-            let start = lastNode.length - (charOffset - totalOffset);
-
-            if (start < 0) {
-                start = Math.ceil(Math.abs(start) / 2);
-            }
-
-            range.setStart(lastNode, start);
             range.collapse(true);
             sel.removeAllRanges();
             sel.addRange(range);
