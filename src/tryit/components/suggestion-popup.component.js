@@ -332,13 +332,19 @@ export class WordSuggestionComponent {
         const textAreaEle = document.getElementById('tryit-sling-div');
         const selectionEnd = getCaretPosition(textAreaEle);
 
-        const before = fileData.substring(0, selectionEnd);
+        let before = fileData.substring(0, selectionEnd);
+        let charsInserted = 4;
 
         let after = fileData.substring(selectionEnd);
-        after = '\t' + after;
-
+        if (after === '' && before.endsWith('\n')) {
+            before = before.substring(0, before.length - 1);
+            charsInserted--;
+        }
+        
+        after = '    ' + after;
+        
         this.fileService.updateFileData(fileIndex, before + after);
-        state.setCaretPositionToRestore(selectionEnd + 1);
+        state.setCaretPositionToRestore(selectionEnd + charsInserted);
 
         this.suggestion = null;
         this.input = null;
