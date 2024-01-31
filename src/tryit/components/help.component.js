@@ -99,7 +99,7 @@ class HelpComponent {
                         }),
                         markup('p', {
                             children: [
-                                textNode('Press Control/Command and J simultaneously to format your code. Press Control/Command and H simultaneously to run your code.')
+                                textNode('Press Control/Command and J simultaneously to format your code. Press Control/Command and M simultaneously to run your code.')
                             ]
                         }),
                         markup('p', {

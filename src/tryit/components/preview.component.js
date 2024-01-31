@@ -43,9 +43,16 @@ class PreviewComponent {
             }
 
             this.previewPendingData.old = this.previewPendingData.current;
-
             this.injectedList = 'Injected files: ';
-            const iframe = document.getElementById('tryit-sling-iframe');
+
+            const newIFrame = document.createElement('iframe');
+            let iframe = document.getElementById('tryit-sling-iframe');
+            let originalIFrame = iframe;
+            
+            newIFrame.style = iframe.style;
+            iframe.parentElement.replaceChild(newIFrame, iframe);
+            iframe = newIFrame;
+            originalIFrame = null;
 
             const fileIndex = state.getEditIndex();
             const fileData = this.fileService.getFileData(fileIndex);
@@ -273,6 +280,7 @@ class PreviewComponent {
 
     prepareHtmlContainer(iframe, fileData) {
         const htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
+       
         htmlContainer.document.open();
         htmlContainer.document.write(fileData);
 
