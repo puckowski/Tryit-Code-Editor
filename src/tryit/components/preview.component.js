@@ -278,16 +278,6 @@ class PreviewComponent {
         }
     }
 
-    newWindow(newIFrame){
-        var myFrame = newIFrame, myWindow = undefined;
-        myFrame.style.display = 'none';
-        myFrame.src = 'javascript:undefined;';
-        document.body.appendChild(myFrame);
-        myWindow = myFrame.contentWindow;
-        document.body.removeChild(myFrame);
-        return myWindow;
-    }
-
     prepareHtmlContainer(iframe, fileData) {
         const htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
        
