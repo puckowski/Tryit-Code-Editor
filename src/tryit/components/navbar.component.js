@@ -32,7 +32,7 @@ class NavbarComponent {
 
                         break;
                     }
-                    case 'h': {
+                    case 'm': {
                         event.preventDefault();
 
                         this.onRun();
