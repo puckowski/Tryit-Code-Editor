@@ -133,6 +133,10 @@ class NavbarComponent {
                     } else {
                         this.fileService.addFile(readEvent.target.result, false, false);
                     }
+
+                    state.setEditIndex(this.fileService.getFileList().length - 1);
+                    
+                    setState(state);
                     state.getDataSubject().next(true);
                 };
             }
