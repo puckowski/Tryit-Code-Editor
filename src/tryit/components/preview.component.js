@@ -45,12 +45,15 @@ class PreviewComponent {
             this.previewPendingData.old = this.previewPendingData.current;
 
             this.injectedList = 'Injected files: ';
-            const iframe = document.getElementById('tryit-sling-iframe');
+            const newIFrame = document.createElement('iframe');
+            let iframe = document.getElementById('tryit-sling-iframe');
+            iframe.parentElement.replaceChild(newIFrame, iframe);
+            iframe = newIFrame;
 
             const fileIndex = state.getEditIndex();
             const fileData = this.fileService.getFileData(fileIndex);
 
-            this.prepareHtmlContainer(iframe, fileData);
+            this.prepareHtmlContainer(iframe, fileData, true);
 
             let fileListJs = this.fileService.getFileList();
 
@@ -71,7 +74,7 @@ class PreviewComponent {
 
             s.DETACHED_SET_TIMEOUT(() => {
                 const iframe = document.getElementById('tryit-sling-iframe');
-                const htmlContainer = this.prepareHtmlContainer(iframe, fileData);
+                const htmlContainer = this.prepareHtmlContainer(iframe, fileData, false);
 
                 if (htmlContainer.document.head) {
                     this.injectedList = 'Injected files: ';
@@ -113,7 +116,7 @@ class PreviewComponent {
                     detectChanges();
 
                     const iframe = document.getElementById('tryit-sling-iframe');
-                    const htmlContainer = this.prepareHtmlContainer(iframe, fileData);
+                    const htmlContainer = this.prepareHtmlContainer(iframe, fileData, false);
 
                     const indexFileObj = this.fileService.getFile(fileIndex);
 
@@ -271,14 +274,49 @@ class PreviewComponent {
         }
     }
 
-    prepareHtmlContainer(iframe, fileData) {
-        const htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
+    newWindow(newIFrame){
+        var myFrame = newIFrame, myWindow = undefined;
+        myFrame.style.display = 'none';
+        myFrame.src = 'javascript:undefined;';
+        document.body.appendChild(myFrame);
+        myWindow = myFrame.contentWindow;
+        document.body.removeChild(myFrame);
+        return myWindow;
+    }
+
+    prepareHtmlContainer(iframe, fileData, write = true, newIFrame = null) {
+        let htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
+        if (write) {
+            if (newIFrame) {
+                const htmlContainer2 = this.newWindow(newIFrame);
+                const keys = new Set(Object.keys(htmlContainer2));
+                const keys2 = Object.keys(htmlContainer);
+                for (const existing of keys2) {
+                    if (!keys.has(existing)) {
+                        delete htmlContainer[existing];
+                    }
+                }
+                // Iterate over properties of the window object
+for (var key in htmlContainer) {
+    // Check if the property is a function
+    if (typeof htmlContainer[key] === 'function') {
+      console.log(key + " is a function");
+    }
+  }
+            }
+            htmlContainer.document.body.innerText = '';
+        for (let i = 0; i < htmlContainer.document.head.childNodes.length; ++i) {
+            htmlContainer.document.head.removeChild(htmlContainer.document.head.childNodes[i]);
+            i--;
+        }
         htmlContainer.document.open();
+        while (htmlContainer.document.childNodes.length > 0) htmlContainer.document.childNodes.removeChild(0);// = [];
         htmlContainer.document.write(fileData);
 
         if (fileData === '') {
             htmlContainer.document.close();
         }
+    }
 
         return htmlContainer;
     }
