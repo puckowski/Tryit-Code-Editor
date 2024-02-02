@@ -293,10 +293,10 @@ class PreviewComponent {
 
     getConsoleScriptText() {
         const consoleScript = 'const console=(function(oldCons) { return {' +
-            'log: function(text) { oldCons.log(text); window.parent.document.getElementById(\'tryit-sling-console\').value += text + \'\\r\\n\'; },' +
-            'info: function (text) { oldCons.info(text); window.parent.document.getElementById(\'tryit-sling-console\').value += text + \'\\r\\n\'; },' +
-            'warn: function (text) { oldCons.warn(text); window.parent.document.getElementById(\'tryit-sling-console\').value += text + \'\\r\\n\'; },' +
-            'error: function (text) { oldCons.error(text); window.parent.document.getElementById(\'tryit-sling-console\').value += text + \'\\r\\n\'; }' +
+            'log: function(text) { oldCons.log(text); const console = window.parent.document.getElementById(\'tryit-sling-console\'); console.value += text + \'\\r\\n\'; console.scrollTop = console.scrollHeight; },' +
+            'info: function (text) { oldCons.info(text); const console = window.parent.document.getElementById(\'tryit-sling-console\'); console.value += text + \'\\r\\n\'; console.scrollTop = console.scrollHeight; },' +
+            'warn: function (text) { oldCons.warn(text); const console = window.parent.document.getElementById(\'tryit-sling-console\'); console.value += text + \'\\r\\n\'; console.scrollTop = console.scrollHeight; },' +
+            'error: function (text) { oldCons.error(text); const console = window.parent.document.getElementById(\'tryit-sling-console\'); console.value += text + \'\\r\\n\'; console.scrollTop = console.scrollHeight; }' +
             '}; }(window.console)); window.console = console;';
 
         return consoleScript;

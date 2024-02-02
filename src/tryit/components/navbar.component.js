@@ -95,20 +95,36 @@ class NavbarComponent {
 
             if (iframeEle.contentDocument) {
                 const scriptList = iframeEle.contentDocument.head.querySelectorAll('script');
+                let tryItScript = null;
+
                 for (let i = 0; i < scriptList.length; ++i) {
                     if (scriptList[i].hasAttribute('tryit-sling-script')) {
+                        tryItScript = scriptList[i];
                         iframeEle.contentDocument.head.removeChild(scriptList[i]);
                     }
                 }
+
                 text = iframeEle.contentDocument.documentElement.outerHTML;
+
+                if (tryItScript) {
+                    iframeEle.contentDocument.head.appendChild(tryItScript);
+                }
             } else if (iframeEle.contentWindow) {
                 const scriptList = iframeEle.contentWindow.document.head.querySelectorAll('script');
+                let tryItScript = null;
+
                 for (let i = 0; i < scriptList.length; ++i) {
                     if (scriptList[i].hasAttribute('tryit-sling-script')) {
+                        tryItScript = scriptList[i];
                         iframeEle.contentWindow.document.head.removeChild(scriptList[i]);
                     }
                 }
+
                 text = iframeEle.contentWindow.document.documentElement.outerHTML;
+
+                if (tryItScript) {
+                    iframeEle.contentDocument.head.appendChild(tryItScript);
+                }
             }
 
             this.exportService.downloadFile('export.html', text);
@@ -135,7 +151,7 @@ class NavbarComponent {
                     }
 
                     state.setEditIndex(this.fileService.getFileList().length - 1);
-                    
+
                     setState(state);
                     state.getDataSubject().next(true);
                 };
