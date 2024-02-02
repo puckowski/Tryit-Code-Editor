@@ -5,6 +5,7 @@ class ScreenService {
     constructor() {
         this.COLLAPSED_MODE_WIDTH = 768;
         this.LOW_RESOLUTION_AREA = 1152000;
+        this.NORMAL_DPI_PRODUCT = 9216;
         this.lastWindowWidth = null;
     }
 
@@ -19,7 +20,12 @@ class ScreenService {
 
         const resolution = window.outerHeight * window.outerWidth;
 
-        if (resolution <= this.LOW_RESOLUTION_AREA) {
+        const devicePixelRatio = window.devicePixelRatio || 1;
+        const dpiX = document.getElementById('tryit-dpi').offsetWidth * devicePixelRatio;
+        const dpiY = document.getElementById('tryit-dpi').offsetHeight * devicePixelRatio;
+        const dpiProduct = dpiX * dpiY;
+
+        if (resolution <= this.LOW_RESOLUTION_AREA && dpiProduct > this.NORMAL_DPI_PRODUCT) {
             state.setLowResolution(true);
         } else {
             state.setLowResolution(false);
@@ -39,7 +45,7 @@ class ScreenService {
         s.DETACHED_SET_TIMEOUT(() => {
             state.getDataSubject().next(true);
         }, 0);
-        
+
         setState(state);
         detectChanges();
     }
