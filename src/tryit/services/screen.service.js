@@ -14,9 +14,10 @@ class ScreenService {
             return;
         }
 
-        this.lastWindowWidth = window.outerWidth;
-
         const state = getState();
+
+
+        this.lastWindowWidth = window.outerWidth;
 
         const resolution = window.outerHeight * window.outerWidth;
 

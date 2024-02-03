@@ -21,11 +21,13 @@ class StoreGlobal {
         this.preserveFocus = false;
         this.portraitMode = false;
         this.lowResolution = false;
-        this.manualLowResolution = false;
+        this.manualLowResolution = null;
         this.fileService = new FileService();
         this.dismissSuggestionSubject = BehaviorSubject(false);
         this.cssModeObject = 'cssmode';
+        this.lowResolutionObject = 'lowresolution';
         this.initializeCssMode();
+        this.initializeLowResolution();
     }
 
     initializeCssMode() {
@@ -52,15 +54,23 @@ class StoreGlobal {
     }
 
     getLowResolution() {
-        return this.lowResolution || this.manualLowResolution;
+        const isManualNormalResolution = this.manualLowResolution === false;
+
+        if (isManualNormalResolution) {
+            return false;
+        } else {
+            return this.lowResolution || this.manualLowResolution;
+        }
     }
 
     setLowResolution(state) {
         this.lowResolution = state;
+        localStorage.setItem(this.lowResolutionObject, this.getLowResolution());
     }
 
     setManualLowResolution(state) {
         this.manualLowResolution = state;
+        localStorage.setItem(this.lowResolutionObject, this.getLowResolution());
     }
 
     getPortraitMode() {
@@ -170,6 +180,16 @@ class StoreGlobal {
             this.heightModifier = parseInt(heightModifierStored);
         } else {
             this.heightModifier = 0;
+        }
+    }
+
+    initializeLowResolution() {
+        const lowResolutionStored = localStorage.getItem(this.lowResolutionObject);
+
+        if (lowResolutionStored !== null) {
+            this.manualLowResolution = lowResolutionStored === 'true';
+        } else {
+            this.manualLowResolution = null;
         }
     }
 }
