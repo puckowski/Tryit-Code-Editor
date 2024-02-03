@@ -42,11 +42,16 @@ class PreviewComponent {
                 return;
             }
 
+            let iframe = document.getElementById('tryit-sling-iframe');
+
+            if (iframe === null) {
+                return;
+            }
+            
             this.previewPendingData.old = this.previewPendingData.current;
             this.injectedList = 'Injected files: ';
 
             const newIFrame = document.createElement('iframe');
-            let iframe = document.getElementById('tryit-sling-iframe');
             let originalIFrame = iframe;
             
             newIFrame.style = iframe.style;
@@ -267,8 +272,9 @@ class PreviewComponent {
     slAfterInit() {
         const state = getState();
         const sub = state.getDataSubject();
-        if (!sub.getHasSubscription(this.onFileChangeFunction)) {
-            sub.subscribe(this.debounce(this.onFileChangeFunction, this.STANDARD_DELAY_MILLISECONDS));
+        const debouncedFileChangeFunction = this.debounce(this.onFileChangeFunction, this.STANDARD_DELAY_MILLISECONDS);
+        if (!sub.getHasSubscription(debouncedFileChangeFunction)) {
+            sub.subscribe(debouncedFileChangeFunction);
             sub.next(true);
         }
 
