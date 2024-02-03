@@ -26,6 +26,7 @@ export class ResetDialogComponent {
         localStorage.removeItem('height');
         localStorage.removeItem('filelist');
         localStorage.removeItem('cssmode');
+        localStorage.removeItem('lowresolution');
         this.fileService.initializeFileList();
 
         const state = getState();
@@ -35,7 +36,7 @@ export class ResetDialogComponent {
         let mod = state.getHeightModifier();
         mod = 0;
         state.setHeightModifier(mod);
-        state.setManualLowResolution(false);
+        state.setManualLowResolution(null);
         setState(state);
 
         let font = ' font: 400 13.3333px Arial;';

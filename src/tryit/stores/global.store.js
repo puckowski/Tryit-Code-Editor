@@ -65,12 +65,11 @@ class StoreGlobal {
 
     setLowResolution(state) {
         this.lowResolution = state;
-        localStorage.setItem(this.lowResolutionObject, this.getLowResolution());
     }
 
     setManualLowResolution(state) {
         this.manualLowResolution = state;
-        localStorage.setItem(this.lowResolutionObject, this.getLowResolution());
+        localStorage.setItem(this.lowResolutionObject, this.manualLowResolution);
     }
 
     getPortraitMode() {
