@@ -21,6 +21,7 @@ class StoreGlobal {
         this.preserveFocus = false;
         this.portraitMode = false;
         this.lowResolution = false;
+        this.manualLowResolution = false;
         this.fileService = new FileService();
         this.dismissSuggestionSubject = BehaviorSubject(false);
         this.cssModeObject = 'cssmode';
@@ -51,11 +52,15 @@ class StoreGlobal {
     }
 
     getLowResolution() {
-        return this.lowResolution;
+        return this.lowResolution || this.manualLowResolution;
     }
 
     setLowResolution(state) {
         this.lowResolution = state;
+    }
+
+    setManualLowResolution(state) {
+        this.manualLowResolution = state;
     }
 
     getPortraitMode() {

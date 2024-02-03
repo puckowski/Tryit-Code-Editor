@@ -1,4 +1,4 @@
-import { markup, textNode, getState, mount } from '../../../dist/sling.min';
+import { markup, textNode, getState, mount, setState } from '../../../dist/sling.min';
 import ResetDialogComponent from './reset-dialog.component';
 
 class HelpComponent {
@@ -10,6 +10,13 @@ class HelpComponent {
         mount('tryit-sling-reset', new ResetDialogComponent(), s.CHANGE_DETECTOR_DETACHED);
     }
 
+    onToggleLowResolution() {
+        const state = getState();
+        const isLowResolution = state.getLowResolution();
+        state.setManualLowResolution(!isLowResolution);
+        setState(state);
+    }
+
     view() {
         const state = getState();
 
@@ -18,6 +25,8 @@ class HelpComponent {
         if (state.getLowResolution()) {
             font = ' font: 400 26px Arial;';
         }
+        
+        const isLowResolution = state.getLowResolution();
 
         return markup('div', {
             attrs: {
@@ -148,6 +157,24 @@ class HelpComponent {
                                     children: [
                                         textNode('Reset')
                                     ]
+                                })
+                            ]
+                        }),
+                        markup('p', {
+                            children: [
+                                textNode('To switch between normal and low resolution mode, click the following toggle.'),
+                            ]
+                        }),
+                        markup('div', {
+                            children: [
+                                textNode('Low Resolution: '),
+                                markup('input', {
+                                    attrs: {
+                                        id: 'low-resolution-checkbox',
+                                        type: 'checkbox',
+                                        ...isLowResolution && { checked: 'true' },
+                                        onchange: this.onToggleLowResolution.bind(this)
+                                    }
                                 })
                             ]
                         }),
