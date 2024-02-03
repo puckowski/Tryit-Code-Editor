@@ -201,6 +201,10 @@ export class WordSuggestionComponent {
 
                         this.y = caret.top - lineHeight - this.convertRemToPixels(0.5);
 
+                        if (textAreaEle.scrollTop > 0) {
+                            this.y -= textAreaEle.scrollTop;
+                        }
+
                         detectChanges();
                     }
                 }
