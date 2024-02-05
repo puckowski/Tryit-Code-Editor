@@ -17,6 +17,7 @@ class PreviewComponent {
         this.nessScriptData = null;
         this.STANDARD_DELAY_MILLISECONDS = 300;
         this.debounce = debounce;
+        this.debouncedFileChangeFunction = null;
         this.onInvalidScriptFunction = () => {
             detectChanges();
         }
@@ -272,15 +273,28 @@ class PreviewComponent {
     slAfterInit() {
         const state = getState();
         const sub = state.getDataSubject();
-        const debouncedFileChangeFunction = this.debounce(this.onFileChangeFunction, this.STANDARD_DELAY_MILLISECONDS);
-        if (!sub.getHasSubscription(debouncedFileChangeFunction)) {
-            sub.subscribe(debouncedFileChangeFunction);
+        this.debouncedFileChangeFunction = this.debounce(this.onFileChangeFunction, this.STANDARD_DELAY_MILLISECONDS);
+        if (!sub.getHasSubscription(this.debouncedFileChangeFunction)) {
+            sub.subscribe(this.debouncedFileChangeFunction);
             sub.next(true);
         }
 
         const subInvalid = state.getInvalidScriptIndexSubject();
         if (!subInvalid.getHasSubscription(this.onInvalidScriptFunction)) {
             subInvalid.subscribe(this.onInvalidScriptFunction);
+        }
+    }
+
+    slOnDestroy() {
+        const state = getState();
+        const sub = state.getDataSubject();
+        if (sub.getHasSubscription(this.debouncedFileChangeFunction)) {
+            sub.clearSubscription(this.debouncedFileChangeFunction);
+        }
+
+        const subInvalid = state.getInvalidScriptIndexSubject();
+        if (subInvalid.getHasSubscription(this.onInvalidScriptFunction)) {
+            subInvalid.clearSubscription(this.onInvalidScriptFunction);
         }
     }
 
@@ -302,8 +316,27 @@ class PreviewComponent {
             'log: function(text) { oldCons.log(text); const console = window.parent.document.getElementById(\'tryit-sling-console\'); console.value += text + \'\\r\\n\'; console.scrollTop = console.scrollHeight; },' +
             'info: function (text) { oldCons.info(text); const console = window.parent.document.getElementById(\'tryit-sling-console\'); console.value += text + \'\\r\\n\'; console.scrollTop = console.scrollHeight; },' +
             'warn: function (text) { oldCons.warn(text); const console = window.parent.document.getElementById(\'tryit-sling-console\'); console.value += text + \'\\r\\n\'; console.scrollTop = console.scrollHeight; },' +
-            'error: function (text) { oldCons.error(text); const console = window.parent.document.getElementById(\'tryit-sling-console\'); console.value += text + \'\\r\\n\'; console.scrollTop = console.scrollHeight; }' +
-            '}; }(window.console)); window.console = console;';
+            'error: function (text) { oldCons.error(text); const console = window.parent.document.getElementById(\'tryit-sling-console\'); console.value += text + \'\\r\\n\'; console.scrollTop = console.scrollHeight; },' +
+            'debug: function (text) { oldCons.debug(text); const console = window.parent.document.getElementById(\'tryit-sling-console\'); console.value += text + \'\\r\\n\'; console.scrollTop = console.scrollHeight; },' +
+            'clear: function (text) { oldCons.clear(text); const console = window.parent.document.getElementById(\'tryit-sling-console\'); console.value = \'\'; console.scrollTop = console.scrollHeight; },' +
+            'trace: oldCons.trace,' +
+            'timeStamp: oldCons.timeStamp,' +
+            'timeLog: oldCons.timeLog,' +
+            'timeEnd: oldCons.timeEnd,' +
+            'time: oldCons.time,' +
+            'table: oldCons.table,' +
+            'profileEnd: oldCons.profileEnd,' +
+            'profile: oldCons.profile,' +
+            'groupEnd: oldCons.groupEnd,' +
+            'groupCollapsed: oldCons.groupCollapsed,' +
+            'group: oldCons.group,' +
+            'dir: oldCons.dir,' +
+            'dirxml: oldCons.dirxml,' +
+            'count: oldCons.count,' +
+            'countReset: oldCons.countReset,' +
+            'assert: oldCons.assert,' +
+            'slingTryIt: true' +
+            '}; }(window.console)); if (window.console.slingTryIt !== true) { window.console = console; }';
 
         return consoleScript;
     }
