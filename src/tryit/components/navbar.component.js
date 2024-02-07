@@ -105,6 +105,7 @@ class NavbarComponent {
                 }
 
                 text = iframeEle.contentDocument.documentElement.outerHTML;
+                text = text.split(SCRIPT_VALIDITY_CHECK_SOURCE).join('');
 
                 if (tryItScript) {
                     iframeEle.contentDocument.head.appendChild(tryItScript);
@@ -121,6 +122,7 @@ class NavbarComponent {
                 }
 
                 text = iframeEle.contentWindow.document.documentElement.outerHTML;
+                text = text.split(SCRIPT_VALIDITY_CHECK_SOURCE).join('');
 
                 if (tryItScript) {
                     iframeEle.contentDocument.head.appendChild(tryItScript);
