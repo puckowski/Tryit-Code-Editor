@@ -104,7 +104,7 @@ class FileTreeComponent {
 
         font += ' font-weight: 900;';
 
-        s.DETACHED_SET_TIMEOUT(() => {
+        setTimeout(() => {
             this.applyCheckedValuesAfterRender();
         }, 0);
 

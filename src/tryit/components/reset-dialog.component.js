@@ -55,7 +55,7 @@ export class ResetDialogComponent {
         toastContainer.style.display = 'block';
         toastContainer.style.font = font;
 
-        s.DETACHED_SET_TIMEOUT(() => {
+        setTimeout(() => {
             toastContainer.style.display = 'none';
         }, 4000);
     }

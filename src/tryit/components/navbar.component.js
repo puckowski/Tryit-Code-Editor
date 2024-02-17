@@ -68,7 +68,7 @@ class NavbarComponent {
         const state = getState();
         state.setShowPreview(!state.getShowPreview());
 
-        s.DETACHED_SET_TIMEOUT(() => {
+        setTimeout(() => {
             state.getDataSubject().next(true);
         }, 0);
 
@@ -314,7 +314,7 @@ class NavbarComponent {
         setState(state);
 
         if (!state.getShowHelp()) {
-            s.DETACHED_SET_TIMEOUT(() => {
+            setTimeout(() => {
                 state.getDataSubject().next(true);
             }, 0);
         }
@@ -325,7 +325,7 @@ class NavbarComponent {
         const state = getState();
         state.setEditIndex(startIndex);
         setState(state);
-        s.DETACHED_SET_TIMEOUT(() => {
+        setTimeout(() => {
             state.getDataSubject().next(true);
         }, 0);
     }
@@ -384,7 +384,7 @@ class NavbarComponent {
             state.setCollapsedMode(true);
         }
 
-        s.DETACHED_SET_TIMEOUT(() => {
+        setTimeout(() => {
             state.getDataSubject().next(true);
         }, 0);
 
@@ -403,7 +403,7 @@ class NavbarComponent {
             state.setCssMode(this.CSS_MODE_LESS);
         }
 
-        s.DETACHED_SET_TIMEOUT(() => {
+        setTimeout(() => {
             state.getDataSubject().next(true);
         }, 0);
 

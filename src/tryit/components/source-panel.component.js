@@ -17,7 +17,7 @@ class SourcePanelComponent {
                 const textAreaEle = document.getElementById('tryit-sling-div');
 
                 if (textAreaEle) {
-                    s.DETACHED_SET_TIMEOUT(() => {
+                    setTimeout(() => {
                         state = getState();
 
                         const collapsedMode = state.getCollapsedMode();
@@ -51,6 +51,10 @@ class SourcePanelComponent {
             sub.subscribe(this.onFileChangeFunction);
             sub.next(true);
         }
+    }
+
+    slOnDestroy() {
+        console.log('Testing.');
     }
 
     setCurrentCursorPosition(charOffset) {
