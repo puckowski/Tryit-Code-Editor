@@ -2,9 +2,6 @@ import { detectChanges, getState, markup, setState, textNode, mount } from '../.
 import ExportService from '../services/export.service';
 import FileService from '../services/file.service';
 import { SCRIPT_VALIDITY_CHECK_SOURCE } from '../stores/global.store';
-import { js_beautify } from '../../../js/beautify';
-import { css_beautify } from '../../../js/beautify-css';
-import { html_beautify } from '../../../js/beautify-html';
 import ShareDialogComponent from './share-dialog.component';
 import pako from '../../../js/pako.min';
 
@@ -19,6 +16,9 @@ class NavbarComponent {
         this.fileService.addFilesFromUrl();
         this.NAVBAR_VH_TARGET = 40;
         this.NAVBAR_PIXEL_HEIGHT_MAX = 240;
+        this.js_beautify = null;
+        this.css_beautify = null;
+        this.html_beautify = null;
     }
 
     slAfterInit() {
@@ -358,17 +358,69 @@ class NavbarComponent {
         let code = this.fileService.getFileData(fileIndex);
 
         if (fileData.injectCss) {
-            code = css_beautify(code);
+            if (this.css_beautify === null) {
+                import(
+                    '../../../js/beautify-css'
+                ).then((module) => {
+                    this.css_beautify = module.default.css_beautify;
+                    code = this.css_beautify(code);
+
+                    this.fileService.updateFileData(fileIndex, code);
+
+                    const sub = state.getDataSubject();
+                    sub.next(true);
+                });
+            } else {
+                code = this.css_beautify(code);
+
+                this.fileService.updateFileData(fileIndex, code);
+
+                const sub = state.getDataSubject();
+                sub.next(true);
+            }
         } else if (fileData.injectScript) {
-            code = js_beautify(code);
+            if (this.js_beautify === null) {
+                import(
+                    '../../../js/beautify'
+                ).then((module) => {
+                    this.js_beautify = module.default.js_beautify;
+                    code = this.js_beautify(code);
+
+                    this.fileService.updateFileData(fileIndex, code);
+
+                    const sub = state.getDataSubject();
+                    sub.next(true);
+                });
+            } else {
+                code = this.js_beautify(code);
+
+                this.fileService.updateFileData(fileIndex, code);
+
+                const sub = state.getDataSubject();
+                sub.next(true);
+            }
         } else {
-            code = html_beautify(code);
+            if (this.html_beautify === null) {
+                import(
+                    '../../../js/beautify-html'
+                ).then((module) => {
+                    this.html_beautify = module.default.html_beautify;
+                    code = this.html_beautify(code);
+
+                    this.fileService.updateFileData(fileIndex, code);
+
+                    const sub = state.getDataSubject();
+                    sub.next(true);
+                });
+            } else {
+                code = this.html_beautify(code);
+
+                this.fileService.updateFileData(fileIndex, code);
+
+                const sub = state.getDataSubject();
+                sub.next(true);
+            }
         }
-
-        this.fileService.updateFileData(fileIndex, code);
-
-        const sub = state.getDataSubject();
-        sub.next(true);
     }
 
     onToggleMode() {
