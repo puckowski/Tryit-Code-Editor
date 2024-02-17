@@ -1,13 +1,13 @@
 import { getState, markup, setState, textNode } from '../../../dist/sling.min';
 import FileService from '../services/file.service';
 import WordSuggestionComponent from './suggestion-popup.component';
-import hljs from '../../../js/highlight';
 import { getCaretPosition } from '../services/caret.service';
 
 class SourcePanelComponent {
 
     constructor() {
         this.fileService = new FileService();
+        this.hljs = null;
         this.onFileChangeFunction = () => {
             let state = getState();
             if (state.getPreserveFocus()) {
@@ -122,7 +122,16 @@ class SourcePanelComponent {
             const textAreaEle = document.getElementById('tryit-sling-div');
             textAreaEle.textContent = code;
 
-            hljs.highlightElement(textAreaEle);
+            if (this.hljs === null) {
+                import(
+                    '../../../js/highlight'
+                ).then((module) => {
+                    this.hljs = module;
+                    this.hljs.highlightElement(textAreaEle);
+                });
+            } else {
+                this.hljs.highlightElement(textAreaEle);
+            }
 
             const caretRestore = state.getCaretPositionToRestore();
             this.setCurrentCursorPosition(caretRestore);
