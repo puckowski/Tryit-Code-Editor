@@ -2,12 +2,16 @@ import { getState, markup, setState, textNode } from '../../../dist/sling.min';
 import FileService from '../services/file.service';
 import WordSuggestionComponent from './suggestion-popup.component';
 import { getCaretPosition } from '../services/caret.service';
+import { debounce } from '../services/throttle.service';
 
 class SourcePanelComponent {
 
     constructor() {
         this.fileService = new FileService();
         this.hljs = null;
+        this.STANDARD_DELAY_MILLISECONDS = 300;
+        this.debounce = debounce;
+        this.debouncedFileChangeFunction = null;
         this.onFileChangeFunction = () => {
             let state = getState();
             if (state.getPreserveFocus()) {
@@ -47,8 +51,9 @@ class SourcePanelComponent {
     slAfterInit() {
         const state = getState();
         const sub = state.getDataSubject();
-        if (!sub.getHasSubscription(this.onFileChangeFunction)) {
-            sub.subscribe(this.onFileChangeFunction);
+        this.debouncedFileChangeFunction = this.debounce(this.onFileChangeFunction, this.STANDARD_DELAY_MILLISECONDS);
+        if (!sub.getHasSubscription(this.debouncedFileChangeFunction)) {
+            sub.subscribe(this.debouncedFileChangeFunction);
             sub.next(true);
         }
     }
