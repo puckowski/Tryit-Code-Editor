@@ -13,6 +13,8 @@ class SourcePanelComponent {
         this.debounce = debounce;
         this.debouncedFileChangeFunction = null;
         this.onFileChangeFunction = () => {
+            this.STANDARD_DELAY_MILLISECONDS = 100;
+
             let state = getState();
             if (state.getPreserveFocus()) {
                 state.setPreserveFocus(false);
