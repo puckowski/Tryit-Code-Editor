@@ -1,4 +1,5 @@
 import { getState } from "../../../dist/sling.min";
+import pako from '../../../js/pako.min';
 
 class FileService {
 
@@ -132,7 +133,6 @@ class FileService {
         this.initializeFileList();
         this.filesParam = 'files';
         this.modeParam = 'mode';
-        this.pako = null;
     }
 
     buildSlingDemo() {
@@ -267,9 +267,9 @@ class FileService {
         }
     }
 
-    async addFilesFromUrl() {
+    addFilesFromUrl() {
         const fileList = this.getFileList();
-        const fromUrl = await this.getFileDataFromUrl();
+        const fromUrl = this.getFileDataFromUrl();
         this.setCssModeFromUrl();
         let count = fileList.length - 1;
         fromUrl.forEach(fileObj => {
@@ -285,24 +285,14 @@ class FileService {
         window.history.pushState({ path: updatedURL }, '', updatedURL);
     }
 
-    async getFileDataFromUrl() {
-        if (this.pako === null) {
-            const module = await import('../../../js/pako.min');
-            this.pako = module;
-            return this.getUncompressedFileData();
-        } else {
-            return this.getUncompressedFileData();
-        }
-    }
-
-    getUncompressedFileData() {
+    getFileDataFromUrl() {
         const url = new URL(window.location.href);
 
         if (url.searchParams.has(this.filesParam)) {
             const urlEncodedString = url.searchParams.get(this.filesParam);
             const filesBase64String = decodeURIComponent(urlEncodedString);
             const compressedFileData = Uint8Array.from(atob(filesBase64String), c => c.charCodeAt(0));
-            const decompressedFileData = this.pako.inflate(compressedFileData);
+            const decompressedFileData = pako.inflate(compressedFileData);
             const fileData = JSON.parse(new TextDecoder().decode(decompressedFileData));
 
             return fileData;
