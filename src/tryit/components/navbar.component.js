@@ -3,7 +3,6 @@ import ExportService from '../services/export.service';
 import FileService from '../services/file.service';
 import { SCRIPT_VALIDITY_CHECK_SOURCE } from '../stores/global.store';
 import ShareDialogComponent from './share-dialog.component';
-import pako from '../../../js/pako.min';
 
 class NavbarComponent {
 
@@ -19,6 +18,7 @@ class NavbarComponent {
         this.js_beautify = null;
         this.css_beautify = null;
         this.html_beautify = null;
+        this.pako = null;
     }
 
     slAfterInit() {
@@ -331,11 +331,23 @@ class NavbarComponent {
     }
 
     onShare() {
+        if (this.pako === null) {
+            import('../../../js/pako.min').then(module => {
+                this.pako = module;
+                this.shareProject();
+            });
+        } else {
+            this.shareProject();
+        }
+
+    }
+
+    shareProject() {
         const fileData = this.fileService.getFileList();
         const jsonString = JSON.stringify(fileData);
 
         const utf8Bytes = new TextEncoder().encode(jsonString);
-        const compressedData = pako.deflate(utf8Bytes);
+        const compressedData = this.pako.deflate(utf8Bytes);
         const base64String = btoa(String.fromCharCode.apply(null, compressedData));
         const filesEncodedString = encodeURIComponent(base64String);
 

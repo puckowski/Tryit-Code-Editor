@@ -13,9 +13,16 @@ class SourcePanelComponent {
         this.debounce = debounce;
         this.debouncedFileChangeFunction = null;
         this.onFileChangeFunction = () => {
-            this.STANDARD_DELAY_MILLISECONDS = 100;
-
             let state = getState();
+
+            const sub = state.getDataSubject();
+            if (this.STANDARD_DELAY_MILLISECONDS === 300 && sub.getHasSubscription(this.debouncedFileChangeFunction)) {
+                sub.clearSubscription(this.debouncedFileChangeFunction);
+                this.STANDARD_DELAY_MILLISECONDS = 100;
+                this.debouncedFileChangeFunction = this.debounce(this.onFileChangeFunction, this.STANDARD_DELAY_MILLISECONDS);
+                sub.subscribe(this.debouncedFileChangeFunction);
+            }
+
             if (state.getPreserveFocus()) {
                 state.setPreserveFocus(false);
                 setState(state);
