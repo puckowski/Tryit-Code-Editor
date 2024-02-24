@@ -450,7 +450,7 @@ class NavbarComponent {
 
         state.getDataSubject().next(true);
         setState(state);
-        
+
         detectChanges();
     }
 
@@ -490,7 +490,7 @@ class NavbarComponent {
             }
 
             headerAlign += ' min-height: ' + fourtyVhOrMax + 'px; ';
-            padding = ' padding: 12px 12px;';
+            padding = ' padding: 8px 8px;';
         }
 
         font += ' font-weight: 900;';

@@ -25,10 +25,12 @@ export function getCaretCoordinates(element, position, options) {
         const dummySpan = document.createElement("span");
         newRange.insertNode(dummySpan);
 
+        const boundingRect = editableDiv.getBoundingClientRect();
+
         // Get the position of the dummy span
         const caretPosition = {
-            left: dummySpan.offsetLeft + editableDiv.offsetLeft,
-            top: dummySpan.offsetTop + editableDiv.offsetTop,
+            left: dummySpan.offsetLeft + boundingRect.left,
+            top: dummySpan.offsetTop + boundingRect.top,
             height: parseInt(computed['lineHeight'])
         };
 
@@ -53,7 +55,7 @@ export function getCaretPosition(element) {
         if (selection.rangeCount !== 0) {
             const range = window.getSelection().getRangeAt(0);
             const preCaretRange = range.cloneRange();
-            
+
             preCaretRange.selectNodeContents(element);
             preCaretRange.setEnd(range.endContainer, range.endOffset);
 
