@@ -82,7 +82,7 @@ class PreviewComponent {
             const invalidIndexInitialSubject = state.getInvalidScriptIndexSubject();
             invalidIndexInitialSubject.next([]);
 
-            s.DETACHED_SET_TIMEOUT(() => {
+            setTimeout(() => {
                 const iframe = document.getElementById('tryit-sling-iframe');
                 const htmlContainer = this.prepareHtmlContainer(iframe, fileData);
 
@@ -177,7 +177,7 @@ class PreviewComponent {
                             let successRunCount = 0;
                             this.isPreviewLoading = true;
 
-                            const checkSuccessInterval = s.DETACHED_SET_INTERVAL(() => {
+                            const checkSuccessInterval = setInterval(() => {
                                 const tryitCountFinal = Number(localStorage.getItem('tryitCount'));
                                 const fileList = this.fileService.getFileList();
                                 const invalidIndexSubject = state.getInvalidScriptIndexSubject();

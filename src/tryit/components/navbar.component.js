@@ -67,12 +67,9 @@ class NavbarComponent {
     togglePreview() {
         const state = getState();
         state.setShowPreview(!state.getShowPreview());
-
-        s.DETACHED_SET_TIMEOUT(() => {
-            state.getDataSubject().next(true);
-        }, 0);
-
+        state.getDataSubject().next(true);
         setState(state);
+        detectChanges();
     }
 
     onRun() {
@@ -314,9 +311,8 @@ class NavbarComponent {
         setState(state);
 
         if (!state.getShowHelp()) {
-            s.DETACHED_SET_TIMEOUT(() => {
-                state.getDataSubject().next(true);
-            }, 0);
+            state.getDataSubject().next(true);
+            detectChanges();
         }
     }
 
@@ -325,9 +321,8 @@ class NavbarComponent {
         const state = getState();
         state.setEditIndex(startIndex);
         setState(state);
-        s.DETACHED_SET_TIMEOUT(() => {
-            state.getDataSubject().next(true);
-        }, 0);
+        state.getDataSubject().next(true);
+        detectChanges();
     }
 
     onShare() {
@@ -436,11 +431,9 @@ class NavbarComponent {
             state.setCollapsedMode(true);
         }
 
-        s.DETACHED_SET_TIMEOUT(() => {
-            state.getDataSubject().next(true);
-        }, 0);
-
+        state.getDataSubject().next(true);
         setState(state);
+
         detectChanges();
     }
 
@@ -455,11 +448,9 @@ class NavbarComponent {
             state.setCssMode(this.CSS_MODE_LESS);
         }
 
-        s.DETACHED_SET_TIMEOUT(() => {
-            state.getDataSubject().next(true);
-        }, 0);
-
+        state.getDataSubject().next(true);
         setState(state);
+
         detectChanges();
     }
 
@@ -499,7 +490,7 @@ class NavbarComponent {
             }
 
             headerAlign += ' min-height: ' + fourtyVhOrMax + 'px; ';
-            padding = ' padding: 12px 12px;';
+            padding = ' padding: 6px 6px;';
         }
 
         font += ' font-weight: 900;';
