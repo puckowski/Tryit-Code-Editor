@@ -1,15 +1,28 @@
-import { getState, markup, setState, textNode } from '../../../dist/sling.min';
+import { detectChanges, getState, markup, setState, textNode } from '../../../dist/sling.min';
 import FileService from '../services/file.service';
 import WordSuggestionComponent from './suggestion-popup.component';
-import hljs from '../../../js/highlight';
 import { getCaretPosition } from '../services/caret.service';
+import { debounce } from '../services/throttle.service';
 
 class SourcePanelComponent {
 
     constructor() {
         this.fileService = new FileService();
+        this.hljs = null;
+        this.STANDARD_DELAY_MILLISECONDS = 300;
+        this.debounce = debounce;
+        this.debouncedFileChangeFunction = null;
         this.onFileChangeFunction = () => {
             let state = getState();
+
+            const sub = state.getDataSubject();
+            if (this.STANDARD_DELAY_MILLISECONDS === 300 && sub.getHasSubscription(this.debouncedFileChangeFunction)) {
+                sub.clearSubscription(this.debouncedFileChangeFunction);
+                this.STANDARD_DELAY_MILLISECONDS = 100;
+                this.debouncedFileChangeFunction = this.debounce(this.onFileChangeFunction, this.STANDARD_DELAY_MILLISECONDS);
+                sub.subscribe(this.debouncedFileChangeFunction);
+            }
+
             if (state.getPreserveFocus()) {
                 state.setPreserveFocus(false);
                 setState(state);
@@ -37,6 +50,7 @@ class SourcePanelComponent {
 
                         const caretRestore = state.getCaretPositionToRestore();
                         this.setCurrentCursorPosition(caretRestore);
+                        detectChanges();
                     }, 100);
                 }
             }
@@ -47,8 +61,9 @@ class SourcePanelComponent {
     slAfterInit() {
         const state = getState();
         const sub = state.getDataSubject();
-        if (!sub.getHasSubscription(this.onFileChangeFunction)) {
-            sub.subscribe(this.onFileChangeFunction);
+        this.debouncedFileChangeFunction = this.debounce(this.onFileChangeFunction, this.STANDARD_DELAY_MILLISECONDS);
+        if (!sub.getHasSubscription(this.debouncedFileChangeFunction)) {
+            sub.subscribe(this.debouncedFileChangeFunction);
             sub.next(true);
         }
     }
@@ -111,29 +126,37 @@ class SourcePanelComponent {
     }
 
     highlightCode() {
-        setTimeout(() => {
-            const state = getState();
+        const state = getState();
 
-            const collapsedMode = state.getCollapsedMode();
-            const showPreview = state.getShowPreview();
+        const collapsedMode = state.getCollapsedMode();
+        const showPreview = state.getShowPreview();
 
-            if (collapsedMode && showPreview) {
-                return;
-            }
+        if (collapsedMode && showPreview) {
+            return;
+        }
 
-            const fileIndex = state.getEditIndex();
-            let code = this.fileService.getFileData(fileIndex);
-            const textAreaEle = document.getElementById('tryit-sling-div');
-            textAreaEle.textContent = code;
+        const fileIndex = state.getEditIndex();
+        let code = this.fileService.getFileData(fileIndex);
+        const textAreaEle = document.getElementById('tryit-sling-div');
+        textAreaEle.textContent = code;
 
-            hljs.highlightElement(textAreaEle);
+        if (this.hljs === null) {
+            import(
+                '../../../js/highlight'
+            ).then((module) => {
+                this.hljs = module;
+                this.hljs.highlightElement(textAreaEle);
+            });
+        } else {
+            this.hljs.highlightElement(textAreaEle);
+        }
 
-            const caretRestore = state.getCaretPositionToRestore();
-            this.setCurrentCursorPosition(caretRestore);
+        const caretRestore = state.getCaretPositionToRestore();
+        this.setCurrentCursorPosition(caretRestore);
 
-            const sub = state.getHasHighlightedSubject();
-            sub.next(true);
-        }, 0);
+        const sub = state.getHasHighlightedSubject();
+        sub.next(true);
+        detectChanges();
     }
 
     onInput(event) {
