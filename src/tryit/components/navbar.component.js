@@ -15,10 +15,11 @@ class NavbarComponent {
         this.CSS_MODE_STANDARD = 0;
         this.fileService.addFilesFromUrl();
         this.NAVBAR_VH_TARGET = 40;
-        this.NAVBAR_PIXEL_HEIGHT_MAX = 240;
+        this.NAVBAR_PIXEL_HEIGHT_MAX = 200;
         this.js_beautify = null;
         this.css_beautify = null;
         this.html_beautify = null;
+        this.showMoreControls = false;
     }
 
     slAfterInit() {
@@ -454,6 +455,10 @@ class NavbarComponent {
         detectChanges();
     }
 
+    onToggleShowMore() {
+        this.showMoreControls = !this.showMoreControls;
+    }
+
     view() {
         const state = getState();
         const mod = state.getHeightModifier();
@@ -534,26 +539,6 @@ class NavbarComponent {
                 }),
                 markup('button', {
                     attrs: {
-                        onclick: this.expandHeight.bind(this),
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
-                    },
-                    children: [
-                        textNode('Expand')
-                    ]
-                }),
-                ...(mod > 0 ? [
-                    markup('button', {
-                        attrs: {
-                            onclick: this.shrinkHeight.bind(this),
-                            style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
-                        },
-                        children: [
-                            textNode('Shrink')
-                        ]
-                    })
-                ] : []),
-                markup('button', {
-                    attrs: {
                         onclick: this.onRun.bind(this),
                         style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
                     },
@@ -579,61 +564,6 @@ class NavbarComponent {
                     },
                     children: [
                         textNode('Export')
-                    ]
-                }),
-                markup('label', {
-                    attrs: {
-                        id: 'try-sling-import-label',
-                        for: 'tryit-sling-import',
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); display: flex; align-items: center; ' + marginRight + '  ' + font + padding,
-                    },
-                    children: [
-                        textNode('Import File')
-                    ]
-                }),
-                markup('label', {
-                    attrs: {
-                        id: 'try-sling-import-workspace-label',
-                        for: 'tryit-sling-import-workspace',
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); display: flex; align-items: center; ' + marginRight + '  ' + font + padding,
-                    },
-                    children: [
-                        textNode('Import Workspace')
-                    ]
-                }),
-                markup('input', {
-                    attrs: {
-                        onchange: this.onImport.bind(this),
-                        id: 'tryit-sling-import',
-                        type: 'file',
-                        style: 'display: none;'
-                    }
-                }),
-                markup('input', {
-                    attrs: {
-                        onchange: this.onImportWorkspace.bind(this),
-                        id: 'tryit-sling-import-workspace',
-                        type: 'file',
-                        style: 'display: none;'
-                    }
-                }),
-                markup('button', {
-                    attrs: {
-                        onclick: this.onHelpToggle.bind(this),
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
-                    },
-                    children: [
-                        textNode('Toggle Help')
-                    ]
-                }),
-                markup('button', {
-                    attrs: {
-                        id: 'tryit-sling-clear-console',
-                        onclick: this.onClearConsole.bind(this),
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
-                    },
-                    children: [
-                        textNode('Clear Console')
                     ]
                 }),
                 markup('button', {
@@ -668,24 +598,120 @@ class NavbarComponent {
                         ...(state.getCssMode() === this.CSS_MODE_STANDARD ? [textNode('Use Less.js 4.1.3')] : []),
                     ]
                 }),
-                markup('button', {
-                    attrs: {
-                        onclick: this.onSlingDemo.bind(this),
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
-                    },
-                    children: [
-                        textNode('Sling.js Demo')
-                    ]
-                }),
-                markup('button', {
-                    attrs: {
-                        onclick: this.onShare.bind(this),
-                        style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204);  ' + font + padding
-                    },
-                    children: [
-                        textNode('Share')
-                    ]
-                })
+                ...(this.showMoreControls === true ? [
+                    markup('button', {
+                        attrs: {
+                            onclick: this.onHelpToggle.bind(this),
+                            style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
+                        },
+                        children: [
+                            textNode('Toggle Help')
+                        ]
+                    }),
+                    markup('button', {
+                        attrs: {
+                            id: 'tryit-sling-clear-console',
+                            onclick: this.onClearConsole.bind(this),
+                            style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
+                        },
+                        children: [
+                            textNode('Clear Console')
+                        ]
+                    }),
+                    markup('button', {
+                        attrs: {
+                            onclick: this.expandHeight.bind(this),
+                            style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
+                        },
+                        children: [
+                            textNode('Expand')
+                        ]
+                    }),
+                    ...(mod > 0 ? [
+                        markup('button', {
+                            attrs: {
+                                onclick: this.shrinkHeight.bind(this),
+                                style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
+                            },
+                            children: [
+                                textNode('Shrink')
+                            ]
+                        })
+                    ] : []),
+                    markup('label', {
+                        attrs: {
+                            id: 'try-sling-import-label',
+                            for: 'tryit-sling-import',
+                            style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); display: flex; align-items: center; ' + marginRight + '  ' + font + padding,
+                        },
+                        children: [
+                            textNode('Import File')
+                        ]
+                    }),
+                    markup('label', {
+                        attrs: {
+                            id: 'try-sling-import-workspace-label',
+                            for: 'tryit-sling-import-workspace',
+                            style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); display: flex; align-items: center; ' + marginRight + '  ' + font + padding,
+                        },
+                        children: [
+                            textNode('Import Workspace')
+                        ]
+                    }),
+                    markup('input', {
+                        attrs: {
+                            onchange: this.onImport.bind(this),
+                            id: 'tryit-sling-import',
+                            type: 'file',
+                            style: 'display: none;'
+                        }
+                    }),
+                    markup('input', {
+                        attrs: {
+                            onchange: this.onImportWorkspace.bind(this),
+                            id: 'tryit-sling-import-workspace',
+                            type: 'file',
+                            style: 'display: none;'
+                        }
+                    }),
+                    markup('button', {
+                        attrs: {
+                            onclick: this.onSlingDemo.bind(this),
+                            style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
+                        },
+                        children: [
+                            textNode('Sling.js Demo')
+                        ]
+                    }),
+                    markup('button', {
+                        attrs: {
+                            onclick: this.onShare.bind(this),
+                            style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204);  ' + marginRight + '  ' + font + padding
+                        },
+                        children: [
+                            textNode('Share')
+                        ]
+                    }),
+                    markup('button', {
+                        attrs: {
+                            onclick: this.onToggleShowMore.bind(this),
+                            style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
+                        },
+                        children: [
+                            textNode('Less')
+                        ]
+                    }),
+                ] : [
+                    markup('button', {
+                        attrs: {
+                            onclick: this.onToggleShowMore.bind(this),
+                            style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
+                        },
+                        children: [
+                            textNode('More')
+                        ]
+                    }),
+                ]),
             ]
         });
     }
