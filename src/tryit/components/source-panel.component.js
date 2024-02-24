@@ -68,10 +68,6 @@ class SourcePanelComponent {
         }
     }
 
-    slOnDestroy() {
-        console.log('Testing.');
-    }
-
     setCurrentCursorPosition(charOffset) {
         if (charOffset >= 0) {
             const el = document.getElementById('tryit-sling-div');
@@ -167,7 +163,7 @@ class SourcePanelComponent {
 
         if (event && event.inputType === 'insertParagraph') {
             let content = event.target.textContent;
-            const contentLength = content.length;// + content.split('\n').length;
+            const contentLength = content.length;
 
             if (contentLength === caretPos) {
                 if (content.endsWith('\n')) {
@@ -176,10 +172,8 @@ class SourcePanelComponent {
                     content = content.substring(0, caretPos) + '\n\n';
                 }
             } else {
-                let before = content.substring(0, caretPos);
-                // const newlineCount = (before.split('\n').length - 1);
-                // before = before.substring(0, before.length - newlineCount);
-                content = before + '\n' + content.substring(caretPos);// - newlineCount);
+                const before = content.substring(0, caretPos);
+                content = before + '\n' + content.substring(caretPos);
             }
             event.target.textContent = content;
             caretPos++;
