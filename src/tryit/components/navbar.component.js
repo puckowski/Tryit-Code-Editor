@@ -490,7 +490,7 @@ class NavbarComponent {
             }
 
             headerAlign += ' min-height: ' + fourtyVhOrMax + 'px; ';
-            padding = ' padding: 8px 8px;';
+            padding = ' padding: 6px 6px;';
         }
 
         font += ' font-weight: 900;';
