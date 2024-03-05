@@ -31,6 +31,7 @@ class FileTreeComponent {
         if (this.editNameIndex >= 0) {
             state.setPreserveFocus(true);
         }
+        state.setCaretPositionToRestore(0);
         setState(state);
         state.getDataSubject().next(true);
     }

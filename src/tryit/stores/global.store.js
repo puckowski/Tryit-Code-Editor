@@ -12,7 +12,7 @@ class StoreGlobal {
         this.inlineHeight = '';
         this.collapsedMode = false;
         this.showPreview = false;
-        this.version = '5.9';
+        this.version = '6.0';
         this.showHelp = false;
         this.sourceHasNewInput = BehaviorSubject(false);
         this.invalidScriptIndices = BehaviorSubject([]);
@@ -26,8 +26,13 @@ class StoreGlobal {
         this.dismissSuggestionSubject = BehaviorSubject(false);
         this.cssModeObject = 'cssmode';
         this.lowResolutionObject = 'lowresolution';
+        this.caretSubject = BehaviorSubject(false);
         this.initializeCssMode();
         this.initializeLowResolution();
+    }
+
+    getCaretSubject() {
+        return this.caretSubject;
     }
 
     initializeCssMode() {

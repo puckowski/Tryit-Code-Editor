@@ -4,6 +4,7 @@ import FileService from '../services/file.service';
 import { SCRIPT_VALIDITY_CHECK_SOURCE } from '../stores/global.store';
 import ShareDialogComponent from './share-dialog.component';
 import pako from '../../../js/pako.min';
+import { getCaretPosition } from '../services/caret.service';
 
 class NavbarComponent {
 
@@ -365,6 +366,8 @@ class NavbarComponent {
 
                     const sub = state.getDataSubject();
                     sub.next(true);
+
+                    this.restoreCaretPosition();
                 });
             } else {
                 code = this.css_beautify(code);
@@ -373,6 +376,8 @@ class NavbarComponent {
 
                 const sub = state.getDataSubject();
                 sub.next(true);
+
+                this.restoreCaretPosition();
             }
         } else if (fileData.injectScript) {
             if (this.js_beautify === null) {
@@ -386,6 +391,8 @@ class NavbarComponent {
 
                     const sub = state.getDataSubject();
                     sub.next(true);
+
+                    this.restoreCaretPosition();
                 });
             } else {
                 code = this.js_beautify(code);
@@ -394,6 +401,8 @@ class NavbarComponent {
 
                 const sub = state.getDataSubject();
                 sub.next(true);
+
+                this.restoreCaretPosition();
             }
         } else {
             if (this.html_beautify === null) {
@@ -407,6 +416,8 @@ class NavbarComponent {
 
                     const sub = state.getDataSubject();
                     sub.next(true);
+
+                    this.restoreCaretPosition();
                 });
             } else {
                 code = this.html_beautify(code);
@@ -415,8 +426,24 @@ class NavbarComponent {
 
                 const sub = state.getDataSubject();
                 sub.next(true);
+
+                this.restoreCaretPosition();
             }
         }
+    }
+
+    restoreCaretPosition() {
+        const state = getState();
+
+        const textAreaEle = document.getElementById('tryit-sling-div');
+        const caretRestore = getCaretPosition(textAreaEle);
+
+        state.setCaretPositionToRestore(caretRestore);
+        setState(state);
+
+        state.getCaretSubject().next(caretRestore);
+
+        detectChanges();
     }
 
     onToggleMode() {

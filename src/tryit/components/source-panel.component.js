@@ -47,10 +47,6 @@ class SourcePanelComponent {
                         textAreaEle.textContent = fileData;
 
                         this.highlightCode();
-
-                        const caretRestore = state.getCaretPositionToRestore();
-                        this.setCurrentCursorPosition(caretRestore);
-                        detectChanges();
                     }, 100);
                 }
             }
@@ -65,6 +61,24 @@ class SourcePanelComponent {
         if (!sub.getHasSubscription(this.debouncedFileChangeFunction)) {
             sub.subscribe(this.debouncedFileChangeFunction);
             sub.next(true);
+        }
+
+        const caretSubject = state.getCaretSubject();
+        if (!caretSubject.getHasSubscription(this.setCurrentCursorPosition)) {
+            caretSubject.subscribe(this.setCurrentCursorPosition);
+        }
+    }
+
+    slOnDestroy() {
+        const state = getState();
+        const sub = state.getDataSubject();
+        if (sub.getHasSubscription(this.debouncedFileChangeFunction)) {
+            sub.clearSubscription(this.debouncedFileChangeFunction);
+        }
+
+        const caretSubject = state.getCaretSubject();
+        if (caretSubject.getHasSubscription(this.setCurrentCursorPosition)) {
+            caretSubject.clearSubscription(this.setCurrentCursorPosition);
         }
     }
 
@@ -142,9 +156,17 @@ class SourcePanelComponent {
             ).then((module) => {
                 this.hljs = module;
                 this.hljs.highlightElement(textAreaEle);
+
+                const caretRestore = state.getCaretPositionToRestore();
+                this.setCurrentCursorPosition(caretRestore);
+                detectChanges();
             });
         } else {
             this.hljs.highlightElement(textAreaEle);
+
+            const caretRestore = state.getCaretPositionToRestore();
+            this.setCurrentCursorPosition(caretRestore);
+            detectChanges();
         }
 
         const caretRestore = state.getCaretPositionToRestore();
