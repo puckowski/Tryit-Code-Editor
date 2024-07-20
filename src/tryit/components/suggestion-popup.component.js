@@ -340,7 +340,7 @@ export class WordSuggestionComponent {
             before = before.substring(0, before.length - 1);
             charsInserted--;
         }
-        
+
         after = '    ' + after;
 
         this.fileService.updateFileData(fileIndex, before + after);
@@ -401,7 +401,8 @@ export class WordSuggestionComponent {
             attrs: {
                 id: 'tryit-sling-suggestion',
                 style: leftAndTopAndDisplay + 'position: fixed; padding: 0.25rem; background-color: rgb(60, 68, 83); color: rgb(204, 204, 204); z-index: 1000;' + font,
-                onclick: this.insertSuggestion.bind(this)
+                onclick: this.insertSuggestion.bind(this),
+                onmousedown: (pointerEvent) => { pointerEvent.preventDefault(); pointerEvent.stopPropagation(); }
             },
             children: [
                 textNode(this.suggestion)
