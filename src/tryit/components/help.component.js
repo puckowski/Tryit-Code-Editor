@@ -118,7 +118,7 @@ class HelpComponent {
                         }),
                         markup('p', {
                             children: [
-                                textNode('A custom build of Less.js 4.1.3 is used that supports CSS Container Queries, Media Queries Level 4, and Cascading and Inheritance Level 6. '),
+                                textNode('A custom build of Less.js 4.1.3 is used that supports CSS Container Queries, Media Queries Level 4, and Cascading and Inheritance Level 6.'),
                                 markup('a', {
                                     attrs: {
                                         href: 'https://github.com/puckowski/less.js'
@@ -131,7 +131,7 @@ class HelpComponent {
                         }),
                         markup('p', {
                             children: [
-                                textNode('Ness.js 1.5.0 supports SCSS-style CSS nesting, nested @media, and nested @layer queries. '),
+                                textNode('Ness.js 1.5.1 supports SCSS-style CSS nesting, nested @media, and nested @layer queries.'),
                                 markup('a', {
                                     attrs: {
                                         href: 'https://github.com/puckowski/Ness.js'
