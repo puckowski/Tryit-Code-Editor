@@ -45,7 +45,7 @@ class FileService {
             '    markup,\n' +
             '    addRoute,\n' +
             '    route\n' +
-            '} from "https://cdn.jsdelivr.net/npm/slingjs@19.0.1/sling.min.js";\n' +
+            '} from "./sling.min.js";\n' +
             '\n' +
             'class HideComponent {\n' +
             '    hideWelcome() {\n' +
@@ -290,8 +290,20 @@ class FileService {
 
         if (url.searchParams.has(this.filesParam)) {
             const urlEncodedString = url.searchParams.get(this.filesParam);
-            const filesBase64String = decodeURIComponent(urlEncodedString);
-            const compressedFileData = Uint8Array.from(atob(filesBase64String), c => c.charCodeAt(0));
+            // navbar.component.js encodes files with: encodeURIComponent(btoa(compressedData))
+            // URLSearchParams.get() returns the percent-encoded string; calling atob on that
+            // value is correct because the percent-encoding preserves base64 characters when
+            // retrieved via get(). Avoid calling decodeURIComponent before atob which can
+            // corrupt the base64 string (spaces, pluses, slashes, padding).
+            const filesBase64String = urlEncodedString;
+            let compressedFileData;
+            try {
+                compressedFileData = Uint8Array.from(atob(filesBase64String), c => c.charCodeAt(0));
+            } catch (err) {
+                console.error('Failed to base64-decode files URL param:', err, filesBase64String);
+                return [];
+            }
+
             const decompressedFileData = pako.inflate(compressedFileData);
             const fileData = JSON.parse(new TextDecoder().decode(decompressedFileData));
 
@@ -305,7 +317,17 @@ class FileService {
         const url = new URL(window.location.href);
 
         if (url.searchParams.has(this.modeParam)) {
-            const modeParam = decodeURIComponent(atob(url.searchParams.get(this.modeParam)));
+            // navbar.component.js sets mode with: encodeURIComponent(btoa(state.getCssMode()))
+            // Get the raw param and call atob on it (don't decodeURIComponent first).
+            const rawMode = url.searchParams.get(this.modeParam);
+            let modeParam;
+            try {
+                modeParam = atob(rawMode);
+            } catch (err) {
+                console.error('Failed to decode mode URL param:', err, rawMode);
+                return;
+            }
+
             const cssModeParam = parseInt(modeParam);
 
             const state = getState();
