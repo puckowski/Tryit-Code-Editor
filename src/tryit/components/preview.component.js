@@ -48,13 +48,13 @@ class PreviewComponent {
             if (iframe === null) {
                 return;
             }
-            
+
             this.previewPendingData.old = this.previewPendingData.current;
             this.injectedList = 'Injected files: ';
 
             const newIFrame = document.createElement('iframe');
             let originalIFrame = iframe;
-            
+
             newIFrame.style = iframe.style;
             iframe.parentElement.replaceChild(newIFrame, iframe);
             iframe = newIFrame;
@@ -159,6 +159,19 @@ class PreviewComponent {
                     consoleScript.type = 'module';
                     consoleScript.setAttribute('tryit-sling-script', 'true');
                     htmlContainer.document.head.appendChild(consoleScript);
+
+                    htmlContainer.addEventListener('error', (e) => {
+                        const script = document.createElement('script');
+                        script.text = 'setTimeout(() => { console.error("Error injecting script: ' + e.message.replace(/"/g, '\\"') + '"); }, 0);';
+                        script.type = 'module';
+                        htmlContainer.document.head.appendChild(script);
+                    });
+                    htmlContainer.addEventListener('unhandledrejection', (e) => {
+                        const script = document.createElement('script');
+                        script.text = 'setTimeout(() => { console.error("Error injecting script: ' + e.message.replace(/"/g, '\\"') + '"); }, 0);';
+                        script.type = 'module';
+                        htmlContainer.document.head.appendChild(script);
+                    });
 
                     fileListJs.forEach((injectedScript) => {
                         if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
@@ -300,7 +313,7 @@ class PreviewComponent {
 
     prepareHtmlContainer(iframe, fileData) {
         const htmlContainer = (iframe.contentWindow) ? iframe.contentWindow : (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
-       
+
         htmlContainer.document.open();
         htmlContainer.document.write(fileData);
 
