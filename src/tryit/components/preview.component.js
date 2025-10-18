@@ -22,12 +22,6 @@ class PreviewComponent {
             detectChanges();
         }
         this.previewPendingData = { current: 0, old: 0 };
-        if (window.ints === undefined) {
-            window.ints = [];
-        }
-        if (window.docs === undefined) {
-            window.docs = [];
-        }
         this.onFileChangeFunction = () => {
             if (this.previewPendingData.current === this.previewPendingData.old) {
                 this.previewPendingData.current = 0;
@@ -54,19 +48,7 @@ class PreviewComponent {
             if (iframe === null) {
                 return;
             }
-
-            window.ints.forEach(i => clearInterval(i));
-            window.ints = [];
-
-            window.docs.forEach(d => {
-                d.document.head.innerHTML = "";
-                d = null;
-            });
-            for (let i = 0 ; i < window.docs.length; ++i) {
-                window.docs[i] = null;
-            }
-            window.docs = [];
-
+            
             this.previewPendingData.old = this.previewPendingData.current;
             this.injectedList = 'Injected files: ';
 
@@ -75,7 +57,6 @@ class PreviewComponent {
             
             newIFrame.style = iframe.style;
             iframe.parentElement.replaceChild(newIFrame, iframe);
-            iframe = null;
             iframe = newIFrame;
             originalIFrame = null;
 
@@ -146,7 +127,6 @@ class PreviewComponent {
 
                     const iframe = document.getElementById('tryit-sling-iframe');
                     const htmlContainer = this.prepareHtmlContainer(iframe, fileData);
-                    window.docs.push(htmlContainer);
 
                     const indexFileObj = this.fileService.getFile(fileIndex);
 
@@ -226,13 +206,10 @@ class PreviewComponent {
 
                                 if (successRunCount === this.CONTENT_LOAD_CHECK_COUNT || invalidIndexSubject.getData().length === 0) {
                                     clearInterval(checkSuccessInterval);
-                                    window.ints.forEach(i => clearInterval(i));
-                                    window.ints = [];
                                     this.isPreviewLoading = false;
                                     detectChanges();
                                 }
                             }, this.STANDARD_DELAY_MILLISECONDS);
-                            window.ints.push(checkSuccessInterval);
 
                             script.setAttribute('tryit-filename', injectedScript.name ? injectedScript.name : '');
 
