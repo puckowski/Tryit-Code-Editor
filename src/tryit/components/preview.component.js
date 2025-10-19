@@ -203,6 +203,7 @@ class PreviewComponent {
                             script.type = 'module';
                             script.src = url;
                             script.dataset.id = id;
+                            script.setAttribute('tryit-script-index', injectedScript.index);
 
                             let tryitCountOriginal = localStorage.getItem('tryitCount');
                             if (!tryitCountOriginal) {

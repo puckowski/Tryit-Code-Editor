@@ -95,16 +95,33 @@ class NavbarComponent {
             if (iframeEle.contentDocument) {
                 const scriptList = iframeEle.contentDocument.head.querySelectorAll('script');
                 let tryItScript = null;
+                let scriptText = '';
+
+                const blobSciptOuterList = [];
 
                 for (let i = 0; i < scriptList.length; ++i) {
                     if (scriptList[i].hasAttribute('tryit-sling-script')) {
                         tryItScript = scriptList[i];
                         iframeEle.contentDocument.head.removeChild(scriptList[i]);
+                    } else if (scriptList[i].hasAttribute('tryit-script-index')) {
+                        const index = Number(scriptList[i].getAttribute('tryit-script-index'));
+                        const file = this.fileService.getFile(index);
+                        scriptText += '\n<script type="module" tryit-filename="' + file.name + '">' + file.data + '</script>';
+                        blobSciptOuterList.push(scriptList[i].outerHTML);
                     }
                 }
 
                 text = iframeEle.contentDocument.documentElement.outerHTML;
                 text = text.split(SCRIPT_VALIDITY_CHECK_SOURCE).join('');
+                for (const blobScriptOuter of blobSciptOuterList) {
+                    text = text.split(blobScriptOuter).join('');
+                }
+
+                const beforeHead = text.indexOf('<head>');
+                const afterHead = beforeHead + 6;
+                const beforeHeadText = text.substring(0, afterHead);
+                const afterHeadText = text.substring(afterHead);
+                text = beforeHeadText + scriptText + afterHeadText;
 
                 if (tryItScript) {
                     iframeEle.contentDocument.head.appendChild(tryItScript);
