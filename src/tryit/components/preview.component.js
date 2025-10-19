@@ -18,6 +18,7 @@ class PreviewComponent {
         this.STANDARD_DELAY_MILLISECONDS = 300;
         this.debounce = debounce;
         this.debouncedFileChangeFunction = null;
+        this.scriptNameMap = new Map();
         this.onInvalidScriptFunction = () => {
             detectChanges();
         }
@@ -161,10 +162,30 @@ class PreviewComponent {
                     htmlContainer.document.head.appendChild(consoleScript);
 
                     htmlContainer.addEventListener('error', (e) => {
-                        const script = document.createElement('script');
-                        script.text = 'setTimeout(() => { console.error("Error injecting script: ' + e.message.replace(/"/g, '\\"') + '"); }, 0);';
-                        script.type = 'module';
-                        htmlContainer.document.head.appendChild(script);
+                        const meta = Array.from(this.scriptNameMap.values()).find(m => m.url === e.filename);
+                        if (meta) {
+                            const script = document.createElement('script');
+                            script.text = 'setTimeout(() => { console.error("Error injecting script: ' + e.message.replace(/"/g, '\\"') + '"); }, 0);';
+                            script.type = 'module';
+                            htmlContainer.document.head.appendChild(script);
+
+                            const invalidIndexSubject = state.getInvalidScriptIndexSubject();
+                            const indices = invalidIndexSubject.getData();
+                            const currentIndex = indices.indexOf(meta.index);
+                            if (currentIndex === -1) {
+                                indices.push(meta.index);
+                            }
+                            invalidIndexSubject.next(indices);
+
+                            clearInterval(meta.checkSuccessInterval);
+                            this.isPreviewLoading = false;
+                            detectChanges();
+                        } else {
+                            const script = document.createElement('script');
+                            script.text = 'setTimeout(() => { console.error("Error injecting script: ' + e.message.replace(/"/g, '\\"') + '"); }, 0);';
+                            script.type = 'module';
+                            htmlContainer.document.head.appendChild(script);
+                        }
                     });
                     htmlContainer.addEventListener('unhandledrejection', (e) => {
                         const script = document.createElement('script');
@@ -176,8 +197,12 @@ class PreviewComponent {
                     fileListJs.forEach((injectedScript) => {
                         if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
                             const script = document.createElement('script');
-                            script.text = injectedScript.data += '\n' + SCRIPT_VALIDITY_CHECK_SOURCE;
+                            const blob = new Blob([injectedScript.data += '\n' + SCRIPT_VALIDITY_CHECK_SOURCE], { type: 'text/javascript' });
+                            const url = URL.createObjectURL(blob);
+                            const id = 'script-' + Date.now();
                             script.type = 'module';
+                            script.src = url;
+                            script.dataset.id = id;
 
                             let tryitCountOriginal = localStorage.getItem('tryitCount');
                             if (!tryitCountOriginal) {
@@ -223,6 +248,8 @@ class PreviewComponent {
                                     detectChanges();
                                 }
                             }, this.STANDARD_DELAY_MILLISECONDS);
+
+                            this.scriptNameMap.set(id, { element: script, url, index: injectedScript.index, checkSuccessInterval });
 
                             script.setAttribute('tryit-filename', injectedScript.name ? injectedScript.name : '');
 
