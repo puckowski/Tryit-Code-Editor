@@ -7,6 +7,7 @@ class FileTreeComponent {
         this.fileService = new FileService();
         this.editNameIndex = -1;
         this.editedFileName = '';
+        this.filenameBorder = '';
     }
 
     onEditName(index) {
@@ -23,6 +24,7 @@ class FileTreeComponent {
 
     onFileNameInput(event) {
         this.editedFileName = event.target.value;
+        this.filenameBorder = event.target.checkValidity() ? '' : '1px solid red';
     }
 
     onFileSelection(index) {
@@ -129,6 +131,7 @@ class FileTreeComponent {
                                     style: 'word-break: break-word; margin: 0 0.5rem 0.5rem 0; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204);' + font,
                                     ...file.index !== this.editNameIndex && { onclick: this.onEditName.bind(this, file.index) },
                                     ...file.index === this.editNameIndex && { onclick: this.onFinishEditName.bind(this, file.index) },
+                                    ...this.filenameBorder !== '' && { disabled: 'true' }
                                 },
                                 children: [
                                     ...(file.index === this.editNameIndex ? [
@@ -176,9 +179,10 @@ class FileTreeComponent {
                             ...(file.index === this.editNameIndex ? [
                                 markup('input', {
                                     attrs: {
-                                        style: 'width: 100%; padding: 1px 2px;',
+                                        style: 'width: 100%; padding: 1px 2px; border: ' + this.filenameBorder + ';',
                                         oninput: this.onFileNameInput.bind(this),
-                                        value: this.editedFileName
+                                        value: this.editedFileName,
+                                        pattern: '[^"]*',
                                     }
                                 })
                             ] : []),
