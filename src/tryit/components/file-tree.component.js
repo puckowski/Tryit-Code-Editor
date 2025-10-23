@@ -7,7 +7,7 @@ class FileTreeComponent {
         this.fileService = new FileService();
         this.editNameIndex = -1;
         this.editedFileName = '';
-        this.filenameBorder = '';
+        this.filenameBoxShadow = '';
     }
 
     onEditName(index) {
@@ -24,7 +24,7 @@ class FileTreeComponent {
 
     onFileNameInput(event) {
         this.editedFileName = event.target.value;
-        this.filenameBorder = event.target.checkValidity() ? '' : '1px solid red';
+        this.filenameBoxShadow = event.target.checkValidity() ? '' : '0 0 0 2px red;';
     }
 
     onFileSelection(index) {
@@ -131,7 +131,7 @@ class FileTreeComponent {
                                     style: 'word-break: break-word; margin: 0 0.5rem 0.5rem 0; background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204);' + font,
                                     ...file.index !== this.editNameIndex && { onclick: this.onEditName.bind(this, file.index) },
                                     ...file.index === this.editNameIndex && { onclick: this.onFinishEditName.bind(this, file.index) },
-                                    ...this.filenameBorder !== '' && { disabled: 'true' }
+                                    ...this.filenameBoxShadow !== '' && { disabled: 'true' }
                                 },
                                 children: [
                                     ...(file.index === this.editNameIndex ? [
@@ -179,7 +179,7 @@ class FileTreeComponent {
                             ...(file.index === this.editNameIndex ? [
                                 markup('input', {
                                     attrs: {
-                                        style: 'width: 100%; padding: 1px 2px; border: ' + this.filenameBorder + ';',
+                                        style: 'width: 100%; padding: 1px 2px; box-shadow: ' + this.filenameBoxShadow + ';',
                                         oninput: this.onFileNameInput.bind(this),
                                         value: this.editedFileName,
                                         pattern: '[^"]*',
