@@ -17,6 +17,13 @@ class HelpComponent {
         setState(state);
     }
 
+    onToggleVelocityTsc() {
+        const state = getState();
+        const isVelocityTsc = state.getVelocityTscScriptEnabled();
+        state.setVelocityTscScriptEnabled(!isVelocityTsc);
+        setState(state);
+    }
+
     view() {
         const state = getState();
 
@@ -27,6 +34,8 @@ class HelpComponent {
         }
         
         const isLowResolution = state.getLowResolution();
+        
+        const isVelocityTsc = state.getVelocityTscScriptEnabled();
 
         return markup('div', {
             attrs: {
@@ -174,6 +183,19 @@ class HelpComponent {
                                         type: 'checkbox',
                                         ...isLowResolution && { checked: 'true' },
                                         onchange: this.onToggleLowResolution.bind(this)
+                                    }
+                                })
+                            ]
+                        }),
+                        markup('div', {
+                            children: [
+                                textNode('VelocityTscScript: '),
+                                markup('input', {
+                                    attrs: {
+                                        id: 'velocity-tsc-checkbox',
+                                        type: 'checkbox',
+                                        ...isVelocityTsc && { checked: 'true' },
+                                        onchange: this.onToggleVelocityTsc.bind(this)
                                     }
                                 })
                             ]
