@@ -15,6 +15,7 @@ class PreviewComponent {
         this.CSS_MODE_NESS = 2;
         this.lessScriptData = null;
         this.nessScriptData = null;
+        this.velocityScriptData = null;
         this.STANDARD_DELAY_MILLISECONDS = 300;
         this.debounce = debounce;
         this.debouncedFileChangeFunction = null;
@@ -36,6 +37,8 @@ class PreviewComponent {
             }
 
             const state = getState();
+
+            const isVelocityTsc = state.getVelocityTscScriptEnabled();
 
             const collapsedMode = state.getCollapsedMode();
             const showPreview = state.getShowPreview();
@@ -196,65 +199,23 @@ class PreviewComponent {
 
                     fileListJs.forEach((injectedScript) => {
                         if (injectedScript.index !== fileIndex && injectedScript.data && injectedScript.data.length > 0) {
-                            const script = document.createElement('script');
-                            const blob = new Blob([injectedScript.data += '\n' + SCRIPT_VALIDITY_CHECK_SOURCE], { type: 'text/javascript' });
-                            const url = URL.createObjectURL(blob);
-                            const id = 'script-' + Date.now();
-                            script.type = 'module';
-                            script.src = url;
-                            script.dataset.id = id;
-                            script.setAttribute('tryit-script-index', injectedScript.index);
+                            if (isVelocityTsc) {
+                                if (this.lessScriptData === null) {
+                                    slGet('velocity.min.js').then(xhrResp => {
+                                        this.velocityScriptData = xhrResp.response;
 
-                            let tryitCountOriginal = localStorage.getItem('tryitCount');
-                            if (!tryitCountOriginal) {
-                                tryitCountOriginal = 0;
-                                localStorage.setItem('tryitCount', tryitCountOriginal);
-                            } else {
-                                tryitCountOriginal = Number(tryitCountOriginal);
-                            }
+                                        const transpiledSource = this.velocityScriptData + '\nconst source = `' + injectedScript.data + '\n' + SCRIPT_VALIDITY_CHECK_SOURCE + '`;\n eval(transpile(source));';
 
-                            let successRunCount = 0;
-                            this.isPreviewLoading = true;
-
-                            const checkSuccessInterval = setInterval(() => {
-                                const tryitCountFinal = Number(localStorage.getItem('tryitCount'));
-                                const fileList = this.fileService.getFileList();
-                                const invalidIndexSubject = state.getInvalidScriptIndexSubject();
-
-                                if (fileList.length === 0) {
-                                    this.injectedList = 'Injected files: ';
-                                    clearInterval(checkSuccessInterval);
-                                    this.isPreviewLoading = false;
-                                    detectChanges();
-                                } else if (tryitCountOriginal === tryitCountFinal) {
-                                    const indices = invalidIndexSubject.getData();
-                                    if (!indices.includes(injectedScript.index)) {
-                                        indices.push(injectedScript.index);
-                                    }
-                                    invalidIndexSubject.next(indices);
+                                        this.injectScriptBlob(htmlContainer, injectedScript, transpiledSource, state);
+                                    });
                                 } else {
-                                    const indices = invalidIndexSubject.getData();
-                                    const currentIndex = indices.indexOf(injectedScript.index);
-                                    if (currentIndex > -1) {
-                                        indices.splice(currentIndex, 1);
-                                    }
-                                    invalidIndexSubject.next(indices);
+                                    const transpiledSource = this.velocityScriptData + '\nconst source = `' + injectedScript.data + '\n' + SCRIPT_VALIDITY_CHECK_SOURCE + '`;\n eval(transpile(source));';
+
+                                    this.injectScriptBlob(htmlContainer, injectedScript, transpiledSource, state);
                                 }
-
-                                successRunCount++;
-
-                                if (successRunCount === this.CONTENT_LOAD_CHECK_COUNT || invalidIndexSubject.getData().length === 0) {
-                                    clearInterval(checkSuccessInterval);
-                                    this.isPreviewLoading = false;
-                                    detectChanges();
-                                }
-                            }, this.STANDARD_DELAY_MILLISECONDS);
-
-                            this.scriptNameMap.set(id, { element: script, url, index: injectedScript.index, checkSuccessInterval });
-
-                            script.setAttribute('tryit-filename', injectedScript.name ? injectedScript.name : '');
-
-                            htmlContainer.document.head.appendChild(script);
+                            } else {
+                                this.injectScriptBlob(htmlContainer, injectedScript, injectedScript.data + '\n' + SCRIPT_VALIDITY_CHECK_SOURCE, state);
+                            }
                         }
                     });
 
@@ -337,6 +298,69 @@ class PreviewComponent {
         if (subInvalid.getHasSubscription(this.onInvalidScriptFunction)) {
             subInvalid.clearSubscription(this.onInvalidScriptFunction);
         }
+    }
+
+    injectScriptBlob(htmlContainer, injectedScript, source, state) {
+        const script = document.createElement('script');
+
+        const blob = new Blob([source], { type: 'text/javascript' });
+        const url = URL.createObjectURL(blob);
+        const id = 'script-' + Date.now();
+        script.type = 'module';
+        script.src = url;
+        script.dataset.id = id;
+        script.setAttribute('tryit-script-index', injectedScript.index);
+
+        let tryitCountOriginal = localStorage.getItem('tryitCount');
+        if (!tryitCountOriginal) {
+            tryitCountOriginal = 0;
+            localStorage.setItem('tryitCount', tryitCountOriginal);
+        } else {
+            tryitCountOriginal = Number(tryitCountOriginal);
+        }
+
+        let successRunCount = 0;
+        this.isPreviewLoading = true;
+
+        const checkSuccessInterval = setInterval(() => {
+            const tryitCountFinal = Number(localStorage.getItem('tryitCount'));
+            const fileList = this.fileService.getFileList();
+            const invalidIndexSubject = state.getInvalidScriptIndexSubject();
+
+            if (fileList.length === 0) {
+                this.injectedList = 'Injected files: ';
+                clearInterval(checkSuccessInterval);
+                this.isPreviewLoading = false;
+                detectChanges();
+            } else if (tryitCountOriginal === tryitCountFinal) {
+                const indices = invalidIndexSubject.getData();
+                if (!indices.includes(injectedScript.index)) {
+                    indices.push(injectedScript.index);
+                }
+                invalidIndexSubject.next(indices);
+            } else {
+                const indices = invalidIndexSubject.getData();
+                const currentIndex = indices.indexOf(injectedScript.index);
+                if (currentIndex > -1) {
+                    indices.splice(currentIndex, 1);
+                }
+                invalidIndexSubject.next(indices);
+            }
+
+            successRunCount++;
+
+            if (successRunCount === this.CONTENT_LOAD_CHECK_COUNT || invalidIndexSubject.getData().length === 0) {
+                clearInterval(checkSuccessInterval);
+                this.isPreviewLoading = false;
+                detectChanges();
+            }
+        }, this.STANDARD_DELAY_MILLISECONDS);
+
+        this.scriptNameMap.set(id, { element: script, url, index: injectedScript.index, checkSuccessInterval });
+
+        script.setAttribute('tryit-filename', injectedScript.name ? injectedScript.name : '');
+
+        htmlContainer.document.head.appendChild(script);
     }
 
     prepareHtmlContainer(iframe, fileData) {

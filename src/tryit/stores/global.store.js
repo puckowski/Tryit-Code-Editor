@@ -12,7 +12,7 @@ class StoreGlobal {
         this.inlineHeight = '';
         this.collapsedMode = false;
         this.showPreview = false;
-        this.version = '6.2';
+        this.version = '6.3';
         this.showHelp = false;
         this.sourceHasNewInput = BehaviorSubject(false);
         this.invalidScriptIndices = BehaviorSubject([]);
@@ -26,9 +26,12 @@ class StoreGlobal {
         this.dismissSuggestionSubject = BehaviorSubject(false);
         this.cssModeObject = 'cssmode';
         this.lowResolutionObject = 'lowresolution';
+        this.velocityTscObject = 'velocitytsc';
+        this.velocityTscEnabled = false;
         this.caretSubject = BehaviorSubject(false);
         this.initializeCssMode();
         this.initializeLowResolution();
+        this.initializeVelocityTscScript();
     }
 
     getCaretSubject() {
@@ -195,6 +198,25 @@ class StoreGlobal {
         } else {
             this.manualLowResolution = null;
         }
+    }
+
+    initializeVelocityTscScript() {
+        const velocityTscStored = localStorage.getItem(this.velocityTscObject);
+
+        if (velocityTscStored !== null) {
+            this.velocityTscEnabled = velocityTscStored === 'true';
+        } else {
+            this.velocityTscEnabled = false;
+        }
+    }
+
+    getVelocityTscScriptEnabled() {
+        return this.velocityTscEnabled;
+    }
+
+    setVelocityTscScriptEnabled(enabled) {
+        this.velocityTscEnabled = enabled;
+        localStorage.setItem(this.velocityTscObject, this.velocityTscEnabled);
     }
 }
 
