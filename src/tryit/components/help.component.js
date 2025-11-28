@@ -189,7 +189,7 @@ class HelpComponent {
                         }),
                         markup('div', {
                             children: [
-                                textNode('VelocityTscScript: '),
+                                textNode('VelocityTscScript Mode: '),
                                 markup('input', {
                                     attrs: {
                                         id: 'velocity-tsc-checkbox',
