@@ -1,66 +1,93 @@
-const webpack = require('webpack');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
+const webpack = require("webpack");
+const path = require("path");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 
 var config = {
-    context: __dirname + '/src',
-    entry: {
-        app: './index.js',
-    },
-    output: {
-        path: __dirname + '/dist',
-        filename: 'dist.js',
-    },
-    module: {
-        rules: [
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                use: [{
-                    loader: 'babel-loader',
-                    options: {
-                      plugins: ['@babel/plugin-syntax-dynamic-import']
-                    }
-                  }]
+  context: path.resolve(__dirname, "src"),
+
+  entry: {
+    app: "./index.js",
+  },
+
+  output: {
+    path: path.resolve(__dirname, "dist"),
+    filename: "dist.js",
+  },
+
+  module: {
+    rules: [
+      {
+        test: /\.mjs$/,
+        include: [path.resolve(__dirname, "node_modules/@browserai/browserai")],
+        type: "javascript/esm",
+        use: {
+          loader: "babel-loader",
+          options: {
+            sourceType: "unambiguous",
+            presets: [["@babel/preset-env", { targets: "defaults" }]],
+          },
+        },
+      },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: "babel-loader",
+            options: {
+              plugins: ["@babel/plugin-syntax-dynamic-import"],
             },
-            {
-                test: /\.css$/,
-                use: [
-                    'style-loader',
-                    'css-loader'
-                ]
-            }
-        ]
+          },
+        ],
+      },
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"],
+      },
+    ],
+  },
+
+  resolve: {
+    extensions: [".mjs", ".js", ".json"],
+    fallback: {
+      path: require.resolve("path-browserify"),
+      url: require.resolve("url/"),
+      fs: false,
     },
-    optimization: {
-        minimize: true,
-        minimizer: [new TerserPlugin({
-            terserOptions: {
-                ecma: undefined,
-                warnings: false,
-                parse: {},
-                compress: {},
-                mangle: true,
-                module: false,
-                output: null,
-                toplevel: false,
-                nameCache: null,
-                ie8: false,
-                keep_classnames: undefined,
-                keep_fnames: false,
-                safari10: false
-            },
-            extractComments: true,
-        })],
+  },
+
+
+
+  plugins: [
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: "*.html", to: "" },
+        { from: "css", to: "css" },
+        { from: "js", to: "js" },
+        { from: "icons", to: "icons" },
+      ],
+    }),
+
+  ],
+
+  devServer: {
+    static: {
+      directory: path.resolve(__dirname, "dist"),
     },
-    plugins: [
-        new CopyWebpackPlugin([
-            { from: './*.html', to: '' },
-            { from: './css', to: '' },
-            { from: './js', to: '' },
-            { from: './icons', to: '' }
-        ]),
-    ]
+    open: true,
+    hot: true,
+    client: {
+      overlay: {
+        errors: true,
+        warnings: false, 
+      },
+    },
+  },
+
+  stats: {
+    warnings: true,
+  },
 };
 
 module.exports = config;

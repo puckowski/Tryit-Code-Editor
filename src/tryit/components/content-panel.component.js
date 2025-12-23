@@ -1,5 +1,6 @@
 import { getState, markup } from '../../../dist/sling.min';
 import FileService from '../services/file.service';
+import ChatComponent from './chat.component';
 import FileTreeComponent from './file-tree.component';
 import HelpComponent from './help.component';
 import PreviewComponent from './preview.component';
@@ -13,6 +14,7 @@ class ContentPanelComponent {
         this.previewComp = new PreviewComponent();
         this.sourceComp = new SourcePanelComponent();
         this.helpComp = new HelpComponent();
+        this.chatComp = new ChatComponent();
         this.unitList = [
             'cm', 'mm', 'in', 'px', 'pt', 'pc', 'em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax', '%'
         ];
@@ -48,6 +50,7 @@ class ContentPanelComponent {
         const collapsedMode = state.getCollapsedMode();
         const showPreview = state.getShowPreview();
         const showHelp = state.getShowHelp();
+        const showChat = state.getShowChat();
         const portraitMode = state.getPortraitMode();
 
         let rootDisplayStyle = 'display: flex;';
@@ -75,6 +78,38 @@ class ContentPanelComponent {
                         }),
                         ...(portraitMode === false ? [
                             ...(showHelp === false ? [
+                                ...(showChat === true ? [
+                                    ...(collapsedMode === false && portraitMode === true ? [
+                                        markup('div', {
+                                            attrs: {
+                                                style: 'width: 100%; max-height: inherit;  height: calc(200% - 1rem);'
+                                            },
+                                            children: [
+                                                this.chatComp
+                                            ]
+                                        })
+                                    ] : []),
+                                    ...(collapsedMode === true ? [
+                                        markup('div', {
+                                            attrs: {
+                                                style: 'width: 100%; max-height: inherit;  height: calc(200% - 1rem);'
+                                            },
+                                            children: [
+                                                this.chatComp
+                                            ]
+                                        })
+                                    ] : []),
+                                    ...(collapsedMode === false && portraitMode === false ? [
+                                        markup('div', {
+                                            attrs: {
+                                                style: 'width: 100%; max-height: inherit;  height: calc(200% - 1rem);'
+                                            },
+                                            children: [
+                                                this.chatComp
+                                            ]
+                                        })
+                                    ] : []),
+                                ] : [
                                 ...(collapsedMode === false ? [
                                     markup('div', {
                                         attrs: {
@@ -115,6 +150,7 @@ class ContentPanelComponent {
                                         })
                                     ] : []),
                                 ] : [])
+                            ]),
                             ] : [
                                 markup('div', {
                                     attrs: {
@@ -127,46 +163,79 @@ class ContentPanelComponent {
                             ]),
                         ] : [
                             ...(showHelp === false ? [
-                                ...(collapsedMode === false ? [
-                                    markup('div', {
-                                        attrs: {
-                                            style: 'width: 100%; max-height: inherit;  height: calc(200% - 1rem);'
-                                        },
-                                        children: [
-                                            this.sourceComp
-                                        ]
-                                    }),
-                                    markup('div', {
-                                        attrs: {
-                                            style: 'width: 100%; max-height: inherit;  height: calc(200% - 1rem);'
-                                        },
-                                        children: [
-                                            this.previewComp
-                                        ]
-                                    })
-                                ] : []),
-                                ...(collapsedMode === true ? [
-                                    ...(showPreview === true ? [
+                                ...(showChat === true ? [
+                                    ...(collapsedMode === false && portraitMode === true ? [
                                         markup('div', {
                                             attrs: {
-                                                style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;  height: calc(200% - 1rem);'
+                                                style: 'width: 100%; max-height: inherit;  height: calc(200% - 1rem);'
+                                            },
+                                            children: [
+                                                this.chatComp
+                                            ]
+                                        })
+                                    ] : []),
+                                    ...(collapsedMode === true ? [
+                                        markup('div', {
+                                            attrs: {
+                                                style: 'width: 100%; max-height: inherit;  height: calc(200% - 1rem);'
+                                            },
+                                            children: [
+                                                this.chatComp
+                                            ]
+                                        })
+                                    ] : []),
+                                    ...(collapsedMode === false && portraitMode === false ? [
+                                        markup('div', {
+                                            attrs: {
+                                                style: 'width: 100%; max-height: inherit;  height: calc(200% - 1rem);'
+                                            },
+                                            children: [
+                                                this.chatComp
+                                            ]
+                                        })
+                                    ] : []),
+                                ] : [
+                                    ...(collapsedMode === false ? [
+                                        markup('div', {
+                                            attrs: {
+                                                style: 'width: 100%; max-height: inherit;  height: calc(200% - 1rem);'
+                                            },
+                                            children: [
+                                                this.sourceComp
+                                            ]
+                                        }),
+                                        markup('div', {
+                                            attrs: {
+                                                style: 'width: 100%; max-height: inherit;  height: calc(200% - 1rem);'
                                             },
                                             children: [
                                                 this.previewComp
                                             ]
                                         })
                                     ] : []),
-                                    ...(showPreview === false ? [
-                                        markup('div', {
-                                            attrs: {
-                                                style: 'width: calc(100% - max(12%, 100px) - 0.5rem); max-height: inherit;  height: calc(200% - 1rem);'
-                                            },
-                                            children: [
-                                                this.sourceComp
-                                            ]
-                                        })
-                                    ] : []),
-                                ] : [])
+                                    ...(collapsedMode === true ? [
+                                        ...(showPreview === true ? [
+                                            markup('div', {
+                                                attrs: {
+                                                    style: 'width: calc(100% - max(12%, 100px)); max-height: inherit;  height: calc(200% - 1rem);'
+                                                },
+                                                children: [
+                                                    this.previewComp
+                                                ]
+                                            })
+                                        ] : []),
+                                        ...(showPreview === false ? [
+                                            markup('div', {
+                                                attrs: {
+                                                    style: 'width: calc(100% - max(12%, 100px) - 0.5rem); max-height: inherit;  height: calc(200% - 1rem);'
+                                                },
+                                                children: [
+                                                    this.sourceComp
+                                                ]
+                                            })
+                                        ] : []),
+                                    ] : [])
+                                ])
                             ] : [
                                 ...(collapsedMode === false && portraitMode === true ? [
                                     markup('div', {

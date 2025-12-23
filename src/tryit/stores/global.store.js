@@ -32,6 +32,20 @@ class StoreGlobal {
         this.initializeCssMode();
         this.initializeLowResolution();
         this.initializeVelocityTscScript();
+        this.showChat = false;
+        this.modelId = crypto.randomUUID();
+    }
+
+    getModelId() {
+        return this.modelId;
+    }
+
+    getShowChat() {
+        return this.showChat;
+    }
+
+    setShowChat(chatState) {
+        this.showChat = chatState;
     }
 
     getCaretSubject() {

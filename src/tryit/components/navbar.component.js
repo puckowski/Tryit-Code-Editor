@@ -335,6 +335,17 @@ class NavbarComponent {
         }
     }
 
+    onChatToggle() {
+        const state = getState();
+        state.setShowChat(!state.getShowChat());
+        setState(state);
+
+        if (!state.getShowChat()) {
+            state.getDataSubject().next(true);
+            detectChanges();
+        }
+    }
+
     onSlingDemo() {
         const startIndex = this.fileService.buildSlingDemo();
         const state = getState();
@@ -650,6 +661,15 @@ class NavbarComponent {
                         },
                         children: [
                             textNode('Toggle Help')
+                        ]
+                    }),
+                    markup('button', {
+                        attrs: {
+                            onclick: this.onChatToggle.bind(this),
+                            style: marginBottom + ' background-color: rgba(255,255,255,0.3); border: none; color: rgb(204, 204, 204); ' + marginRight + '  ' + font + padding
+                        },
+                        children: [
+                            textNode('Toggle Chat')
                         ]
                     }),
                     markup('button', {
