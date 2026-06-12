@@ -24,10 +24,11 @@ class ChatComponent {
     async processQuestion(event) {
         const question = document.getElementById('tryit-sling-chat').value;
         const chunks = await this.browserAI.generateText(
-            'You are a JavaScript expert focused on vanilla JavaScript advice. Do not default to suggesting libraries. Prompt: ' + question, {
+            question, {
             maxTokens: 300,
             temperature: 0.1,
             stream: true,
+            system_prompt: 'You are a JavaScript expert focused on vanilla JavaScript advice. Do not default to suggesting libraries.'
         });
 
         let response = '';
